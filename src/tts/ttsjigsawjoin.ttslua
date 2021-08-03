@@ -1,12 +1,12 @@
 --[[ Lua code. See documentation: http://berserk-games.com/knowledgebase/scripting/ --]]
-local templateData = {}
-local puzzleData = {}
+templateData = {}
+puzzleData = {}
 
 ------------
 -- TTS Hooks
 ------------
 
-local gameState = {}
+gameState = {}
 function onLoad(save_state)
   local start = os.time()
 
@@ -59,7 +59,7 @@ function onSave()
 end
 
 -- this is 300% faster than JSON.encode(gameState) without caching
-local pieceTextCache = ''
+pieceTextCache = ''
 function serializeGameStateJSON()
   local players = {}
   for playerName, playerData in pairs(gameState.players) do
@@ -143,7 +143,7 @@ function onObjectRandomize(object, player_color)
 end
 
 
-local lastDrop = {}
+lastDrop = {}
 function onObjectDropped(player_color, object)
   if not gameState.enabled then return end
 
@@ -199,7 +199,7 @@ function onObjectPickedUp(player_color, object)
   ))
 end
 
-local lastPlayerWarning = {}
+lastPlayerWarning = {}
 function checkPlayerLimits(player)
   local start = os.time()
 
@@ -985,7 +985,7 @@ end
 
 -- Converts a TTS object type into a Piece type
 -- caches all object lookups but only returns valid pieces
-local pieceCache = {}
+pieceCache = {}
 function getPiece(object)
   --debugPrint(string.format(
   --  'getPiece object: %s',
@@ -1161,7 +1161,7 @@ end
 
 
 
-local activeMerges = {}
+activeMerges = {}
 function onPieceDropped(player_color, droppedPiece)
   local start = os.time()
 
@@ -1394,7 +1394,7 @@ end
 
 
 
-local pieceData443 = {
+pieceData443 = {
   {solutionPosition={x=-1.513992,y=1,z=1.469442},solutionRotation={x=0,y=0,z=0},neighbors={6,2,5}},
   {solutionPosition={x=-0.512197,y=1,z=1.504521},solutionRotation={x=0,y=0,z=0},neighbors={3,1,7,6,5}},
   {solutionPosition={x=0.526660,y=1,z=1.479086},solutionRotation={x=0,y=270,z=0},neighbors={2,7,6,8,4}},
@@ -1413,7 +1413,7 @@ local pieceData443 = {
   {solutionPosition={x=1.466051,y=1,z=-1.480784},solutionRotation={x=0,y=0,z=0},neighbors={15,11,12}}
 }
 
-local pieceData12123 = {
+pieceData12123 = {
   {solutionPosition={x=-5.513302,y=1,z=5.491064},solutionRotation={x=0,y=270,z=0},neighbors={13,2,14}},
   {solutionPosition={x=-4.544133,y=1,z=5.476081},solutionRotation={x=0,y=0,z=0},neighbors={13,15,14,3,1}},
   {solutionPosition={x=-3.535484,y=1,z=5.485717},solutionRotation={x=0,y=90,z=0},neighbors={14,15,16,2,4}},
@@ -1560,7 +1560,7 @@ local pieceData12123 = {
   {solutionPosition={x=5.486812,y=1,z=-5.510740},solutionRotation={x=0,y=90,z=0},neighbors={143,132,131}}
 }
 
-local pieceData24243 = {
+pieceData24243 = {
   {solutionPosition={x=-11.493659,y=1,z=11.512020},solutionRotation={x=0,y=0,z=0},neighbors={2,25,26}},
   {solutionPosition={x=-10.522344,y=1,z=11.517986},solutionRotation={x=0,y=270,z=0},neighbors={26,27,3,25,1}},
   {solutionPosition={x=-9.531169,y=1,z=11.494074},solutionRotation={x=0,y=0,z=0},neighbors={26,4,2,27,28}},
@@ -2142,7 +2142,7 @@ local pieceData24243 = {
 
 
 
-local pieceData12153 = {
+pieceData12153 = {
   {solutionPosition={x=-5.482304,y=1,z=7.002843},solutionRotation={x=0,y=180,z=0},neighbors={14,13,2}},
   {solutionPosition={x=-4.489907,y=1,z=6.980417},solutionRotation={x=0,y=0,z=0},neighbors={13,3,1,15,14}},
   {solutionPosition={x=-3.511083,y=1,z=7.006345},solutionRotation={x=0,y=90,z=0},neighbors={16,14,15,2,4}},
@@ -2325,7 +2325,7 @@ local pieceData12153 = {
   {solutionPosition={x=5.485512,y=1,z=-7.012766},solutionRotation={x=0,y=0,z=0},neighbors={168,167,179}}
 }
 
-local pieceData24303 = {
+pieceData24303 = {
   {solutionPosition={x=-11.509055,y=1,z=14.497213},solutionRotation={x=0,y=270,z=0},neighbors={26,25,2}},
   {solutionPosition={x=-10.538230,y=1,z=14.502435},solutionRotation={x=0,y=90,z=0},neighbors={27,25,1,26,3}},
   {solutionPosition={x=-9.528822,y=1,z=14.494547},solutionRotation={x=0,y=90,z=0},neighbors={4,26,2,27,28}},
@@ -3050,7 +3050,7 @@ local pieceData24303 = {
 
 
 
-local pieceData12163 = {
+pieceData12163 = {
   {solutionPosition={x=-5.483490,y=1,z=7.488750},solutionRotation={x=0,y=0,z=0},neighbors={13,14,2}},
   {solutionPosition={x=-4.508917,y=1,z=7.503501},solutionRotation={x=0,y=180,z=0},neighbors={3,13,1,15,14}},
   {solutionPosition={x=-3.509979,y=1,z=7.486652},solutionRotation={x=0,y=0,z=0},neighbors={4,2,16,15,14}},
@@ -3245,7 +3245,7 @@ local pieceData12163 = {
   {solutionPosition={x=5.510649,y=1,z=-7.517419},solutionRotation={x=0,y=180,z=0},neighbors={191,179,180}}
 }
 
-local pieceData24323 = {
+pieceData24323 = {
   {solutionPosition={x=-11.519593,y=1,z=15.496099},solutionRotation={x=0,y=270,z=0},neighbors={26,25,2}},
   {solutionPosition={x=-10.548212,y=1,z=15.518127},solutionRotation={x=0,y=90,z=0},neighbors={1,25,26,27,3}},
   {solutionPosition={x=-9.546819,y=1,z=15.500851},solutionRotation={x=0,y=90,z=0},neighbors={4,2,26,27,28}},
@@ -4016,7 +4016,7 @@ local pieceData24323 = {
   {solutionPosition={x=11.509094,y=1,z=-15.524389},solutionRotation={x=0,y=0,z=0},neighbors={743,767,744}}
 }
 
-local pieceData27192 = {
+pieceData27192 = {
   {solutionPosition={x=-13.023277,y=1,z=8.999908},solutionRotation={x=0,y=0,z=0},neighbors={28,2,29}},
   {solutionPosition={x=-12.041072,y=1,z=9.021314},solutionRotation={x=0,y=270,z=0},neighbors={3,1,29,30,28}},
   {solutionPosition={x=-11.026780,y=1,z=9.012719},solutionRotation={x=0,y=270,z=0},neighbors={31,4,29,30,2}},
@@ -4532,7 +4532,7 @@ local pieceData27192 = {
   {solutionPosition={x=13.015701,y=1,z=-9.019274},solutionRotation={x=0,y=0,z=0},neighbors={486,485,512}}
 }
 
-local pieceData38272 = {
+pieceData38272 = {
   {solutionPosition={x=-18.545095,y=1,z=13.019593},solutionRotation={x=0,y=0,z=0},neighbors={2,40,39}},
   {solutionPosition={x=-17.539143,y=1,z=13.026241},solutionRotation={x=0,y=90,z=0},neighbors={40,3,41,1,39}},
   {solutionPosition={x=-16.504320,y=1,z=13.030660},solutionRotation={x=0,y=90,z=0},neighbors={41,40,2,42,4}},
@@ -5562,7 +5562,7 @@ local pieceData38272 = {
 }
 
 
-local pieceData433 = {
+pieceData433 = {
   {solutionPosition={x=-1.500567,y=1,z=0.974492},solutionRotation={x=0,y=180,z=0},neighbors={5,6,2}},
   {solutionPosition={x=-0.499492,y=1,z=1.004608},solutionRotation={x=0,y=90,z=0},neighbors={5,7,6,3,1}},
   {solutionPosition={x=0.520426,y=1,z=0.986252},solutionRotation={x=0,y=180,z=0},neighbors={2,4,7,6,8}},
@@ -5577,7 +5577,7 @@ local pieceData433 = {
   {solutionPosition={x=1.477759,y=1,z=-0.991718},solutionRotation={x=0,y=90,z=0},neighbors={11,8,7}}
 }
 
-local pieceData16123 = {
+pieceData16123 = {
   {solutionPosition={x=-7.513052,y=1,z=5.484133},solutionRotation={x=0,y=180,z=0},neighbors={18,17,2}},
   {solutionPosition={x=-6.510731,y=1,z=5.507473},solutionRotation={x=0,y=0,z=0},neighbors={18,1,19,17,3}},
   {solutionPosition={x=-5.501511,y=1,z=5.502975},solutionRotation={x=0,y=0,z=0},neighbors={18,19,20,2,4}},
@@ -5772,7 +5772,7 @@ local pieceData16123 = {
   {solutionPosition={x=7.515808,y=1,z=-5.477970},solutionRotation={x=0,y=270,z=0},neighbors={191,175,176}}
 }
 
-local pieceData32243 = {
+pieceData32243 = {
   {solutionPosition={x=-15.528208,y=1,z=11.524852},solutionRotation={x=0,y=0,z=0},neighbors={2,33,34}},
   {solutionPosition={x=-14.557315,y=1,z=11.517859},solutionRotation={x=0,y=270,z=0},neighbors={35,33,3,34,1}},
   {solutionPosition={x=-13.542834,y=1,z=11.498567},solutionRotation={x=0,y=90,z=0},neighbors={35,34,4,2,36}},
@@ -6543,7 +6543,7 @@ local pieceData32243 = {
   {solutionPosition={x=15.526316,y=1,z=-11.521568},solutionRotation={x=0,y=270,z=0},neighbors={736,735,767}}
 }
 
-local pieceData543 = {
+pieceData543 = {
   {solutionPosition={x=-2.005935,y=1,z=1.470026},solutionRotation={x=0,y=180,z=0},neighbors={7,6,2}},
   {solutionPosition={x=-1.002642,y=1,z=1.477648},solutionRotation={x=0,y=90,z=0},neighbors={6,8,3,1,7}},
   {solutionPosition={x=0.016100,y=1,z=1.501641},solutionRotation={x=0,y=0,z=0},neighbors={2,8,7,4,9}},
@@ -6566,7 +6566,7 @@ local pieceData543 = {
   {solutionPosition={x=1.982716,y=1,z=-1.481608},solutionRotation={x=0,y=0,z=0},neighbors={15,19,14}}
 }
 
-local pieceData15123 = {
+pieceData15123 = {
   {solutionPosition={x=-6.991093,y=1,z=5.480351},solutionRotation={x=0,y=180,z=0},neighbors={2,16,17}},
   {solutionPosition={x=-5.987692,y=1,z=5.483638},solutionRotation={x=0,y=270,z=0},neighbors={17,16,1,3,18}},
   {solutionPosition={x=-4.985610,y=1,z=5.509283},solutionRotation={x=0,y=270,z=0},neighbors={17,2,4,19,18}},
@@ -6749,7 +6749,7 @@ local pieceData15123 = {
   {solutionPosition={x=7.007320,y=1,z=-5.492401},solutionRotation={x=0,y=90,z=0},neighbors={179,164,165}}
 }
 
-local pieceData30243 = {
+pieceData30243 = {
   {solutionPosition={x=-14.495951,y=1,z=11.503520},solutionRotation={x=0,y=270,z=0},neighbors={32,31,2}},
   {solutionPosition={x=-13.496733,y=1,z=11.519661},solutionRotation={x=0,y=0,z=0},neighbors={33,31,1,32,3}},
   {solutionPosition={x=-12.525392,y=1,z=11.522484},solutionRotation={x=0,y=0,z=0},neighbors={33,32,2,4,34}},
@@ -7472,7 +7472,7 @@ local pieceData30243 = {
   {solutionPosition={x=14.497319,y=1,z=-11.492623},solutionRotation={x=0,y=0,z=0},neighbors={690,689,719}}
 }
 
-local pieceData1693 = {
+pieceData1693 = {
   {solutionPosition={x=-7.483587,y=1,z=3.982920},solutionRotation={x=0,y=270,z=0},neighbors={18,17,2}},
   {solutionPosition={x=-6.516599,y=1,z=3.967767},solutionRotation={x=0,y=270,z=0},neighbors={19,17,3,18,1}},
   {solutionPosition={x=-5.517306,y=1,z=4.004992},solutionRotation={x=0,y=0,z=0},neighbors={4,19,2,20,18}},
@@ -7619,7 +7619,7 @@ local pieceData1693 = {
   {solutionPosition={x=7.494404,y=1,z=-4.004264},solutionRotation={x=0,y=90,z=0},neighbors={143,128,127}}
 }
 
-local pieceData32183 = {
+pieceData32183 = {
   {solutionPosition={x=-15.530730,y=1,z=8.491229},solutionRotation={x=0,y=270,z=0},neighbors={33,2,34}},
   {solutionPosition={x=-14.549777,y=1,z=8.499912},solutionRotation={x=0,y=0,z=0},neighbors={34,3,33,1,35}},
   {solutionPosition={x=-13.539570,y=1,z=8.513267},solutionRotation={x=0,y=270,z=0},neighbors={36,2,4,35,34}},
@@ -8198,7 +8198,7 @@ local pieceData32183 = {
   {solutionPosition={x=15.507151,y=1,z=-8.521184},solutionRotation={x=0,y=0,z=0},neighbors={575,544,543}}
 }
 
-local pieceData48273 = {
+pieceData48273 = {
   {solutionPosition={x=-23.535620,y=1,z=13.015416},solutionRotation={x=0,y=270,z=0},neighbors={49,2,50}},
   {solutionPosition={x=-22.555355,y=1,z=13.013153},solutionRotation={x=0,y=270,z=0},neighbors={1,3,51,50,49}},
   {solutionPosition={x=-21.533318,y=1,z=13.017022},solutionRotation={x=0,y=180,z=0},neighbors={51,4,50,52,2}},
@@ -9498,7 +9498,7 @@ local pieceData48273 = {
 }
 
 
-local pieceData64363 = {
+pieceData64363 = {
   {solutionPosition={x=-31.538185,y=1,z=17.505386},solutionRotation={x=0,y=270,z=0},neighbors={66,65,2}},
   {solutionPosition={x=-30.536983,y=1,z=17.530434},solutionRotation={x=0,y=0,z=0},neighbors={3,65,67,1,66}},
   {solutionPosition={x=-29.539471,y=1,z=17.498581},solutionRotation={x=0,y=90,z=0},neighbors={66,2,68,67,4}},
@@ -11805,7 +11805,7 @@ local pieceData64363 = {
   {solutionPosition={x=31.561523,y=1,z=-17.503330},solutionRotation={x=0,y=90,z=0},neighbors={2239,2303,2240}}
 }
 
-local pieceData80453 = {
+pieceData80453 = {
   {solutionPosition={x=-39.560478,y=1,z=22.015436},solutionRotation={x=0,y=90,z=0},neighbors={82,2,81}},
   {solutionPosition={x=-38.577713,y=1,z=22.033449},solutionRotation={x=0,y=0,z=0},neighbors={1,82,81,3,83}},
   {solutionPosition={x=-37.573055,y=1,z=22.008934},solutionRotation={x=0,y=90,z=0},neighbors={83,2,4,82,84}},
@@ -15408,7 +15408,7 @@ local pieceData80453 = {
   {solutionPosition={x=39.575928,y=1,z=-22.039345},solutionRotation={x=0,y=0,z=0},neighbors={3519,3520,3599}}
 }
 
-local pieceData96543 = {
+pieceData96543 = {
   {solutionPosition={x=-47.593735,y=1,z=26.523695},solutionRotation={x=0,y=180,z=0},neighbors={2,98,97}},
   {solutionPosition={x=-46.630013,y=1,z=26.546648},solutionRotation={x=0,y=0,z=0},neighbors={97,98,1,3,99}},
   {solutionPosition={x=-45.593754,y=1,z=26.549196},solutionRotation={x=0,y=0,z=0},neighbors={2,4,100,98,99}},
@@ -20595,7 +20595,7 @@ local pieceData96543 = {
   {solutionPosition={x=47.569244,y=1,z=-26.541800},solutionRotation={x=0,y=270,z=0},neighbors={5183,5088,5087}}
 }
 
-local pieceData16103 = {
+pieceData16103 = {
   {solutionPosition={x=-7.512232,y=1,z=4.505671},solutionRotation={x=0,y=0,z=0},neighbors={2,17,18}},
   {solutionPosition={x=-6.504678,y=1,z=4.490323},solutionRotation={x=0,y=90,z=0},neighbors={18,17,3,19,1}},
   {solutionPosition={x=-5.481913,y=1,z=4.503202},solutionRotation={x=0,y=180,z=0},neighbors={19,18,2,20,4}},
@@ -20758,7 +20758,7 @@ local pieceData16103 = {
   {solutionPosition={x=7.512362,y=1,z=-4.487265},solutionRotation={x=0,y=90,z=0},neighbors={144,143,159}}
 }
 
-local pieceData32203 = {
+pieceData32203 = {
   {solutionPosition={x=-15.499961,y=1,z=9.485557},solutionRotation={x=0,y=270,z=0},neighbors={2,33,34}},
   {solutionPosition={x=-14.507079,y=1,z=9.509591},solutionRotation={x=0,y=90,z=0},neighbors={35,33,34,3,1}},
   {solutionPosition={x=-13.510929,y=1,z=9.493149},solutionRotation={x=0,y=180,z=0},neighbors={36,2,35,4,34}},
