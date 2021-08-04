@@ -145,7 +145,7 @@ end
 
 local lastDrop = {}
 function onObjectDropped(player_color, object)
-  if not gameState.enabled then return end
+  if not gameState.enabled or player_color == "Grey" then return end
 
   local start = os.time()
 
