@@ -13,7 +13,13 @@ function onLoad(save_state)
   if save_state == '' then
     gameState = {
       enabled = true,
-      debug_enabled = false,
+      debug_level = 0, 
+      -- 0: debugging off
+      -- 1: specific function debugging
+      -- 2: infrequent function calls
+      -- 3: include frequent function calls
+      -- 4: display everything
+      -- 99:if a debug message has this level it won't display
       duration = 0,
       players = {},
       teams = {}
@@ -27,17 +33,23 @@ function onLoad(save_state)
   populateDynamicUI()
   Wait.frames(function()
     UI.setAttribute('enabled', 'isOn', gameState.enabled)
-    UI.setAttribute('debug_enabled', 'isOn', gameState.debug_enabled)
+    if gameState.debug_level == 0 then
+      UI.setAttribute('debug_level', 'text', "Debugging Off")
+    else
+      UI.setAttribute('debug_level', 'text', "Debug Level "..tostring(gameState.debug_level))
+    end
   end, 2)
 
   scanAllObjects()
 
   Wait.time(onWaitMain, 1, -1)
 
-  debugPrint(string.format(
-    'onLoad elapsed: %.2f',
-    os.time() - start
-  ))
+  if gameState.debug_level >= 2 then
+    debugPrint(string.format(
+      'onLoad elapsed: %.2f',
+      os.time() - start
+    ))
+  end
 end
 
 function onSave()
@@ -48,12 +60,14 @@ function onSave()
   --local gameStateJSON = JSON.encode(gameState)
   local gameStateJSON = serializeGameStateJSON()
 
-  debugPrint(string.format(
-    'onSave elapsed: %.2f, gameStateJSON.len: %d, gameStateJSON: %s',
-    os.time() - start,
-    string.len(gameStateJSON),
-    gameStateJSON
-  ))
+  if gameState.debug_level >= 4 then
+    debugPrint(string.format(
+      'onSave elapsed: %.2f, gameStateJSON.len: %d, gameStateJSON: %s',
+      os.time() - start,
+      string.len(gameStateJSON),
+      gameStateJSON
+    ))
+  end
 
   return gameStateJSON
 end
@@ -134,12 +148,14 @@ function onObjectRandomize(object, player_color)
   pieceRotation.y = math.random(-180, 180)
   randomizedPiece.object.setRotationSmooth(pieceRotation)
 
-  debugPrint(string.format(
-    'onObjectRandomize player_color: %s, randomizedPiece.id: %d, elapsed: %.2f',
-    player_color,
-    randomizedPiece.id,
-    os.time() - start
-  ))
+  if gameState.debug_level >= 2 then
+    debugPrint(string.format(
+      'onObjectRandomize player_color: %s, randomizedPiece.id: %d, elapsed: %.2f',
+      player_color,
+      randomizedPiece.id,
+      os.time() - start
+    ))
+  end
 end
 
 
@@ -163,13 +179,15 @@ function onObjectDropped(player_color, object)
     onPieceDropped(player_color, droppedPiece)
   end
 
-  debugPrint(string.format(
-    'onObjectDropped player_color: %s, droppedPiece.id: %d, lastDrop: %s, elapsed: %.2f',
-    player_color,
-    droppedPiece.id,
-    tostring(lastDrop[player_color]),
-    os.time() - start
-  ))
+  if gameState.debug_level >= 3 then
+    debugPrint(string.format(
+      'onObjectDropped player_color: %s, droppedPiece.id: %d, lastDrop: %s, elapsed: %.2f',
+      player_color,
+      droppedPiece.id,
+      tostring(lastDrop[player_color]),
+      os.time() - start
+    ))
+  end
 end
 
 function getHostPlayer()
@@ -191,12 +209,14 @@ function onObjectPickedUp(player_color, object)
   local player = Player[player_color]
   checkPlayerLimits(player)
 
-  debugPrint(string.format(
-    'onObjectPickedUp player_color: %s, pickedUpPiece.id: %d, elapsed: %.2f',
-    player_color,
-    pickedUpPiece.id,
-    os.time() - start
-  ))
+  if gameState.debug_level >= 3 then
+    debugPrint(string.format(
+      'onObjectPickedUp player_color: %s, pickedUpPiece.id: %d, elapsed: %.2f',
+      player_color,
+      pickedUpPiece.id,
+      os.time() - start
+    ))
+  end
 end
 
 local lastPlayerWarning = {}
@@ -243,13 +263,15 @@ function checkPlayerLimits(player)
 
   lastPlayerWarning[player.steam_name] = playerWarning
 
-  debugPrint(string.format(
-    'checkPlayerLimits player.color: %s, playerWarning.frame_count: %s, playerWarning.broadcast_count: %s, elapsed: %.2f',
-    tostring(player.color),
-    tostring(playerWarning.frame_count),
-    tostring(playerWarning.broadcast_count),
-    os.time() - start
-  ))
+  if gameState.debug_level >= 3 then
+    debugPrint(string.format(
+      'checkPlayerLimits player.color: %s, playerWarning.frame_count: %s, playerWarning.broadcast_count: %s, elapsed: %.2f',
+      tostring(player.color),
+      tostring(playerWarning.frame_count),
+      tostring(playerWarning.broadcast_count),
+      os.time() - start
+    ))
+  end
 end
 
 function onClick_CloseGreeting(player)
@@ -259,12 +281,14 @@ function onClick_CloseGreeting(player)
     player.team = 'Clubs'
   end
 
-  debugPrint(string.format(
-    'onClick_CloseGreeting, player.color: %s, player.team: %s, elapsed: %.2f',
-    tostring(player.color),
-    tostring(player.team),
-    os.time() - start
-  ))
+  if gameState.debug_level >= 2 then
+    debugPrint(string.format(
+      'onClick_CloseGreeting, player.color: %s, player.team: %s, elapsed: %.2f',
+      tostring(player.color),
+      tostring(player.team),
+      os.time() - start
+    ))
+  end
 end
 
 -- this is unsafe during game shutdown!
@@ -300,11 +324,13 @@ function onObjectSpawned(spawn_object)
   local piece = getPiece(spawn_object)
   if piece == nil then return end
 
-  debugPrint(string.format(
-    'onObjectSpawned piece.id: %d, elapsed: %.2f',
-    piece.id,
-    os.time() - start
-  ))
+  if gameState.debug_level >= 4 then
+    debugPrint(string.format(
+      'onObjectSpawned piece.id: %d, elapsed: %.2f',
+      piece.id,
+      os.time() - start
+    ))
+  end
 end
 
 ---------------
@@ -725,11 +751,13 @@ function showCredits()
     Wait.frames(showCreditsRoutine, 1)
   end
 
-  debugPrint(string.format(
-    'showCredits elapsed: %.2f, #allProjectedPieceCoordinates: %d',
-    os.time() - start,
-    #allProjectedPieceCoordinates
-  ))
+  if gameState.debug_level >= 2 then
+    debugPrint(string.format(
+      'showCredits elapsed: %.2f, #allProjectedPieceCoordinates: %d',
+      os.time() - start,
+      #allProjectedPieceCoordinates
+    ))
+  end
 end
 
 
@@ -751,8 +779,13 @@ function onValueChanged_enabled()
   UI.setAttribute('enabled_' .. tostring(not gameState.enabled), 'active', false)
 end
 
-function onValueChanged_debug_enabled()
-  gameState.debug_enabled = not gameState.debug_enabled
+function onClick_debug_level()
+  gameState.debug_level = (gameState.debug_level + 1) % 5
+  if gameState.debug_level == 0 then
+    UI.setAttribute('debug_level', 'text', "Debugging Off")
+  else
+    UI.setAttribute('debug_level', 'text', "Debug Level "..tostring(gameState.debug_level))
+  end
 end
 
 
@@ -770,11 +803,13 @@ function scanAllObjects()
     tempPiece = getPiece(object)
   end
 
-  debugPrint(string.format(
-    'scanAllObjects #allObjects: %d, elapsed: %.2f',
-    #allObjects,
-    os.time() - start
-  ))
+  if gameState.debug_level >= 2 then
+    debugPrint(string.format(
+      'scanAllObjects #allObjects: %d, elapsed: %.2f',
+      #allObjects,
+      os.time() - start
+    ))
+  end
 end
 
 
@@ -791,12 +826,14 @@ function getAllPieces()
     end
   end
 
-  debugPrint(string.format(
-    'getAllPieces #allPieces: %s, #allObjects: %s, elapsed: %.2f',
-    tostring(#allPieces),
-    tostring(#allObjects),
-    os.time() - start
-  ))
+  if gameState.debug_level >= 3 then
+    debugPrint(string.format(
+      'getAllPieces #allPieces: %s, #allObjects: %s, elapsed: %.2f',
+      tostring(#allPieces),
+      tostring(#allObjects),
+      os.time() - start
+    ))
+  end
 
   return allPieces
 end
@@ -836,10 +873,12 @@ function onWaitMain()
 
   updateScoreBoards()
 
-  debugPrint(string.format(
-    'onWaitMain elapsed: %.2f',
-    os.time() - start
-  ))
+  if gameState.debug_level >= 4 then
+    debugPrint(string.format(
+      'onWaitMain elapsed: %.2f',
+      os.time() - start
+    ))
+  end
 end
 
 function getPlayerState(player_name)
@@ -987,10 +1026,7 @@ end
 -- caches all object lookups but only returns valid pieces
 local pieceCache = {}
 function getPiece(object)
-  --debugPrint(string.format(
-  --  'getPiece object: %s',
-  --  tostring(object)
-  --))
+  local start = os.time()
 
   local piece = pieceCache[object]
   if piece == nil then
@@ -1007,6 +1043,14 @@ function getPiece(object)
     pieceCache[object] = piece
   end
   if piece.id == nil then return end
+
+  if gameState.debug_level >= 4 then
+    debugPrint(string.format(
+      'getPiece object: %s elapsed: %.2f seconds',
+      tostring(object),
+      os.time() - start
+    ))
+  end
   return piece
 end
 
@@ -1024,20 +1068,22 @@ function projectPiecePosition(targetPiece, pieceId)
 
   local projectedObjectPosition = targetPosition + rotatedOffsetSolutionPosition
 
-  --debugPrint(string.format(
-  --  'projectPiecePosition droppedPiece.id: %s, targetPiece.id: %s, \n\tdroppedPiece.solutionPosition: %s, targetPiece.solutionPosition: %s, offsetSolutionPosition: %s, \n\ttargetRotation: %s, rotationYOffset: %s, rotatedOffsetSolutionPosition: %s, \n\ttargetPosition: %s, projectedObjectPosition: %s, elapsed: %.2f seconds',
-  --  pieceId,
-  --  targetPiece.id,
-  --  dumpTTSVector(pieceData[pieceId].solutionPosition),
-  --  dumpTTSVector(targetPiece.solutionPosition),
-  --  dumpTTSVector(offsetSolutionPosition),
-  --  dumpTTSVector(targetRotation),
-  --  rotationYOffset,
-  --  dumpTTSVector(rotatedOffsetSolutionPosition),
-  --  dumpTTSVector(targetPosition),
-  --  dumpTTSVector(projectedObjectPosition),
-  --  os.time() - start
-  --))
+  if gameState.debug_level >= 99 then
+    debugPrint(string.format(
+      'projectPiecePosition droppedPiece.id: %s, targetPiece.id: %s, \n\tdroppedPiece.solutionPosition: %s, targetPiece.solutionPosition: %s, offsetSolutionPosition: %s, \n\ttargetRotation: %s, rotationYOffset: %s, rotatedOffsetSolutionPosition: %s, \n\ttargetPosition: %s, projectedObjectPosition: %s, elapsed: %.2f seconds',
+      pieceId,
+      targetPiece.id,
+      dumpTTSVector(pieceData[pieceId].solutionPosition),
+      dumpTTSVector(targetPiece.solutionPosition),
+      dumpTTSVector(offsetSolutionPosition),
+      dumpTTSVector(targetRotation),
+      rotationYOffset,
+      dumpTTSVector(rotatedOffsetSolutionPosition),
+      dumpTTSVector(targetPosition),
+      dumpTTSVector(projectedObjectPosition),
+      os.time() - start
+    ))
+  end
 
   return projectedObjectPosition
 end
@@ -1063,12 +1109,14 @@ function snapPieces(droppedPiece, targetPiece)
 
   droppedPiece.object.setRotationSmooth({ x = 0, y = snapRotation.y, z = 0 })
 
-  debugPrint(string.format(
-    'snapPieces droppedPiece.id: %s, targetPiece.id: %s, elapsed: %.2f seconds',
-    droppedPiece.id,
-    targetPiece.id,
-    os.time() - start
-  ))
+  if gameState.debug_level >= 2 then
+    debugPrint(string.format(
+      'snapPieces droppedPiece.id: %s, targetPiece.id: %s, elapsed: %.2f seconds',
+      droppedPiece.id,
+      targetPiece.id,
+      os.time() - start
+    ))
+  end
 end
 
 
@@ -1104,12 +1152,14 @@ function attachPieces(droppedPiece, targetPiece)
 
   targetPiece.object.addAttachment(droppedPiece.object)
 
-  debugPrint(string.format(
-    'attachPieces droppedPiece.id: %s, targetPiece.id: %s, elapsed: %.2f seconds',
-    droppedPiece.id,
-    targetPiece.id,
-    os.time() - start
-  ))
+  if gameState.debug_level >= 2 then
+    debugPrint(string.format(
+      'attachPieces droppedPiece.id: %s, targetPiece.id: %s, elapsed: %.2f seconds',
+      droppedPiece.id,
+      targetPiece.id,
+      os.time() - start
+    ))
+  end
 end
 
 
@@ -1142,15 +1192,17 @@ function arePiecesAligned(droppedPiece, targetPiece)
     result = true
   end
 
-  debugPrint(string.format(
-    'arePiecesAligned droppedPiece.id: %s, targetPiece.id: %s, result: %s, elapsed: %.2f, rotationDelta: %s, positionDelta: %s',
-    droppedPiece.id,
-    targetPiece.id,
-    tostring(result),
-    os.time() - start,
-    dumpTTSVector(rotationDelta),
-    dumpTTSVector(positionDelta)
-  ))
+  if gameState.debug_level >= 3 then
+    debugPrint(string.format(
+      'arePiecesAligned droppedPiece.id: %s, targetPiece.id: %s, result: %s, elapsed: %.2f, rotationDelta: %s, positionDelta: %s',
+      droppedPiece.id,
+      targetPiece.id,
+      tostring(result),
+      os.time() - start,
+      dumpTTSVector(rotationDelta),
+      dumpTTSVector(positionDelta)
+    ))
+  end
 
   return result
 end
@@ -1167,12 +1219,14 @@ function onPieceDropped(player_color, droppedPiece)
 
   activeMerges[droppedPiece.id] = activeMerges[droppedPiece.id] or 0
 
-  --debugPrint(string.format(
-  --  'onPieceDropped player_color: %s, droppedPiece.id: %d, activeMerges: %d',
-  --  player_color,
-  --  droppedPiece.id,
-  --  activeMerges[droppedPiece.id]
-  --))
+  if gameState.debug_level >= 3 then
+    debugPrint(string.format(
+      'onPieceDropped player_color: %s, droppedPiece.id: %d, activeMerges: %d',
+      player_color,
+      droppedPiece.id,
+      activeMerges[droppedPiece.id]
+    ))
+  end
 
   if activeMerges[droppedPiece.id] > 0 then return end
   if gameState.pieces[droppedPiece.id].joinedTo ~= nil then return end
@@ -1212,16 +1266,18 @@ function onPieceDropped(player_color, droppedPiece)
     end
   end
 
-  debugPrint(string.format(
-    'onPieceDropped player_color: %s, droppedPiece.id: %s, elapsed: %.2f, droppedPieceGroup[%d]: [%s], candidateMatches[%d]: [%s]',
-    player_color,
-    droppedPiece.id,
-    os.time() - start,
-    #droppedPieceGroup,
-    table.concat(droppedPieceGroup, ','),
-    #candidateMatches,
-    table.concat(candidateMatches, ',')
-  ))
+  if gameState.debug_level >= 3 then
+    debugPrint(string.format(
+      'onPieceDropped player_color: %s, droppedPiece.id: %s, elapsed: %.2f, droppedPieceGroup[%d]: [%s], candidateMatches[%d]: [%s]',
+      player_color,
+      droppedPiece.id,
+      os.time() - start,
+      #droppedPieceGroup,
+      table.concat(droppedPieceGroup, ','),
+      #candidateMatches,
+      table.concat(candidateMatches, ',')
+    ))
+  end
 end
 
 
@@ -1264,13 +1320,15 @@ function joinPieces(player, droppedPiece, targetPiece)
   local timeout = 2 -- seconds
 
   local timeoutFunc = function()
-    debugPrint(string.format(
-      'timeoutFunc droppedPiece.id: %d, isSmoothMoving: %s, resting: %s, held_by_color: %s',
-      droppedPiece.id,
-      tostring(droppedPiece.object.isSmoothMoving()),
-      tostring(droppedPiece.object.resting),
-      tostring(droppedPiece.object.held_by_color)
-    ))
+    if gameState.debug_level >= 3 then
+      debugPrint(string.format(
+        'timeoutFunc droppedPiece.id: %d, isSmoothMoving: %s, resting: %s, held_by_color: %s',
+        droppedPiece.id,
+        tostring(droppedPiece.object.isSmoothMoving()),
+        tostring(droppedPiece.object.resting),
+        tostring(droppedPiece.object.held_by_color)
+      ))
+    end
     toRunFunc()
   end
 
@@ -1291,10 +1349,12 @@ function onCheckSolution()
     end
   end
 
-  debugPrint(string.format(
-    'onCheckSolution elapsed: %.2f',
-    os.time() - start
-  ))
+  if gameState.debug_level >= 2 then
+    debugPrint(string.format(
+      'onCheckSolution elapsed: %.2f',
+      os.time() - start
+    ))
+  end
 end
 
 
@@ -1320,10 +1380,35 @@ function dumpTTSVector(vector)
   )
 end
 
-
+function printTable(t,return_as_string,table_id_list)
+	local s
+	return_as_string = return_as_string == true -- default is false
+	if table_id_list == nil then -- used if table has been seen before. don't display it again
+		table_id_list = {}
+	end
+	if type(t) == "nil" or type(t) == "boolean" then
+		s = string.upper(tostring(t))
+	elseif type(t) == "number" or type(t) == "function" then
+		s = tostring(t)
+	elseif type(t) == "table" and table_id_list[t] == nil then
+    table_id_list[t] = true
+    local strings_list = {}
+    for i, v in pairs(t) do
+      table.insert(strings_list,tostring(i)..":"..printTable(v,true,table_id_list))
+    end
+    s = "{"..table.concat(strings_list,",").."}"
+	else
+		s = '"'..tostring(t)..'"'
+	end
+	if return_as_string then
+		return s
+	else
+		return print(""..string.gsub(s,"%[([0-9A-Fa-f][0-9A-Fa-f]+)%]","[#%1]"))
+	end
+end
 
 function debugPrint(message)
-  if gameState.debug_enabled then
+  if gameState.debug_level ~= 0 then
     local time = os.time()
     local date = os.date('*t', time)
     local milliseconds = time % 1
