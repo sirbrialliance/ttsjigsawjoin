@@ -92,8 +92,9 @@ function serializeGameStateJSON()
           pieces[#pieces + 1] = '[]'
         else
           pieces[#pieces + 1] = string.format(
-            '{"joinedTo":%d,"player_name":"%s"}',
+            '{"joinedTo":%d,"parentId":%d,"player_name":"%s"}',
             pieceData.joinedTo,
+            pieceData.parentId,
             string.gsub(pieceData.player_name, '\\', '\\\\'):gsub('"', '\\"')
           )
         end
@@ -265,6 +266,24 @@ function onClick_CloseGreeting(player)
     tostring(player.team),
     os.time() - start
   ))
+end
+
+function iterJoinedTo(pieceId,include_self)
+  -- This iterator is safe against changing the returned value's data
+  include_self = include_self ~= false -- Default is false
+  local nextPieceId = gameState.pieces[pieceId].joinedTo
+  local startPieceId = pieceId
+  return function ()
+            if include_self then
+              include_self = false
+              return pieceId
+            end
+            local ret = nextPieceId
+            if ret ~= nil and ret ~= startPieceId then
+              nextPieceId = gameState.pieces[ret].joinedTo
+              return ret
+            end
+          end
 end
 
 -- this is unsafe during game shutdown!
@@ -645,7 +664,8 @@ function spawnPuzzle(templateId, picture)
   for x = 1, #templateData[gameState.templateId].pieces do
     gameState.pieces[x] = {
       player_name = nil,
-      joinedTo = nil
+      joinedTo = nil,
+      parentId = nil
     }
 
     local piece = spawnObject({
@@ -670,10 +690,8 @@ function showCredits()
   local allProjectedPieceCoordinates = {}
   for index, piece in ipairs(allPieces) do
     local pieceGroup = { piece.id }
-    for pieceId, pieceState in ipairs(gameState.pieces) do
-      if pieceState.joinedTo == piece.id then
-        pieceGroup[#pieceGroup + 1] = pieceId
-      end
+    for pieceId in iterJoinedTo(piece.id, false) do
+      pieceGroup[#pieceGroup + 1] = pieceId
     end
 
     for index, pieceId in ipairs(pieceGroup) do
@@ -1095,13 +1113,6 @@ function attachPieces(droppedPiece, targetPiece)
     targetPiece.object.addAttachment(attachment)
   end
 
-  for x = 1, #gameState.pieces do
-    local pieceState = gameState.pieces[x]
-    if pieceState.joinedTo == droppedPiece.id then
-      pieceState.joinedTo = targetPiece.id
-    end
-  end
-
   targetPiece.object.addAttachment(droppedPiece.object)
 
   debugPrint(string.format(
@@ -1175,58 +1186,45 @@ function onPieceDropped(player_color, droppedPiece)
   --))
 
   if activeMerges[droppedPiece.id] > 0 then return end
-  if gameState.pieces[droppedPiece.id].joinedTo ~= nil then return end
 
-  local droppedPieceGroup = { droppedPiece.id }
-  for pieceId, pieceState in ipairs(gameState.pieces) do
-    if pieceState.joinedTo == droppedPiece.id then
-      droppedPieceGroup[#droppedPieceGroup + 1] = pieceId
-    end
+  local droppedPieceGroup = {}
+  for pieceId in iterJoinedTo(droppedPiece.id) do
+    droppedPieceGroup[pieceId] = true
   end
 
   local candidateMatches = {}
-  for index, pieceId in ipairs(droppedPieceGroup) do
-    for index, targetId in ipairs(templateData[gameState.templateId].pieces[pieceId].neighbors) do
-      local candidateId = gameState.pieces[targetId].joinedTo or targetId
+  for pieceId, _ in pairs(droppedPieceGroup) do
+    for _, targetId in ipairs(templateData[gameState.templateId].pieces[pieceId].neighbors) do
+      targetId = gameState.pieces[targetId].parentId or targetId
 
-      if not table_contains(droppedPieceGroup, candidateId) and
-        not table_contains(candidateMatches, candidateId) then
-
-        candidateMatches[#candidateMatches + 1] = candidateId
+      if droppedPieceGroup[targetId] == nil then
+        candidateMatches[targetId] = true
       end
     end
   end
 
   local player = Player[player_color]
-
-  for index, targetId in ipairs(candidateMatches) do
+  for targetId, _ in pairs(candidateMatches) do
     local targetPiece = getPiece(targetId)
 
-    if targetPiece ~= nil and
-      gameState.pieces[targetPiece.id].joinedTo == nil and
-      arePiecesAligned(droppedPiece, targetPiece) then
-
-      joinPieces(player, droppedPiece, targetPiece)
-
-      break
-    end
+      if targetPiece ~= nil and targetPiece.object ~= nil and arePiecesAligned(droppedPiece, targetPiece) then
+        joinPieces(player, droppedPiece, targetPiece)
+        break
+      end
   end
 
   debugPrint(string.format(
-    'onPieceDropped player_color: %s, droppedPiece.id: %s, elapsed: %.2f, droppedPieceGroup[%d]: [%s], candidateMatches[%d]: [%s]',
+    'onPieceDropped player_color: %s, droppedPiece.id: %s, elapsed: %.2f',
     player_color,
     droppedPiece.id,
-    os.time() - start,
-    #droppedPieceGroup,
-    table.concat(droppedPieceGroup, ','),
-    #candidateMatches,
-    table.concat(candidateMatches, ',')
+    os.time() - start
   ))
 end
 
 
 function joinPieces(player, droppedPiece, targetPiece)
   activeMerges[targetPiece.id] = (activeMerges[targetPiece.id] or 0) + 1
+  activeMerges[droppedPiece.id] = (activeMerges[droppedPiece.id] or 0) + 1
 
   droppedPiece.object.interactable = false
 
@@ -1239,8 +1237,17 @@ function joinPieces(player, droppedPiece, targetPiece)
   teamState.score = teamState.score + 1
 
   local droppedPieceState = gameState.pieces[droppedPiece.id]
+  local targetPieceState = gameState.pieces[targetPiece.id]
   droppedPieceState.player_name = player.steam_name
-  droppedPieceState.joinedTo = targetPiece.id
+  targetPieceState.player_name = targetPieceState.player_name or player.steam_name
+
+  targetJoinedTo = targetPieceState.joinedTo
+  targetPieceState.joinedTo = droppedPieceState.joinedTo or droppedPiece.id
+  droppedPieceState.joinedTo = targetJoinedTo or targetPiece.id
+
+  for pieceId in iterJoinedTo(targetPiece.id) do
+    gameState.pieces[pieceId].parentId = targetPiece.id
+  end
 
   -- TODO save cache WIP
   pieceTextCache = ''
@@ -1250,9 +1257,10 @@ function joinPieces(player, droppedPiece, targetPiece)
   local toRunFunc = function()
     droppedPiece.object.interactable = true
 
-    activeMerges[targetPiece.id] = activeMerges[targetPiece.id] - 1
-
     attachPieces(droppedPiece, targetPiece)
+
+    activeMerges[targetPiece.id] = activeMerges[targetPiece.id] - 1
+    activeMerges[droppedPiece.id] = activeMerges[droppedPiece.id] - 1
 
     Wait.frames(onCheckSolution, 1)
   end
