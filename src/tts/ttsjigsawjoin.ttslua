@@ -34,6 +34,9 @@ function onLoad(save_state)
 
   Wait.time(onWaitMain, 1, -1)
 
+  tableSurface = getObjectFromGUID("1f2767")
+  tableSurface.interactable = false
+
   debugPrint(string.format(
     'onLoad elapsed: %.2f',
     os.time() - start
