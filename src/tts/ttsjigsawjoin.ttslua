@@ -583,7 +583,7 @@ function onClick_ContinuePuzzleSelector()
 end
 
 function destroyPuzzle()
-  for index, object in ipairs(getAllObjects()) do
+  for index, object in ipairs(getObjects()) do
     if isBoard(object) or getPiece(object) then
       object.destruct()
     end
@@ -767,7 +767,7 @@ end
 function scanAllObjects()
   local start = os.time()
 
-  local allObjects = getAllObjects()
+  local allObjects = getObjects()
   local tempPiece = nil
   for index, object in ipairs(allObjects) do
     tempPiece = getPiece(object)
@@ -784,7 +784,7 @@ end
 function getAllPieces()
   local start = os.time()
 
-  local allObjects = getAllObjects()
+  local allObjects = getObjects()
   local allPieces = {}
   for index, object in ipairs(allObjects) do
     local piece = getPiece(object)
