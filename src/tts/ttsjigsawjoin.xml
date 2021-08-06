@@ -46,7 +46,7 @@
     childForceExpandWidth="false"
     childAlignment="MiddleRight" />
 </Defaults>
-<TableLayout class="jjWindow jjControlPanel">
+<TableLayout id="controlPanel" class="jjWindow jjControlPanel">
   <Row preferredHeight="50">
     <Cell>
       <VerticalLayout class="jjTitle">
@@ -72,7 +72,7 @@
       </VerticalLayout>
     </Cell>
   </Row>
-  <Row id="teamScoreBoardRow" active="false">
+  <Row id="teamScoreBoardRow" active="false" preferredHeight="180">
     <Cell>
       <VerticalScrollView color="" scrollSensitivity="30">
         <TableLayout id="teamScoreBoard" class="scoreBoard">
