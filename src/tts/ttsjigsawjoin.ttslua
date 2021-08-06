@@ -674,6 +674,7 @@ function spawnPuzzle(templateId, picture)
   -- TODO save cache WIP
   pieceTextCache = ''
 
+  gameState.guidCatalog = {}
   gameState.pieces = {}
   for x = 1, #templateData[gameState.templateId].pieces do
     gameState.pieces[x] = {
@@ -685,27 +686,14 @@ function spawnPuzzle(templateId, picture)
     local piece = spawnObject({
       type = 'Custom_Model',
       position = shuffledPositions[x],
-      rotation = { x = 0, y = math.random(-180, 180), z = 0 }
+      rotation = { x = 0, y = math.random(-180, 180), z = 0 },
+      callback_function = function(o) gameState.guidCatalog[getPieceId(o)] = o.guid end
     })
     piece.setCustomObject({
       mesh = templateData[gameState.templateId].baseUrl .. 'piece.' .. x .. '.obj',
       diffuse = picture,
       material = 3
     })
-  end
-  Wait.frames(setGUIDCatalog,2)
-end
-function setGUIDCatalog()
-  gameState.guidCatalog = {}
-  for _, obj in pairs(getObjects()) do
-    local pieceId = getPieceId(obj)
-    if pieceId then
-      if obj.spawning then
-        Wait.frames(setGUIDCatalog,2)
-        return
-      end
-      gameState.guidCatalog[pieceId] = obj.guid
-    end
   end
 end
 
@@ -966,15 +954,14 @@ function onClick_RecoverDeletedPieces(player, button, id)
       local object = spawnObject({
         type = 'Custom_Model',
         position = {x=0,y=5,z=0},
-        rotation = { x = 0, y = 0, z = 0 }
+        rotation = { x = 0, y = 0, z = 0 },
+        callback_function = function(o) gameState.guidCatalog[getPieceId(o)] = o.guid end
       })
       object.setCustomObject({
         mesh = templateData[gameState.templateId].baseUrl .. 'piece.' .. pieceId .. '.obj',
         diffuse = gameState.pictureUrl,
         material = 3
       })
-
-      Wait.frames(function() gameState.guidCatalog[pieceId]=object.guid end ,2)
     end
   end
   
