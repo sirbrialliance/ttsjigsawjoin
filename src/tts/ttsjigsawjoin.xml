@@ -141,6 +141,11 @@
       <Button onClick="onClick_ShowCredits">Show Credits</Button>
     </Cell>
   </Row>
+  <Row preferredHeight="20" visibility="Host" active="true">
+    <Cell>
+      <Button onClick="onClick_RecoverDeletedPieces">Fix Deleted or Non-Joining Pieces</Button>
+    </Cell>
+  </Row>
   <Row preferredHeight="20">
     <Cell>
       <VerticalLayout class="jjTitle">
