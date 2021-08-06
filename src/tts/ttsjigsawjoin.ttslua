@@ -661,6 +661,7 @@ function spawnPuzzle(templateId, picture)
       diffuse = picture,
       material = 3
     })
+	piece.sticky = false
   end
 end
 
