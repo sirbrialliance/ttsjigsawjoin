@@ -28,6 +28,7 @@ function onLoad(save_state)
     }
   else
     gameState = JSON.decode(save_state)
+    gameState.debug_level = 0
   end
 
   populateDynamicUI()
