@@ -926,14 +926,26 @@ end
 
 function onClick_teamScoreBoardTitle(player, button, id)
   if not player.admin then return end
-  local show = (UI.getAttribute('teamScoreBoardRow', 'active') == 'true')
-  UI.setAttribute('teamScoreBoardRow', 'active', tostring(not show))
+  local show = UI.getAttribute('teamScoreBoardRow', 'active') ~= 'true'
+  local offsetX, offsetY = UI.getAttribute('controlPanel', 'offsetXY'):gmatch("(.*) (.*)")()
+  local height = tonumber(UI.getAttribute('controlPanel', 'height'))
+  local newheight = height + tonumber(UI.getAttribute('teamScoreBoardRow', 'preferredHeight')) * (show and 1 or -1) --
+  offsetY = tostring(tonumber(offsetY) - math.floor(math.abs((newheight - height) / 2)) * (newheight-height > 0 and 1 or -1))
+  UI.setAttribute('controlPanel', 'height', tostring(newheight))
+  UI.setAttribute('controlPanel', 'offsetXY', offsetX.." "..offsetY)
+  UI.setAttribute('teamScoreBoardRow', 'active', tostring(show))
 end
 
 function onClick_playerScoreBoardTitle(player, button, id)
   if not player.admin then return end
-  local show = (UI.getAttribute('playerScoreBoardRow', 'active') == 'true')
-  UI.setAttribute('playerScoreBoardRow', 'active', tostring(not show))
+  local show = UI.getAttribute('playerScoreBoardRow', 'active') ~= 'true'
+  local offsetX, offsetY = UI.getAttribute('controlPanel', 'offsetXY'):gmatch("(.*) (.*)")()
+  local height = tonumber(UI.getAttribute('controlPanel', 'height'))
+  local newheight = height + 374 * (show and 1 or -1)
+  offsetY = tostring(tonumber(offsetY) - math.floor(math.abs((newheight - height) / 2)) * (newheight-height > 0 and 1 or -1))
+  UI.setAttribute('controlPanel', 'height', tostring(newheight))
+  UI.setAttribute('controlPanel', 'offsetXY', offsetX.." "..offsetY)
+  UI.setAttribute('playerScoreBoardRow', 'active', tostring(show))
 end
 
 
