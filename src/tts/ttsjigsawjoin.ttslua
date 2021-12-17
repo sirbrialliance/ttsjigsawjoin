@@ -24,7 +24,9 @@ function onLoad(save_state)
       players = {},
       teams = {}
       --pieces = {},
-      --templateId = nil
+      --guidCatalog = {},
+      --templateId = nil,
+      --pictureUrl = nil
     }
   else
     gameState = JSON.decode(save_state)
@@ -121,21 +123,32 @@ function serializeGameStateJSON()
       pieceTextCache = pieceText
     end
   end
+  local guidCatalogText = ''
+  if gameState.guidCatalog ~= nil then
+    guidCatalogText = ',"guidCatalog":["' .. table.concat(gameState.guidCatalog, '","') .. '"]'
+  end
 
   local templateText = ''
   if gameState.templateId ~= nil then
     templateText = ',"templateId":"' .. gameState.templateId .. '"'
   end
 
+  local pictureUrlText = ''
+  if gameState.pictureUrl ~= nil then
+    pictureUrlText = ',"pictureUrl":' .. JSON.encode(gameState.pictureUrl)
+  end
+
   local result = string.format(
-    '{"enabled":%s,"debug_enabled":%s,"duration":%d,"players":{%s},"teams":{%s}%s%s}',
+    '{"enabled":%s,"debug_enabled":%s,"duration":%d,"players":{%s},"teams":{%s}%s%s%s%s}',
     tostring(gameState.enabled),
     tostring(gameState.debug_enabled),
     gameState.duration,
     table.concat(players, ','),
     table.concat(teams, ','),
     pieceText,
-    templateText
+    guidCatalogText,
+    templateText,
+    pictureUrlText
   )
 
   return result
@@ -639,6 +652,7 @@ end
 
 function spawnPuzzle(templateId, picture)
   gameState.templateId = templateId
+  gameState.pictureUrl = picture
 
   local board = spawnObject({
     type = 'Custom_Model',
@@ -690,6 +704,7 @@ function spawnPuzzle(templateId, picture)
   -- TODO save cache WIP
   pieceTextCache = ''
 
+  gameState.guidCatalog = {}
   gameState.pieces = {}
   for x = 1, #templateData[gameState.templateId].pieces do
     gameState.pieces[x] = {
@@ -701,7 +716,8 @@ function spawnPuzzle(templateId, picture)
     local piece = spawnObject({
       type = 'Custom_Model',
       position = shuffledPositions[x],
-      rotation = { x = 0, y = math.random(-180, 180), z = 0 }
+      rotation = { x = 0, y = math.random(-180, 180), z = 0 },
+      callback_function = function(o) gameState.guidCatalog[getPieceId(o)] = o.guid end
     })
     piece.setCustomObject({
       mesh = templateData[gameState.templateId].baseUrl .. 'piece.' .. x .. '.obj',
@@ -949,6 +965,89 @@ function onClick_playerScoreBoardTitle(player, button, id)
 end
 
 
+function onClick_RecoverDeletedPieces(player, button, id)
+  if gameState.templateId == nil or gameState.guidCatalog == nil or next(gameState.guidCatalog) == nil or not player.admin then return end
+
+  -- Make a reverse lookup table of all valid piece GUIDs
+  local allValidPieceGUIDs = {}
+  for pieceId, guid in pairs(gameState.guidCatalog) do
+    allValidPieceGUIDs[guid] = pieceId
+  end
+
+
+  -- Find all piece GUIDs on the table
+  -- Also delete any invalid GUID pieces
+  local allPieceGUIDs = {}
+  for _, piece in pairs(getAllPieces()) do
+    local allAttachments = piece.object.getAttachments()
+    if allValidPieceGUIDs[piece.object.guid] == nil and #allAttachments < 10 then
+      piece.object.destruct()
+    else
+      allPieceGUIDs[piece.object.guid] = true
+      if allValidPieceGUIDs[piece.object.guid] == nil then
+        -- a large piece does not have a valid guid, so make it valid
+        pieceId = getPieceId(piece.object)
+        allValidPieceGUIDs[gameState.guidCatalog[pieceId]] = nil
+        gameState.guidCatalog[pieceId] = piece.object.guid
+        allValidPieceGUIDs[gameState.guidCatalog[pieceId]] = pieceId
+      end
+
+      -- delete invalid attachments in reverse order to 1-shot it without messing up
+      for i = #allAttachments, 1, -1 do
+        attachment = allAttachments[i]
+        allPieceGUIDs[attachment.guid] = true
+        if not allValidPieceGUIDs[attachment.guid] then
+          piece.object.destroyAttachment(attachment.index)
+        end
+      end
+    end
+  end
+
+  -- Replace all missing or invalid pieces
+  for pieceId = 1, #gameState.pieces do
+    if gameState.guidCatalog[pieceId] and allPieceGUIDs[gameState.guidCatalog[pieceId]] == nil then
+      -- The piece does not exist so replace it
+      local object = spawnObject({
+        type = 'Custom_Model',
+        position = {x=0,y=5,z=0},
+        rotation = { x = 0, y = 0, z = 0 },
+        callback_function = function(o) gameState.guidCatalog[getPieceId(o)] = o.guid end
+      })
+      object.setCustomObject({
+        mesh = templateData[gameState.templateId].baseUrl .. 'piece.' .. pieceId .. '.obj',
+        diffuse = gameState.pictureUrl,
+        material = 3
+      })
+    end
+  end
+  
+  -- Rebuild parentId and joinedTo
+  for _, piece in pairs(getAllPieces()) do
+    local allAttachments = piece.object.getAttachments()
+    if #allAttachments > 0 then
+      -- Loop through all attachments and assign correct values
+      gameState.pieces[piece.id].parentId = piece.id
+      local lastPieceId = piece.id
+      for _, attachment in pairs(allAttachments) do
+        local pieceId = allValidPieceGUIDs[attachment.guid]
+        if pieceId ~= nil then
+          gameState.pieces[lastPieceId].joinedTo = pieceId
+          gameState.pieces[pieceId].joinedTo = piece.id
+          lastPieceId = pieceId
+        else
+          -- We should never reach here, but it is not entirely out of the question
+          print("Rebuilding parentIds and joinedTos failed somewhere.")
+        end
+      end
+      gameState.pieces[lastPieceId].joinedTo = piece.id
+    else
+      -- Piece has no attachments
+      gameState.pieces[piece.id].joinedTo = nil
+      gameState.pieces[piece.id].parentId = nil
+      gameState.pieces[piece.id].player_name = nil
+    end
+  end
+end
 
 function updateScoreBoards()
   local playerColors = {}
