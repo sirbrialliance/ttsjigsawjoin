@@ -125,10 +125,7 @@
   </Row>
   <Row preferredHeight="30" visibility="Host" active="false">
     <Cell>
-      <HorizontalLayout childForceExpandWidth="false" spacing="4">
-        <Toggle id="debug_enabled" onValueChanged="onValueChanged_debug_enabled"></Toggle>
-        <Text class="panelText">Debug Enabled</Text>
-      </HorizontalLayout>
+      <Button id="debug_level" onClick="onClick_debug_level">Debugging Unknown</Button>
     </Cell>
   </Row>
   <Row preferredHeight="20" visibility="Host" active="false">
