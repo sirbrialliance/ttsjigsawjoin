@@ -47,9 +47,67 @@ function onLoad(save_state)
 
   Wait.time(onWaitMain, 1, -1)
 
-  tableSurface = getObjectFromGUID("1f2767")
-  tableSurface.interactable = false
+  Physics.play_area = 2.5
 
+  if tableSurfaces ~= nil then
+    for i,v in pairs(tableSurfaces) do
+      if v ~= nil and v ~= tableSurface then
+        v.destruct()
+      end
+    end
+  end
+  tableSurface = getObjectFromGUID("1f2767")
+  if tableSurface ~= nil then
+    tableSurfaces = {}
+    tableSurface.setCustomObject({
+      mesh = "http://cloud-3.steamusercontent.com/ugc/1701784456924019297/E6BD6A9D7C6C935C2281036FA5535123AE6C4C49/"
+    })
+    tableSurface.locked = true
+    tableSurface.interactable = false
+    sv = tableSurface.getVectorLines({})
+    tableSurface.setVectorLines({})
+    tableSurface = tableSurface.reload()
+    Wait.frames(function()
+          local wid = 98
+          for i = 0, 5 do
+            xi = i % 3
+            yi = math.floor(i/3)
+            tableSurfaces[i] = tableSurface.clone({position={ -wid + wid * xi, 0, -wid/2 + wid * yi}})
+            tableSurfaces[i].setRotation({0,0,0})
+            tableSurfaces[i].interactable = false
+          end
+          tableSurface.destruct()
+          tableSurface = tableSurfaces[0]
+          for _,p1 in pairs(sv) do
+            for _, p2 in pairs(p1.points) do
+              p2.y = 2
+            end
+          end
+          Global.setVectorLines(sv)
+        end, 5)
+  else
+    tableSurfaces = {}
+    for _,o in pairs(getObjects()) do
+      local customObj = o.getCustomObject()
+      if customObj and customObj.mesh and customObj.mesh:match("123AE6C4C49") then
+        table.insert(tableSurfaces,o)
+        o.interactable = false
+      end
+    end
+    table.sort(tableSurfaces,
+            function(a,b)
+              apos = a.getPosition()
+              bpos = b.getPosition()
+              if math.abs(apos.z-bpos.z) > 1 then
+                return apos.z < bpos.z
+              end
+              return apos.x < bpos.x
+            end)
+    for i = 1, 6 do
+      tableSurfaces[i-1] = tableSurfaces[i]
+      tableSurfaces[i] = nil
+    end
+  end
   if gameState.debug_level >= 2 then
     debugPrint(string.format(
       'onLoad elapsed: %.2f',
@@ -74,8 +132,34 @@ function onSave()
       gameStateJSON
     ))
   end
-
   return gameStateJSON
+end
+
+function printTable(t,return_as_string,table_id_list)
+	local s
+	return_as_string = return_as_string == true -- default is false
+	if table_id_list == nil then -- used if table has been seen before. don't display it again
+		table_id_list = {}
+	end
+	if type(t) == "nil" or type(t) == "boolean" then
+		s = string.upper(tostring(t))
+	elseif type(t) == "number" or type(t) == "function" then
+		s = tostring(t)
+	elseif type(t) == "table" and table_id_list[t] == nil then
+    table_id_list[t] = true
+    local strings_list = {}
+    for i, v in pairs(t) do
+      table.insert(strings_list,tostring(i)..":"..printTable(v,true,table_id_list))
+    end
+    s = "{"..table.concat(strings_list,",").."}"
+	else
+		s = '"'..tostring(t)..'"'
+	end
+	if return_as_string then
+		return s
+	else
+		return print(""..string.gsub(s,"%[([0-9A-Fa-f][0-9A-Fa-f]+)%]","[#%1]"))
+	end
 end
 
 -- this is 300% faster than JSON.encode(gameState) without caching
@@ -100,7 +184,6 @@ function serializeGameStateJSON()
       teamData.score
     )
   end
-
   local pieceText = ''
   if gameState.pieces ~= nil then
     if pieceTextCache ~= '' then
@@ -176,7 +259,6 @@ function onObjectRandomize(object, player_color)
   end
 end
 
-
 lastDrop = {}
 function onObjectDropped(player_color, object)
   if not gameState.enabled or player_color == "Grey" then return end
@@ -215,81 +297,146 @@ function getHostPlayer()
     end
   end
 end
+function findInArray(val,arr,cmp_func) --cmp_func is optional, a function with two arguments that returns a boolean value
+  -- returns the index of the value in the table
+  if type(arr) ~= "table" then
+    return nil
+  end
+  if cmp_func ~= nil then
+    if type(cmp_func) == "function" then
+      for i, v in pairs(arr) do
+        success, res = pcall(cmp_func,v,val)
+        if success then
+          if res == true then
+            return i
+          end
+        else
+          error("findInArray:custom compare function failed with error:"..tostring(res))
+        end
+      end
+    else
+      error("findInArray:custom compare function is not a function or does not have 2 arguments.")
+    end
+  else
+    for i, v in pairs(arr) do
+      if v == val then
+        return i
+      end
+    end
+  end
+  return nil
+end
 
-function onObjectPickedUp(player_color, object)
-  if not gameState.enabled then return end
+function isInArray(val,arr,cmp_func) --cmp_func is optional
+  return findInArray(val,arr,cmp_func) ~= nil
+end
 
-  local start = os.time()
+function areDiagonals(pId1, pId2)
+  if gameState.templateId ~= nil then
+    pos1 = templateData[gameState.templateId].pieces[pId1].solutionPosition
+    pos2 = templateData[gameState.templateId].pieces[pId2].solutionPosition
+    return math.abs(pos1.x - pos2.x) > 0.5 and math.abs(pos1.x - pos2.x) < 1.5 and math.abs(pos1.z - pos2.z) > 0.5 and math.abs(pos1.z - pos2.z) < 1.5
+  end
+  return false
+end
 
-  local pickedUpPiece = getPiece(object)
-  if pickedUpPiece == nil then return end
+function onPlayerAction(player, action, objects)
+  if player.color ~= "Grey" and not player.admin then
+    if action == Player.Action.Select then
+      return checkPlayerSelection(player, objects)
+    elseif isInArray(action, {
+      Player.Action.PickUp,
+      Player.Action.RotateIncrementalLeft,
+      Player.Action.RotateIncrementalRight,
+      Player.Action.RotateOver,
+      Player.Action.FlipIncrementalLeft,
+      Player.Action.FlipIncrementalRight,
+      Player.Action.FlipOver,
+      Player.Action.Group,
+      Player.Action.Randomize,
+      Player.Action.Under
+    }) then
+      local playerState = getPlayerState(player.steam_name)
+      local playerAllowance = playerState.score + 1
 
-  local player = Player[player_color]
-  checkPlayerLimits(player)
+      local handObjects = player.getHoldingObjects() or {}
+      local selObjects = player.getSelectedObjects() or {}
+      local handCount = handObjects == nil and 0 or #handObjects
+      local selCount = selObjects == nil and 0 or #selObjects
 
-  if gameState.debug_level >= 3 then
-    debugPrint(string.format(
-      'onObjectPickedUp player_color: %s, pickedUpPiece.id: %d, elapsed: %.2f',
-      player_color,
-      pickedUpPiece.id,
-      os.time() - start
-    ))
+      local objectCount = math.max(handCount,selCount) + (action == Player.Action.PickUp and handCount > 0 and 1 or 0)
+      if objectCount > playerAllowance then
+        for _, obj in pairs(selObjects) do
+          obj.removeFromPlayerSelection(player.color)
+        end
+        for _, obj in pairs(handObjects) do
+          obj.setVelocity({0,0,0})
+          obj.setAngularVelocity({0,0,0})
+          obj.drop()
+        end
+        local message = string.format(
+          '%s, your score of %d only allows you to move %d piece'..(playerAllowance == 1 and "" or "s")..' simultaneously.'..(playerAllowance == 1 and " Join pieces together to get a higher score." or ""),
+          player.steam_name,
+          playerState.score,
+          playerAllowance
+          )
+        broadcastToColor(message, player.color, Color.Red)
+        local hostPlayer = getHostPlayer()
+        broadcastToColor(message, hostPlayer.color, player.color)
+        player.changeColor("Grey")
+        return false
+      end
+    end
   end
 end
 
 lastPlayerWarning = {}
-function checkPlayerLimits(player)
+function checkPlayerSelection(player, objects)
   local start = os.time()
 
-  if player.admin then return end
-  if player.color == 'Grey' then return end
-
-  local playerState = getPlayerState(player.steam_name)
-  local playerWarning = lastPlayerWarning[player.steam_name] or {}
-
-  local playerAllowance = playerState.score + 1
-
-  local playerSelectedCount = 0
-  for index, object in ipairs(player.getSelectedObjects() or {}) do
-    if getPiece(object) ~= nil then
-      playerSelectedCount = playerSelectedCount + 1
-
-      if playerSelectedCount > playerAllowance then
-        object.drop()
-        object.removeFromPlayerSelection(player.color)
-
-        if playerWarning.frame_count == nil or playerWarning.frame_count < Time.frame_count then
-          playerWarning.frame_count = Time.frame_count
-
-          local message = string.format(
-            '%s, your score of %d only allows you to select %d of %d pieces simultaneously.',
-            player.steam_name,
-            playerState.score,
-            playerAllowance,
-            playerSelectedCount
+  -- Check the player's selection and reduce it if it is too high
+  -- Must return a boolean since this function is also called by onPlayerAction()
+  local shouldAllow = true
+  if player.color ~= "Grey" and not player.admin then
+    local playerState = getPlayerState(player.steam_name)
+    local playerAllowance = playerState.score + 1
+    local sel_objects = player.getSelectedObjects() or {}
+    if objects ~= nil then
+      if #sel_objects + #objects > playerAllowance then
+        shouldAllow = false
+      end
+    elseif #sel_objects > playerAllowance then
+      shouldAllow = false
+      for i = #sel_objects, playerAllowance + 1, -1 do
+        sel_objects[i].drop()
+        sel_objects[i].removeFromPlayerSelection(player.color)
+      end
+    end
+    if shouldAllow == false then
+      local tmPlayerWarning = lastPlayerWarning[player.steam_name] or 0
+      if Time.time - tmPlayerWarning > 5 then
+        lastPlayerWarning[player.steam_name] = Time.time
+        local message = string.format(
+          '%s, your score of %d only allows you to move %d piece'..(playerAllowance == 1 and "" or "s")..' simultaneously.'..(playerAllowance == 1 and " Join pieces together to get a higher score." or ""),
+          player.steam_name,
+          playerState.score,
+          playerAllowance
           )
-          broadcastToColor(message, player.color, Color.Red)
-
-          local hostPlayer = getHostPlayer()
-          broadcastToColor(message, hostPlayer.color, player.color)
-
-          playerWarning.broadcast_count = (playerWarning.broadcast_count or 0) + 1
-        end
+        broadcastToColor(message, player.color, Color.Red)
+        local hostPlayer = getHostPlayer()
+        broadcastToColor(message, hostPlayer.color, player.color)
       end
     end
   end
-
-  lastPlayerWarning[player.steam_name] = playerWarning
-
-  if gameState.debug_level >= 3 then
+  if gameState.debug_level >= 4 then
     debugPrint(string.format(
-      'checkPlayerLimits player.color: %s, playerWarning.frame_count: %s, playerWarning.broadcast_count: %s, elapsed: %.2f',
+      'checkPlayerSelection player.color: %s, shouldAllow: %s, elapsed: %.2f',
       tostring(player.color),
-      tostring(playerWarning.frame_count),
-      tostring(playerWarning.broadcast_count),
+      tostring(shouldAllow),
       os.time() - start
     ))
   end
+  return shouldAllow
 end
 
 function onClick_CloseGreeting(player)
@@ -299,14 +446,12 @@ function onClick_CloseGreeting(player)
     player.team = 'Clubs'
   end
 
-  if gameState.debug_level >= 2 then
-    debugPrint(string.format(
-      'onClick_CloseGreeting, player.color: %s, player.team: %s, elapsed: %.2f',
-      tostring(player.color),
-      tostring(player.team),
-      os.time() - start
-    ))
-  end
+  debugPrint(string.format(
+    'onClick_CloseGreeting, player.color: %s, player.team: %s, elapsed: %.2f',
+    tostring(player.color),
+    tostring(player.team),
+    os.time() - start
+  ))
 end
 
 function iterJoinedTo(pieceId,include_self)
@@ -376,6 +521,10 @@ function onEndEdit_puzzleUrl(player, value, id)
   UI.setAttribute(id, 'text', value)
 end
 
+function onEndEdit_newPictureUrl(player, value, id)
+  UI.setAttribute(id, 'text', value)
+end
+
 function onValueChanged_templateSelection(player, value, id)
   UI.setAttribute(id, 'isOn', value)
   UI.setAttribute('templateSelection', 'selectedId', id)
@@ -436,23 +585,22 @@ function onClick_CancelPuzzleSelector()
   UI.setAttribute('puzzleSelector', 'active', false)
 end
 
+function onClick_CancelNewPictureUrl()
+  UI.setAttribute('pictureUrlChanger', 'active', false)
+end
+
 function findElementById(table, id)
-  local found = nil
   for index, element in ipairs(table) do
-    for key, value in pairs(element.attributes) do
-      if key == 'id' and value == id then
-        found = element
-        break
+    if element.attributes.id == id then
+      return element
+    end
+    if element.children then
+      local found = findElementById(element.children, id)
+      if found then
+        return found
       end
     end
-    if found then break end
-
-    if element.children then
-      found = findElementById(element.children, id)
-      if found then break end
-    end
   end
-  return found
 end
 
 function onClick_NewPuzzle()
@@ -462,8 +610,8 @@ end
 function populateDynamicUI()
   local uiTable = UI.getXmlTable()
 
-  populateScoreBoard(uiTable, 'teamScoreBoard', 6)
-  populateScoreBoard(uiTable, 'playerScoreBoard', 20)
+  MAX_SCOREBOARD_LEN = 100
+  populateScoreBoard(uiTable, 'playerScoreBoard', MAX_SCOREBOARD_LEN)
   populatePuzzleListContainer(uiTable)
   populateTemplateListContainer(uiTable)
 
@@ -641,6 +789,34 @@ function onClick_ContinuePuzzleSelector()
   UI.setAttribute('puzzleSelector', 'active', false)
 end
 
+function onClick_ContinueNewPictureUrl()
+  changePictureUrl(UI.getAttribute('newPictureUrl', 'text'))
+  UI.setAttribute('pictureUrlChanger', 'active', false)
+end
+
+function changePictureUrl(url)
+  for _, obj in pairs(getObjects()) do
+    if obj.getCustomObject().diffuse and gameState.pictureUrl and (obj.getCustomObject().diffuse == gameState.pictureUrl or getPieceId(obj)) then
+      local properties = obj.getCustomObject()
+      properties.diffuse = url
+      obj.setCustomObject(properties)
+      if next(obj.getAttachments()) then
+        local droppedAttachments = obj.removeAttachments()
+        for index, attachment in ipairs(droppedAttachments) do
+          if attachment.getCustomObject().diffuse then
+            local properties = attachment.getCustomObject()
+            properties.diffuse = url
+            attachment.setCustomObject(properties)
+          end
+          obj.addAttachment(attachment)
+        end
+       end
+      obj.reload()
+    end
+  end
+  gameState.pictureUrl = url
+end
+
 function destroyPuzzle()
   for index, object in ipairs(getObjects()) do
     if isBoard(object) or getPiece(object) then
@@ -706,6 +882,9 @@ function spawnPuzzle(templateId, picture)
 
   gameState.guidCatalog = {}
   gameState.pieces = {}
+  for name, _ in pairs(gameState.players) do
+    gameState.players[name].duration = 0
+  end
   for x = 1, #templateData[gameState.templateId].pieces do
     gameState.pieces[x] = {
       player_name = nil,
@@ -724,68 +903,104 @@ function spawnPuzzle(templateId, picture)
       diffuse = picture,
       material = 3
     })
-	piece.sticky = false
+    piece.sticky = false
   end
 end
 
+function _pairsBySorted(t, sort_func)
+  sort_func = (type(sort_func) == "function") and sort_func or (|a,b|a[1]<b[1])
+  local arr = {}
+  for n, v in pairs(t) do table.insert(arr, {n,v}) end
+  table.sort(arr, sort_func)
+  local i = 0      -- iterator variable
+  local iter = function ()   -- iterator function
+        i = i + 1
+        if arr[i] == nil then return nil
+        else return arr[i][1], arr[i][2]
+        end
+      end
+  return iter
+end
+function pairsBySortedKeys(t, sort_func)
+  sort_func2 = (type(sort_func) == "function") and (|a,b|sort_func(a[1],b[1])) or (|a,b|a[1]<b[1])
+  return _pairsBySorted(t, sort_func2)
+end
+function pairsBySortedValues(t, sort_func)
+  sort_func2 = (type(sort_func) == "function") and (|a,b|sort_func(a[2],b[2])) or (|a,b|a[2]<b[2])
+  return _pairsBySorted(t, sort_func2)
+end
 
 function showCredits()
   local start = os.time()
 
-  local allPieces = getAllPieces()
-
   local allProjectedPieceCoordinates = {}
-  for index, piece in ipairs(allPieces) do
+  local allContributingPlayers = {}
+  local biggestPieceGroup = {}
+  local biggestPiece = nil
+  for _, piece in ipairs(getAllPieces()) do
     local pieceGroup = { piece.id }
     for pieceId in iterJoinedTo(piece.id, false) do
       pieceGroup[#pieceGroup + 1] = pieceId
     end
-
-    for index, pieceId in ipairs(pieceGroup) do
-      allProjectedPieceCoordinates[pieceId] =
-        projectPiecePosition(piece, pieceId)
+    if #pieceGroup > #biggestPieceGroup then
+      biggestPieceGroup = pieceGroup
+      biggestPiece = piece
+    end
+  end
+  if biggestPiece == nil then
+    return
+  end
+  for _, pieceId in ipairs(biggestPieceGroup) do
+    if gameState.pieces[pieceId].player_name then
+      if allProjectedPieceCoordinates[gameState.pieces[pieceId].player_name] then
+        table.insert(allProjectedPieceCoordinates[gameState.pieces[pieceId].player_name],projectPiecePosition(biggestPiece, pieceId))
+      else
+        allProjectedPieceCoordinates[gameState.pieces[pieceId].player_name] = {projectPiecePosition(biggestPiece, pieceId)}
+      end
+      allContributingPlayers[gameState.pieces[pieceId].player_name] = (allContributingPlayers[gameState.pieces[pieceId].player_name] or 0) + 1
     end
   end
 
-  local host_player = getHostPlayer()
-
-  local creditedPlayers = {}
-  for playerPosition, playerData in ipairs(getPlayerScoreData()) do
-    if playerData.score > 0 then
-      creditedPlayers[#creditedPlayers + 1] = playerData
-    end
-  end
-
+  local it_contributions = pairsBySortedValues(allContributingPlayers,|a,b|a>b)
   local playerIndex = 0
+  local host_player = getHostPlayer()
   local panelIndex = 0
 
   local function showCreditsRoutine()
     UI.hide('creditsPanel1')
     UI.hide('creditsPanel2')
 
+    local player_name, player_piece_count
     if UI.getAttribute('closeCredits', 'active') == 'True' then
-      panelIndex = panelIndex % 2 + 1
-      UI.show('creditsPanel' .. tostring(panelIndex))
-
-      playerIndex = playerIndex % #creditedPlayers + 1
-
-      local playerData = creditedPlayers[playerIndex]
-      for pieceId, piecePosition in ipairs(allProjectedPieceCoordinates) do
-        if (gameState.pieces[pieceId].player_name or '') == playerData.name then
+      player_name, player_piece_count = it_contributions()
+      playerIndex = playerIndex + 1
+      if player_name == nil then
+        -- recreate iterator for another pass and exit loop
+        it_contributions = pairsBySortedValues(allContributingPlayers,|a,b|a>b)
+        playerIndex = 0
+      else
+        panelIndex = panelIndex % 2 + 1
+        UI.show('creditsPanel' .. tostring(panelIndex))
+        for _, piecePosition in ipairs(allProjectedPieceCoordinates[player_name]) do
           host_player.pingTable(piecePosition)
         end
+        UI.setAttribute('creditsPlayerName' .. tostring(panelIndex), 'text', player_name)
+        UI.setAttribute('creditsPlayerPosition' .. tostring(panelIndex), 'text', playerIndex)
+        UI.setAttribute('creditsPlayerScore' .. tostring(panelIndex), 'text', player_piece_count)
+        local hs = math.floor(gameState.players[player_name].duration / 60 / 60)
+        local ms = math.floor(gameState.players[player_name].duration/60) % 60
+        if hs > 0 then
+          UI.setAttribute('creditsPlayerDuration' .. tostring(panelIndex), 'text', string.format('%dh%02dm', hs, ms))
+        else
+          UI.setAttribute('creditsPlayerDuration' .. tostring(panelIndex), 'text', string.format('%dm',ms))
+        end
       end
-      UI.setAttribute('creditsPlayerName' .. tostring(panelIndex), 'text', playerData.name)
-      UI.setAttribute('creditsPlayerPosition' .. tostring(panelIndex), 'text', playerIndex)
-      UI.setAttribute('creditsPlayerScore' .. tostring(panelIndex), 'text', playerData.score)
-      UI.setAttribute('creditsPlayerDuration' .. tostring(panelIndex), 'text',
-        string.format('%0.1f', playerData.duration / 60))
 
       Wait.time(showCreditsRoutine, 5)
     end
   end
 
-  if #creditedPlayers > 0 then
+  if next(allContributingPlayers) ~= nil then
     UI.setAttribute('closeCredits', 'active', true)
     Wait.frames(showCreditsRoutine, 1)
   end
@@ -907,7 +1122,8 @@ function onWaitMain()
     local teamState = getTeamState(player.team)
     teamState.duration = teamState.duration + 1
 
-    checkPlayerLimits(player)
+    checkPlayerSelection(player)
+
   end
 
   updateScoreBoards()
@@ -942,10 +1158,11 @@ end
 
 function onClick_teamScoreBoardTitle(player, button, id)
   if not player.admin then return end
-  local show = UI.getAttribute('teamScoreBoardRow', 'active') ~= 'true'
+  show = showTeamScoreBoard ~= true  -- initially set to true
+  updateTeamScoreBoard(show)
   local offsetX, offsetY = UI.getAttribute('controlPanel', 'offsetXY'):gmatch("(.*) (.*)")()
   local height = tonumber(UI.getAttribute('controlPanel', 'height'))
-  local newheight = height + tonumber(UI.getAttribute('teamScoreBoardRow', 'preferredHeight')) * (show and 1 or -1) --
+  local newheight = height + 30*3*(show and 1 or -1) --
   offsetY = tostring(tonumber(offsetY) - math.floor(math.abs((newheight - height) / 2)) * (newheight-height > 0 and 1 or -1))
   UI.setAttribute('controlPanel', 'height', tostring(newheight))
   UI.setAttribute('controlPanel', 'offsetXY', offsetX.." "..offsetY)
@@ -964,6 +1181,31 @@ function onClick_playerScoreBoardTitle(player, button, id)
   UI.setAttribute('playerScoreBoardRow', 'active', tostring(show))
 end
 
+
+function printInvalidPieces()
+  -- Make a lookup table of all valid piece GUIDs
+  local allValidPieceGUIDs = {}
+  for _, guid in pairs(gameState.guidCatalog) do
+    allValidPieceGUIDs[guid] = true
+  end
+
+  local allPieceGUIDs = {}
+  for _, piece in pairs(getAllPieces()) do
+    local allAttachments = piece.object.getAttachments()
+    allPieceGUIDs[piece.object.guid] = true
+    for _, attachment in pairs(allAttachments) do
+      allPieceGUIDs[attachment.guid] = true
+    end
+  end
+
+  s = ""
+  for guid,_ in pairs(allPieceGUIDs) do
+    if not allValidPieceGUIDs[guid] then
+      s = s..(s=="" and "Invalid guids:" or ",")..guid
+    end
+  end
+  print(s)
+end
 
 function onClick_RecoverDeletedPieces(player, button, id)
   if gameState.templateId == nil or gameState.guidCatalog == nil or next(gameState.guidCatalog) == nil or not player.admin then return end
@@ -1018,13 +1260,14 @@ function onClick_RecoverDeletedPieces(player, button, id)
         diffuse = gameState.pictureUrl,
         material = 3
       })
+      object.sticky = false
     end
   end
-  
+
   -- Rebuild parentId and joinedTo
   for _, piece in pairs(getAllPieces()) do
     local allAttachments = piece.object.getAttachments()
-    if #allAttachments > 0 then
+    if next(allAttachments) then
       -- Loop through all attachments and assign correct values
       gameState.pieces[piece.id].parentId = piece.id
       local lastPieceId = piece.id
@@ -1047,19 +1290,26 @@ function onClick_RecoverDeletedPieces(player, button, id)
       gameState.pieces[piece.id].player_name = nil
     end
   end
+  onCheckSolutionRequest()
+end
+
+function onClick_ChangePictureUrl(player, button, id)
+  if gameState.templateId == nil or gameState.pictureUrl == nil or not player.admin then return end
+  UI.setAttribute('pictureUrlChanger', 'active', true)
 end
 
 function updateScoreBoards()
-  local playerColors = {}
-  for index, player in ipairs(Player.getPlayers()) do
-    playerColors[player.steam_name] = player.color
+  local start = os.time()
+
+  updateTeamScoreBoard()
+  updatePlayerScoreBoard()
+
+  if gameState.debug_level >= 4 then
+    debugPrint(string.format(
+      'updateScoreBoards elapsed: %.2f seconds',
+      os.time() - start
+    ))
   end
-
-  local playerScores = getPlayerScoreData()
-  updateScoreBoard('playerScoreBoard', playerScores, playerColors)
-
-  local teamScores = getTeamScoreData()
-  updateScoreBoard('teamScoreBoard', teamScores, playerColors)
 end
 
 function getTeamScoreData()
@@ -1076,21 +1326,50 @@ function getTeamScoreData()
 end
 
 function getPlayerScoreData()
+
+  inRoom = {}
+  for _, p in pairs(Player.getPlayers()) do
+    inRoom[p.steam_name] = true
+  end
+
   local playerScoreBoard = {}
   for playerName, playerData in pairs(gameState.players) do
-    playerScoreBoard[#playerScoreBoard + 1] = {
-      name = playerName,
-      score = playerData.score,
-      duration = playerData.duration
-    }
+    if playerData.score > 0 or inRoom[playerName] then
+      playerScoreBoard[#playerScoreBoard + 1] = {
+        name = playerName,
+        score = playerData.score,
+        duration = playerData.duration
+      }
+    end
   end
-  table.sort(playerScoreBoard, function(lhs, rhs) return lhs.score > rhs.score end)
+
+  table.sort(playerScoreBoard, function(lhs, rhs)
+          if (lhs.duration > 300 and lhs.score > 0 or inRoom[lhs.name] == true) ~= (rhs.duration > 300 and rhs.score > 0 or inRoom[rhs.name] == true) then
+            return lhs.duration > 300 and lhs.score > 0 or inRoom[lhs.name] == true
+          end
+          return lhs.score > rhs.score
+        end)
   return playerScoreBoard
 end
 
-function updateScoreBoard(scoreBoardId, scoreBoardData, colorTable)
+currentPlayerScoreBoardData = {}
+function updatePlayerScoreBoard()
+  local start = os.time()
+
+  local colorTable = {}
+  for index, player in ipairs(Player.getPlayers()) do
+    colorTable[player.steam_name] = player.color
+  end
+
+  local scoreBoardData = getPlayerScoreData()
+
+  local UIchanges = 0
   for index, scoreData in ipairs(scoreBoardData) do
-    local scoreId = scoreBoardId .. '_score' .. index
+    if index > MAX_SCOREBOARD_LEN then
+      break
+    end
+
+    local scoreId = 'playerScoreBoard_score' .. index
     local name = scoreData.name
     local score = scoreData.score
     local color = '#808080'
@@ -1107,20 +1386,92 @@ function updateScoreBoard(scoreBoardId, scoreBoardData, colorTable)
       color = '#' .. Color.fromString(playerColor):toHex()
     end
 
-    --if index <= #scoreBoard.children then
+    local entry = currentPlayerScoreBoardData[index] or {}
+    if entry.score ~= score then
+      UI.setAttribute(scoreId .. '_score', 'text', score)
+      entry.score = score
+      UIchanges = UIchanges + 1
+    end
+    if entry.name ~= name then
+      UI.setAttribute(scoreId .. '_name', 'text', name)
+      entry.name = name
+      UIchanges = UIchanges + 1
+    end
+    if entry.color ~= color then
+      UI.setAttribute(scoreId, 'color', color)
+      entry.color = color
+      UIchanges = UIchanges + 1
+    end
+    if entry.tooltip ~= tooltip and Time.time - (entry.tooltip_tm or 0) > math.random(9,11) then
+      UI.setAttribute(scoreId, 'tooltip', tooltip)
+      entry.tooltip = tooltip
+      entry.tooltip_tm = Time.time
+      UIchanges = UIchanges + 1
+    end
+    if not currentPlayerScoreBoardData[index] then
+      UI.setAttribute(scoreId, 'active', true)
+      UIchanges = UIchanges + 1
+    end
+    currentPlayerScoreBoardData[index] = entry
+  end
+
+  if gameState.debug_level >= 4 then
+    debugPrint(string.format(
+      'updatePlayerScoreBoard UIchanges: %d elapsed: %.2f seconds',
+      UIchanges,
+      os.time() - start
+    ))
+  end
+end
+
+currentTeamScoreBoardData = {}
+function updateTeamScoreBoard(show)
+  local start = os.time()
+
+  if show == nil then
+    show = showTeamScoreBoard == true -- Default is false
+  end
+
+  local scoreBoardData = getTeamScoreData()
+  for index = 1, 6 do
+    scoreData = scoreBoardData[index]
+    local scoreId = 'teamScoreBoard_score' .. index
+    if index == 1 or scoreData and scoreData.score > 0 then
+      local name = scoreData.name
+      local score = scoreData.score
+
+      local elapsed = calcTime(scoreData.duration)
+      local tooltip = string.format(
+        'Time in Game: %02d:%02d:%02d\nPieces per Minute: %.1f',
+        elapsed.H, elapsed.M, elapsed.S,
+        scoreData.score / (scoreData.duration / 60)
+      )
+
       UI.setAttribute(scoreId .. '_score', 'text', score)
       UI.setAttribute(scoreId .. '_name', 'text', name)
-      UI.setAttribute(scoreId, 'active', true)
-      UI.setAttribute(scoreId, 'color', color)
+      UI.setAttribute(scoreId, 'active', tostring(show))
       UI.setAttribute(scoreId, 'tooltip', tooltip)
-    --end
+    else
+      UI.setAttribute(scoreId, 'active', tostring(false))
+      UI.setAttribute(scoreId .. '_score', 'text', nil)
+      UI.setAttribute(scoreId .. '_name', 'text', nil)
+      UI.setAttribute(scoreId, 'tooltip', nil)
+    end
+  end
+  showTeamScoreBoard = show
+
+  if gameState.debug_level >= 4 then
+    debugPrint(string.format(
+      'updateTeamScoreBoard elapsed: %.2f seconds',
+      os.time() - start
+    ))
   end
 end
 
 function getPieceId(object)
   if object == nil then return end
   if gameState.templateId == nil then return end
-  if object.tag == nil or object.tag ~= 'Generic' then return end
+  if type(object) ~= "userdata" or object.tag == nil or object.tag ~= 'Generic' then return end
 
   local customObject = object.getCustomObject()
   if customObject then
@@ -1164,19 +1515,38 @@ function getPiece(object)
 
   local piece = pieceCache[object]
   if piece == nil then
-    piece = {
-      id = getPieceId(object),
-      object = object,
-      solutionPosition = nil
-    }
-    if piece.id ~= nil then
-      piece.solutionPosition = Vector(templateData[gameState.templateId].pieces[piece.id].solutionPosition)
-      piece.solutionRotation = Vector(templateData[gameState.templateId].pieces[piece.id].solutionRotation) + Vector(0, 180, 0)
-      pieceCache[piece.id] = piece
+    if type(object) == "number" then
+      local pieceId = object
+      for i, o in pairs(getObjects()) do
+        if getPieceId(o) == pieceId then
+          piece = {
+            id = pieceId,
+            object = o,
+            solutionPosition = nil
+          }
+          if piece.id ~= nil then
+            piece.solutionPosition = Vector(templateData[gameState.templateId].pieces[piece.id].solutionPosition)
+            piece.solutionRotation = Vector(templateData[gameState.templateId].pieces[piece.id].solutionRotation) + Vector(0, 180, 0)
+            pieceCache[piece.id] = piece
+          end
+          pieceCache[o] = piece
+        end
+      end
+    else
+      piece = {
+        id = getPieceId(object),
+        object = object,
+        solutionPosition = nil
+      }
+      if piece.id ~= nil then
+        piece.solutionPosition = Vector(templateData[gameState.templateId].pieces[piece.id].solutionPosition)
+        piece.solutionRotation = Vector(templateData[gameState.templateId].pieces[piece.id].solutionRotation) + Vector(0, 180, 0)
+        pieceCache[piece.id] = piece
+      end
+      pieceCache[object] = piece
     end
-    pieceCache[object] = piece
   end
-  if piece.id == nil then return end
+  if piece == nil or piece.id == nil then return end
 
   if gameState.debug_level >= 4 then
     debugPrint(string.format(
@@ -1187,7 +1557,6 @@ function getPiece(object)
   end
   return piece
 end
-
 
 function projectPiecePosition(targetPiece, pieceId)
   local start = os.time()
@@ -1385,20 +1754,20 @@ function onPieceDropped(player_color, droppedPiece)
 
   if gameState.debug_level >= 3 then
     debugPrint(string.format(
-      'onPieceDropped player_color: %s, droppedPiece.id: %s, elapsed: %.2f, droppedPieceGroup[%d]: [%s], candidateMatches[%d]: [%s]',
+      'onPieceDropped player_color: %s, droppedPiece.id: %s, elapsed: %.2f, droppedPieceGroup: [%s], candidateMatches: [%s]',
       player_color,
       droppedPiece.id,
       os.time() - start,
-      #droppedPieceGroup,
-      table.concat(droppedPieceGroup, ','),
-      #candidateMatches,
-      table.concat(candidateMatches, ',')
+      printTable(droppedPieceGroup,true),
+      printTable(candidateMatches,true)
     ))
   end
 end
 
 
-function joinPieces(player, droppedPiece, targetPiece)
+function joinPieces(player, droppedPiece, targetPiece, animated)
+  animated = animated ~= false -- Default is true
+
   activeMerges[targetPiece.id] = (activeMerges[targetPiece.id] or 0) + 1
   activeMerges[droppedPiece.id] = (activeMerges[droppedPiece.id] or 0) + 1
 
@@ -1406,6 +1775,7 @@ function joinPieces(player, droppedPiece, targetPiece)
 
   droppedPiece.object.removeFromPlayerSelection(player.color)
 
+  lastPlayerToConnect = {steam_name=player.steam_name, team=player.team}
   local playerState = getPlayerState(player.steam_name)
   playerState.score = playerState.score + 1
 
@@ -1428,7 +1798,9 @@ function joinPieces(player, droppedPiece, targetPiece)
   -- TODO save cache WIP
   pieceTextCache = ''
 
-  snapPieces(droppedPiece, targetPiece)
+  if animated then
+    snapPieces(droppedPiece, targetPiece)
+  end
 
   local toRunFunc = function()
     droppedPiece.object.interactable = true
@@ -1438,7 +1810,9 @@ function joinPieces(player, droppedPiece, targetPiece)
     activeMerges[targetPiece.id] = activeMerges[targetPiece.id] - 1
     activeMerges[droppedPiece.id] = activeMerges[droppedPiece.id] - 1
 
-    Wait.frames(onCheckSolution, 1)
+    if animated then
+      Wait.frames(onCheckSolutionRequest, 1)
+    end
   end
 
   local conditionFunc = function()
@@ -1459,21 +1833,106 @@ function joinPieces(player, droppedPiece, targetPiece)
     end
     toRunFunc()
   end
-
-  Wait.condition(toRunFunc, conditionFunc, timeout, timeoutFunc)
+  if animated then
+    Wait.condition(toRunFunc, conditionFunc, timeout, timeoutFunc)
+  else
+    toRunFunc()
+  end
 end
 
+function isAdjacentPiece(piece1, piece2)
+  if piece1 and piece1.solutionPosition and piece2 and piece2.solutionPosition then
+    return math.abs(piece1.solutionPosition.x - piece2.solutionPosition.x) < 0.5 or math.abs(piece1.solutionPosition.z - piece2.solutionPosition.z) < 0.5
+  end
+  return false
+end
+
+function onChat(msg,player)
+  if player.host == true then
+    if msg:match("^!puzzle") then
+      if msg:match("edges") then
+        for pieceId, info in pairs(templateData[gameState.templateId].pieces) do
+          if #info.neighbors <= 5 and gameState.pieces[pieceId].joinedTo == nil then
+            local piece = getPiece(pieceId)
+            if piece and piece.object ~= nil and piece.object.locked == false then
+              piece.object.setPosition(player.getPointerPosition())
+            end
+          end
+        end
+      elseif msg:match("join") or msg:match("solve") then
+        pcall(function()
+          local pieces
+          if msg:match("solve") then
+            pieces = getAllPieces()
+          else
+            pieces = {}
+            for _,v in pairs(player.getSelectedObjects()) do
+              table.insert(pieces, getPiece(v))
+            end
+          end
+          if next(pieces) then
+            local mainpiece = nil
+            local joinPieceQueue = {}
+            for i = 1, #pieces do
+              if mainpiece == nil then
+                mainpiece = pieces[i]
+                mainpiece.object.locked = true
+              else
+                --joinPieces(player,pieces[i],mainpiece,false)
+                table.insert(joinPieceQueue,{player,pieces[i],mainpiece,false})
+              end
+            end
+            local function doNextJoinPieces()
+              for _ = 1, 100 do
+                args = table.remove(joinPieceQueue)
+                if args then
+                  joinPieces(table.unpack(args))
+                end
+              end
+              if next(joinPieceQueue) then
+                Wait.frames(doNextJoinPieces,20)
+              else
+                onCheckSolutionRequest()
+              end
+            end
+            doNextJoinPieces()
+          end
+        end)
+      end
+      return false
+    end
+  end
+end
+
+checkSolution_waitid = nil
+function onCheckSolutionRequest()
+  -- Prevent function from running many times in a short period of time
+  if checkSolution_waitid != nil then
+    Wait.stop(checkSolution_waitid)
+  end
+  checkSolution_waitid = Wait.time(onCheckSolution, 0.5)
+end
 
 function onCheckSolution()
   local start = os.time()
 
-  local allPieces = getAllPieces()
-
-  local piece = allPieces[#allPieces]
-  if piece ~= nil then
-    if #(piece.object.getAttachments()) + 1 == #templateData[gameState.templateId].pieces then
+  local parentIdCounts = {}
+  for pieceId, state in pairs(gameState.pieces) do
+    if state.parentId ~= nil then
+      parentIdCounts[state.parentId] = (parentIdCounts[state.parentId] or 0) + 1
+    end
+  end
+  for pieceId, numattached in pairs(parentIdCounts) do
+    if numattached == #templateData[gameState.templateId].pieces then
       --printToAll('Victory!!!')
+      if lastPlayerToConnect then
+        local playerState = getPlayerState(lastPlayerToConnect.steam_name)
+        playerState.score = playerState.score + 1
+        local teamState = getTeamState(lastPlayerToConnect.team)
+        teamState.score = teamState.score + 1
+      end
       showCredits()
+      break
     end
   end
 
@@ -1508,32 +1967,7 @@ function dumpTTSVector(vector)
   )
 end
 
-function printTable(t,return_as_string,table_id_list)
-	local s
-	return_as_string = return_as_string == true -- default is false
-	if table_id_list == nil then -- used if table has been seen before. don't display it again
-		table_id_list = {}
-	end
-	if type(t) == "nil" or type(t) == "boolean" then
-		s = string.upper(tostring(t))
-	elseif type(t) == "number" or type(t) == "function" then
-		s = tostring(t)
-	elseif type(t) == "table" and table_id_list[t] == nil then
-    table_id_list[t] = true
-    local strings_list = {}
-    for i, v in pairs(t) do
-      table.insert(strings_list,tostring(i)..":"..printTable(v,true,table_id_list))
-    end
-    s = "{"..table.concat(strings_list,",").."}"
-	else
-		s = '"'..tostring(t)..'"'
-	end
-	if return_as_string then
-		return s
-	else
-		return print(""..string.gsub(s,"%[([0-9A-Fa-f][0-9A-Fa-f]+)%]","[#%1]"))
-	end
-end
+
 
 function debugPrint(message)
   if gameState.debug_level ~= 0 then
