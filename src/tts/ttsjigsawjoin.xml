@@ -175,7 +175,7 @@
   <Row preferredHeight="20">
     <Cell>
       <VerticalLayout class="jjTitle">
-        <Text class="panelText" fontSize="10">v2022-04-28-V14</Text>
+        <Text class="panelText" fontSize="10">v2022-06-27-V15</Text>
       </VerticalLayout>
     </Cell>
   </Row>

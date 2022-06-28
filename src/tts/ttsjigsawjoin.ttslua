@@ -2659,7 +2659,78 @@ templateData['ca9x16-36x64'] = {dimensions = {width=36, height=64}, size=1346572
 templateData['ca9x16-45x80'] = {dimensions = {width=45, height=80}, size=21118377, seed=71, ratio='9x16'}
 templateData['ca9x16-54x96'] = {dimensions = {width=54, height=96}, size=30525874, seed=72, ratio='9x16'}
 
-
+templateData['tr16x9-8x5'] = {dimensions = {width=8, height=5}, size=233059, seed=1, ratio='16x9'}
+templateData['tr16x9-16x9'] = {dimensions = {width=16, height=9}, size=913118, seed=2, ratio='16x9'}
+templateData['tr16x9-23x13'] = {dimensions = {width=23, height=13}, size=1949874, seed=3, ratio='16x9'}
+templateData['tr16x9-32x18'] = {dimensions = {width=32, height=18}, size=3884366, seed=4, ratio='16x9'}
+templateData['tr16x9-48x27'] = {dimensions = {width=48, height=27}, size=8883635, seed=5, ratio='16x9'}
+templateData['tr16x9-64x36'] = {dimensions = {width=64, height=36}, size=16037245, seed=6, ratio='16x9'}
+templateData['tr16x9-80x45'] = {dimensions = {width=80, height=45}, size=25179848, seed=7, ratio='16x9'}
+templateData['tr16x9-96x54'] = {dimensions = {width=96, height=54}, size=36421443, seed=8, ratio='16x9'}
+templateData['tr3x2-6x4'] = {dimensions = {width=6, height=4}, size=133721, seed=9, ratio='3x2'}
+templateData['tr3x2-12x8'] = {dimensions = {width=12, height=8}, size=599374, seed=10, ratio='3x2'}
+templateData['tr3x2-21x14'] = {dimensions = {width=21, height=14}, size=1925972, seed=11, ratio='3x2'}
+templateData['tr3x2-36x24'] = {dimensions = {width=36, height=24}, size=5885626, seed=12, ratio='3x2'}
+templateData['tr3x2-48x32'] = {dimensions = {width=48, height=32}, size=10650605, seed=13, ratio='3x2'}
+templateData['tr3x2-57x38'] = {dimensions = {width=57, height=38}, size=15074826, seed=14, ratio='3x2'}
+templateData['tr3x2-66x44'] = {dimensions = {width=66, height=44}, size=20308365, seed=15, ratio='3x2'}
+templateData['tr3x2-78x52'] = {dimensions = {width=78, height=52}, size=28440531, seed=16, ratio='3x2'}
+templateData['tr4x3-4x3'] = {dimensions = {width=4, height=3}, size=60265, seed=17, ratio='4x3'}
+templateData['tr4x3-12x9'] = {dimensions = {width=12, height=9}, size=680131, seed=18, ratio='4x3'}
+templateData['tr4x3-16x12'] = {dimensions = {width=16, height=12}, size=1233907, seed=19, ratio='4x3'}
+templateData['tr4x3-24x18'] = {dimensions = {width=24, height=18}, size=2861587, seed=20, ratio='4x3'}
+templateData['tr4x3-36x27'] = {dimensions = {width=36, height=27}, size=6629901, seed=21, ratio='4x3'}
+templateData['tr4x3-48x36'] = {dimensions = {width=48, height=36}, size=11992227, seed=22, ratio='4x3'}
+templateData['tr4x3-60x45'] = {dimensions = {width=60, height=45}, size=18836787, seed=23, ratio='4x3'}
+templateData['tr4x3-72x54'] = {dimensions = {width=72, height=54}, size=27257025, seed=24, ratio='4x3'}
+templateData['tr5x4-5x4'] = {dimensions = {width=5, height=4}, size=107242, seed=25, ratio='5x4'}
+templateData['tr5x4-10x8'] = {dimensions = {width=10, height=8}, size=491881, seed=26, ratio='5x4'}
+templateData['tr5x4-20x16'] = {dimensions = {width=20, height=16}, size=2102172, seed=27, ratio='5x4'}
+templateData['tr5x4-30x24'] = {dimensions = {width=30, height=24}, size=4844496, seed=28, ratio='5x4'}
+templateData['tr5x4-40x32'] = {dimensions = {width=40, height=32}, size=8841400, seed=29, ratio='5x4'}
+templateData['tr5x4-50x40'] = {dimensions = {width=50, height=40}, size=13893434, seed=30, ratio='5x4'}
+templateData['tr5x4-60x48'] = {dimensions = {width=60, height=48}, size=20108678, seed=31, ratio='5x4'}
+templateData['tr5x4-70x56'] = {dimensions = {width=70, height=56}, size=27486443, seed=32, ratio='5x4'}
+templateData['tr4x4-4x4'] = {dimensions = {width=4, height=4}, size=83358, seed=33, ratio='4x4'}
+templateData['tr4x4-8x8'] = {dimensions = {width=8, height=8}, size=390842, seed=34, ratio='4x4'}
+templateData['tr4x4-12x12'] = {dimensions = {width=12, height=12}, size=919492, seed=35, ratio='4x4'}
+templateData['tr4x4-20x20'] = {dimensions = {width=20, height=20}, size=2648759, seed=36, ratio='4x4'}
+templateData['tr4x4-30x30'] = {dimensions = {width=30, height=30}, size=6073319, seed=37, ratio='4x4'}
+templateData['tr4x4-40x40'] = {dimensions = {width=40, height=40}, size=11078309, seed=38, ratio='4x4'}
+templateData['tr4x4-50x50'] = {dimensions = {width=50, height=50}, size=17395065, seed=39, ratio='4x4'}
+templateData['tr4x4-70x70'] = {dimensions = {width=70, height=70}, size=34411809, seed=40, ratio='4x4'}
+templateData['tr4x5-4x5'] = {dimensions = {width=4, height=5}, size=108654, seed=41, ratio='4x5'}
+templateData['tr4x5-8x10'] = {dimensions = {width=8, height=10}, size=491621, seed=42, ratio='4x5'}
+templateData['tr4x5-16x20'] = {dimensions = {width=16, height=20}, size=2101900, seed=43, ratio='4x5'}
+templateData['tr4x5-24x30'] = {dimensions = {width=24, height=30}, size=4833959, seed=44, ratio='4x5'}
+templateData['tr4x5-32x40'] = {dimensions = {width=32, height=40}, size=8841161, seed=45, ratio='4x5'}
+templateData['tr4x5-40x50'] = {dimensions = {width=40, height=50}, size=13878011, seed=46, ratio='4x5'}
+templateData['tr4x5-48x60'] = {dimensions = {width=48, height=60}, size=20111519, seed=47, ratio='4x5'}
+templateData['tr4x5-56x70'] = {dimensions = {width=56, height=70}, size=27486293, seed=48, ratio='4x5'}
+templateData['tr3x4-3x4'] = {dimensions = {width=3, height=4}, size=58475, seed=49, ratio='3x4'}
+templateData['tr3x4-9x12'] = {dimensions = {width=9, height=12}, size=673148, seed=50, ratio='3x4'}
+templateData['tr3x4-12x16'] = {dimensions = {width=12, height=16}, size=1237756, seed=51, ratio='3x4'}
+templateData['tr3x4-18x24'] = {dimensions = {width=18, height=24}, size=2878816, seed=52, ratio='3x4'}
+templateData['tr3x4-27x36'] = {dimensions = {width=27, height=36}, size=6637942, seed=53, ratio='3x4'}
+templateData['tr3x4-36x48'] = {dimensions = {width=36, height=48}, size=11992319, seed=54, ratio='3x4'}
+templateData['tr3x4-45x60'] = {dimensions = {width=45, height=60}, size=18804763, seed=55, ratio='3x4'}
+templateData['tr3x4-54x72'] = {dimensions = {width=54, height=72}, size=27266057, seed=56, ratio='3x4'}
+templateData['tr2x3-4x6'] = {dimensions = {width=4, height=6}, size=132496, seed=57, ratio='2x3'}
+templateData['tr2x3-8x12'] = {dimensions = {width=8, height=12}, size=594938, seed=58, ratio='2x3'}
+templateData['tr2x3-14x21'] = {dimensions = {width=14, height=21}, size=1924848, seed=59, ratio='2x3'}
+templateData['tr2x3-24x36'] = {dimensions = {width=24, height=36}, size=5882115, seed=60, ratio='2x3'}
+templateData['tr2x3-32x48'] = {dimensions = {width=32, height=48}, size=10638293, seed=61, ratio='2x3'}
+templateData['tr2x3-38x57'] = {dimensions = {width=38, height=57}, size=15076191, seed=62, ratio='2x3'}
+templateData['tr2x3-44x66'] = {dimensions = {width=44, height=66}, size=20266676, seed=63, ratio='2x3'}
+templateData['tr2x3-52x78'] = {dimensions = {width=52, height=78}, size=28439508, seed=64, ratio='2x3'}
+templateData['tr9x16-5x8'] = {dimensions = {width=5, height=8}, size=233276, seed=65, ratio='9x16'}
+templateData['tr9x16-9x16'] = {dimensions = {width=9, height=16}, size=914300, seed=66, ratio='9x16'}
+templateData['tr9x16-13x23'] = {dimensions = {width=13, height=23}, size=1961821, seed=67, ratio='9x16'}
+templateData['tr9x16-18x32'] = {dimensions = {width=18, height=32}, size=3881233, seed=68, ratio='9x16'}
+templateData['tr9x16-27x48'] = {dimensions = {width=27, height=48}, size=8879706, seed=69, ratio='9x16'}
+templateData['tr9x16-36x64'] = {dimensions = {width=36, height=64}, size=16056342, seed=70, ratio='9x16'}
+templateData['tr9x16-45x80'] = {dimensions = {width=45, height=80}, size=25171270, seed=71, ratio='9x16'}
+templateData['tr9x16-54x96'] = {dimensions = {width=54, height=96}, size=36411269, seed=72, ratio='9x16'}
 
 for lbl, details in pairs(templateData) do
   details.size = details.size/1000000
@@ -2667,6 +2738,7 @@ for lbl, details in pairs(templateData) do
 end
 
 pieceTypeList = {}
+pieceTypeList['tr'] = {name = "Traditional", description = "Traditional puzzle pieces! Like Anthony used to make"}
 pieceTypeList['ca'] = {name = "Casual", description = "Made for the laid back puzzler"}
 pieceTypeList['fk'] = {name = "Funky", description = "Funky pieces that have many interesting features"}
 pieceTypeList['jg'] = {name = "Spikey", description = "Small, simple and to the pointy"}
