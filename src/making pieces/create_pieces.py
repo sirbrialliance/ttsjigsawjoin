@@ -1,8 +1,11 @@
+#!/usr/bin/env python3.7
 import math
 import random
 import itertools
 import pathlib
 import py2d
+from gzip import GzipFile
+
 
 
 # Efficiently iterate over overlapping pairs including (last, first), e.g.:
@@ -36,15 +39,15 @@ def intersect_lines(line1, line2):
 
 
 class KnobSelector:
-    def __init__(self, filepath):
+    def __init__(self, zippath):
         self.knobs = []
-        with open(filepath, 'r') as f:
-            for line in f:
-                self.knobs.append([tuple(float(c) for c in p.split(',')) for p in line.split(' ')])
+        with GzipFile(zippath, 'r') as zip:
+            for line in zip:
+                self.knobs.append([tuple(float(c) for c in p.split(b',')) for p in line.split(b' ')])
 
     def random_selector(self):
         knob = random.choice(self.knobs)
-        if random.randrange(2) == 1:
+        if random.randrange(4) == 1:
             return [(p[0], -p[1]) for p in knob]
         else:
             return knob
@@ -58,7 +61,7 @@ class KnobSelector:
 #   O O O O
 # The O's are hexagon pieces, oriented with points at top and bottom and vertical edges to the sides.
 def create_hexagon_pieces(width, height, knob_func, edge_len=1.0, trim=True):
-    assert width >= 2 and height >= 2
+    assert width >= 1 and height >= 1
     # the corners are ordered in the array in a brick-wall pattern as if the hexagon's upper/lower points were squashed:
     #  \   / \   /
     #   \ /   \ /                     *--*--*--*--*
@@ -289,6 +292,7 @@ def polygon_to_obj(vertices: [(float, float)], center: (float, float), picture_r
                    max_vertex_1d_error=0.00051, max_texture_1d_error=0.00051, plane_scale=1.0, face_max_verts=4):
     assert face_max_verts >= 3
 
+
     # manipulate vertices into what we can build the obj from
     faces, perimeter, all_vertices, vertex_to_texture = offset_tesselate_transform_and_texture(
         vertices, center, picture_rect, offset, rotate_deg, plane_scale, face_max_verts)
@@ -367,6 +371,9 @@ def create_objs(obj_dir, board_polygon, board_center, piece_polygons, piece_cent
     board_max_x = max(p[0] for p in board_polygon)
     board_max_y = max(p[1] for p in board_polygon)
     picture_rect = ((board_min_x, board_min_y), (board_max_x, board_max_y))
+
+
+
     for i, (poly, center) in enumerate(zip([board_polygon] + piece_polygons, [board_center] + piece_centers)):
         rotate_deg = piece_rotations[i-1] if i > 0 else 0
         obj = polygon_to_obj(poly, center, picture_rect, rotate_deg=-rotate_deg, offset=0)
@@ -398,14 +405,17 @@ class RNG:
         return 1.0 * self.seed / self.m
 
 
-def make_puzzle(width, height, seed, knob_func, save_path, host_url, show_plot=False):
+def make_puzzle(width, height, ratio, seed, knob_func, save_path, host_url, show_plot=False):
     rng = RNG(seed)
     edge_len = math.sqrt(1 / (1.5 * math.sqrt(3)))  # make hexagon have unit area
     board_polygon, board_center, piece_polygons, piece_centers, neighbors = create_hexagon_pieces(
         width, height, knob_func, edge_len)
     rotations = [rng.randbetween(0, 5) * 60.0 for _ in piece_polygons]
-    total_size = create_objs(save_path / f'{width}x{height}', board_polygon, board_center, piece_polygons,
-                             piece_centers, rotations)
+
+    folder_name = 'hc' + ratio.replace(":", "x") + f"-{width + height - 1}x{height * 2 - 1}"
+    with (save_path / (folder_name+'.txt')).open('w') as f:
+        for poly in piece_polygons:
+            f.write(str([str(p) for p in poly])+'\n')
 
     if show_plot:
         import matplotlib.pyplot as plt
@@ -421,8 +431,11 @@ def make_puzzle(width, height, seed, knob_func, save_path, host_url, show_plot=F
                 plt.plot([connection[0][0], connection[1][0]], [connection[0][1], connection[1][1]])
         plt.show()
 
+    total_size = create_objs(save_path / folder_name, board_polygon, board_center, piece_polygons,
+                             piece_centers, rotations)
+
     piece_data_entries = (
-        f'{{solutionPosition={{x={c[0]:.6f},y=1,z={-c[1]:.6f}}},'  # TODO: this assumes plane_scale=1 for polygon_to_obj 
+        f'{{solutionPosition={{x={c[0]:.6f},y=1,z={-c[1]:.6f}}},'  # TODO: this assumes plane_scale=1 for polygon_to_obj
         f'solutionRotation={{x=0,y={r},z=0}},'
         f'neighbors={{{",".join(str(i+1) for i in n)}}}}}'
         for c, n, r in zip(piece_centers, neighbors, rotations)
@@ -441,27 +454,95 @@ def make_puzzle(width, height, seed, knob_func, save_path, host_url, show_plot=F
         f"}}"
     print(template_data)
 
-
+try:
+    knob_func
+except:
+    knob_func = KnobSelector('knobs.gz').random_selector
 def main():
-    knob_func = KnobSelector('knobs.txt').random_selector
-    save_path = pathlib.Path('../as/')
+    save_path = pathlib.Path(r"D:\Pieces")
     host_url = 'https://raw.githubusercontent.com/CashewTTS/ttsjiggyshex/as/'
-    make_puzzle( 5,  4, 12345, knob_func, save_path, host_url)
-    make_puzzle( 6,  5, 12345, knob_func, save_path, host_url)
-    make_puzzle( 7,  6, 12345, knob_func, save_path, host_url)
-    make_puzzle( 9,  7, 12345, knob_func, save_path, host_url)
-    make_puzzle(10,  8, 12345, knob_func, save_path, host_url)
-    make_puzzle(11,  9, 12345, knob_func, save_path, host_url)
-    make_puzzle(13, 10, 12345, knob_func, save_path, host_url)
-    make_puzzle( 8,  4, 12345, knob_func, save_path, host_url)
-    make_puzzle(10,  5, 12345, knob_func, save_path, host_url)
-    make_puzzle(12,  6, 12345, knob_func, save_path, host_url)
-    make_puzzle(14,  7, 12345, knob_func, save_path, host_url)
-    make_puzzle(16,  8, 12345, knob_func, save_path, host_url)
-    make_puzzle(18,  9, 12345, knob_func, save_path, host_url)
-    make_puzzle(20, 10, 12345, knob_func, save_path, host_url)
-    make_puzzle(22, 11, 12345, knob_func, save_path, host_url)
 
+    puzzles_to_do = [("16:9",[
+                        [6,3],
+                        [10,5],
+                        [16,8],
+                        [27,13],
+                        [39,19],
+                        [50,24]
+                        ]),
+                     ("3:2",[
+                         [3,2],
+                         [11,7],
+                         [17,11],
+                         [25,16],
+                         [33,21],
+                         [41,26]
+                         ]),
+                     ("4:3",[
+                         [4,3],
+                         [8,6],
+                         [12,9],
+                         [18,14],
+                         [27,21],
+                         [38,29]
+                         ]),
+                    ( "5:4",[
+                         [5,4],
+                         [8,7],
+                         [13,11],
+                         [18,16],
+                         [26,22],
+                         [34,29]
+                         ]),
+                     ("4:4",[
+                         [2,3],
+                         [4,5],
+                         [7,9],
+                         [11,15],
+                         [18,24],
+                         [25,34]
+                         ]),
+                     ("4:5",[
+                         [2,4],
+                         [3,7],
+                         [7,16],
+                         [9,22],
+                         [12,30],
+                         [16,40]
+                         ]),
+                     ("3:4",[
+                         [2,5],
+                         [3,9],
+                         [4,12],
+                         [6,19],
+                         [9,28],
+                         [13,42]
+                         ]),
+                     ("2:3",[
+                         [2,6],
+                         [2,9],
+                         [3,16],
+                         [4,22],
+                         [6,35],
+                         [8,48]
+                         ]),
+                     ("9:16",[
+                        [2,7],
+                        [2,11],
+                        [2,17],
+                        [2,25],
+                        [2,36],
+                        [2,52]
+                        ])
+                     ]
+    seed_inc = 0
+    #make_puzzle(2, 2, "16:9", 11, knob_func, save_path, host_url)
+    for lbl, dims_list in puzzles_to_do:
+        for nw, nh in dims_list:
+            seed_inc += 1
+            make_puzzle(nw, nh, lbl, seed_inc, knob_func, save_path, host_url)
+            break
+        break
 
 if __name__ == '__main__':
     main()

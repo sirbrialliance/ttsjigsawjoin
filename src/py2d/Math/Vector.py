@@ -59,6 +59,10 @@ class Vector(object):
 		"""Return a normal vector of this vector"""
 		return Vector(-self.y, self.x)
 
+	def cross(self, b):
+		"""Return the cross-product of this vector and vector b"""
+		return self.x*b.y - self.y*b.x
+
 	def as_tuple(self):
 		"""Convert the vector to a non-object tuple"""
 		return (self.x, self.y)
@@ -99,7 +103,10 @@ class Vector(object):
 	def __getitem__(self, key):
 		if key == 0: return self.x
 		elif key == 1: return self.y
-		else: raise KeyError('Invalid key: %s. Valid keys are 0 and 1 for x and y' % key)
+		elif type(key) == type(0):
+			raise IndexError()
+		else:
+			raise KeyError('Invalid key: %s. Valid keys are 0 and 1 for x and y' % key)
 
 	def __setitem__(self, key, value):
 		if key == 0: self.x = value

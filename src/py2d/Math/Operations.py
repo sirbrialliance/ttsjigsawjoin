@@ -280,7 +280,7 @@ def distance_point_lineseg_squared(p, a, b):
 	ab = b - a
 	bp = p - b
 
-	r = float(ap * ab) / ab.length_squared
+	r = float(ap * ab) / (1 if ab.length_squared == 0 else ab.length_squared)
 
 	if r <= 0: return ap.length_squared
 	if r >= 1: return bp.length_squared

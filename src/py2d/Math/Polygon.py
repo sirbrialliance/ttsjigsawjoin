@@ -759,7 +759,7 @@ class Polygon(object):
 
 		if len(p) >= 3:
 			while max_vertices is not None and len(p) > max_vertices:
-				l = list(range(max_vertices))
+				l = list(range(min(len(p)-2, max_vertices)))
 				out.append(Polygon.from_pointlist([p[k] for k in l]))
 				for v in sorted(l[1:-1], reverse=True):
 					dbg(p[v], (255,0,255), "del %d" % g.del_index)
@@ -784,6 +784,49 @@ class Polygon(object):
 					if check_intersect_lineseg_lineseg(a, b, c, d): return True
 
 		return False
+
+	def get_closest_distance_to_self(self):
+		if len(self.points) < 2:
+			return 0
+		if len(self.points) == 2:
+			return (self.points[1]-self.points[0]).get_length()
+
+		min_dist_squared = None
+		for i in range(len(self.points)):
+			a = self.points[i]
+			ln = len(self.points)
+
+			#find the first point forward that gets closer to point a
+			j1 = 1
+			old_dist = (self.points[(i+j1)%ln]-a).get_length_squared()
+			for j1 in range(2, ln):
+				new_dist = (self.points[(i+j1)%ln]-a).get_length_squared()
+				if new_dist < old_dist:
+					break
+				else:
+					old_dist = new_dist
+			j1 -= 1
+
+			#find the first point backward that gets closer to point i
+			j2 = 1
+			old_dist = (self.points[(i-j2)%ln]-a).get_length_squared()
+			for j2 in range(2, ln):
+				new_dist = (self.points[(i-j2)%ln]-a).get_length_squared()
+				if new_dist < old_dist:
+					break
+				else:
+					old_dist = new_dist
+			j2 -= 1
+			j2 = ln - j2
+
+			# find the closest point it ever gets to itself
+			new_dist_squared = (self.points[(i+j1)%ln] - a).get_length_squared()
+			min_dist_squared = new_dist_squared if min_dist_squared is None else min(min_dist_squared, new_dist_squared)
+			for j in range(i+j1, min(i+j2,ln)):
+				new_dist_squared = distance_point_lineseg_squared(a, self.points[j%ln], self.points[(j+1)%ln])
+				min_dist_squared = min(min_dist_squared, new_dist_squared)
+
+		return min_dist_squared**0.5
 
 	def is_clockwise(self):
 		"""Determines whether the polygon has a clock-wise orientation."""
@@ -879,6 +922,28 @@ class Polygon(object):
 
 	def get_bottom(self):
 		return max(self.points, key=lambda p: p.y).y
+
+	def get_angle_at(self, index):
+		# Returns the angle at vertex "index" between 0 and pi that is always positive
+		a = self.points[(index+1)%len(self.points)] - self.points[index]
+		b = self.points[(index-1)%len(self.points)] - self.points[index]
+		if a.length == 0 or b.length == 0:
+			return 0
+		v = a*b/a.length/b.length
+		return math.acos(v)
+
+	def get_interrior_angle_at(self, index):
+		#Returns the interrior angle of a vertex between -2pi and +2pi where a positive angle means the following edge is clockwise from the previous edge
+		a = self.points[(index+1)%len(self.points)] - self.points[index]
+		b = self.points[(index-1)%len(self.points)] - self.points[index]
+		cw = self.is_clockwise()
+
+		# If this is clockwise, all interrior angles are going to be positive
+		angle = -math.atan2(a.cross(b), a*b)
+		if (angle < 0) != cw:
+			angle = angle + (2*math.pi) * (-1 if cw else 1)
+		return angle
+
 
 	append = add_point
 	extend = add_points
