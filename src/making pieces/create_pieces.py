@@ -39,15 +39,15 @@ def intersect_lines(line1, line2):
 
 
 class KnobSelector:
-    def __init__(self, zippath):
+    def __init__(self, filepath):
         self.knobs = []
-        with GzipFile(zippath, 'r') as zip:
-            for line in zip:
+        with (GzipFile(filepath, 'r') if '.gz' in filepath else open(filepath, 'rb')) as f:
+            for line in f:
                 self.knobs.append([tuple(float(c) for c in p.split(b',')) for p in line.split(b' ')])
 
     def random_selector(self):
         knob = random.choice(self.knobs)
-        if random.randrange(4) == 1:
+        if random.randrange(2) == 1:
             return [(p[0], -p[1]) for p in knob]
         else:
             return knob
@@ -61,7 +61,7 @@ class KnobSelector:
 #   O O O O
 # The O's are hexagon pieces, oriented with points at top and bottom and vertical edges to the sides.
 def create_hexagon_pieces(width, height, knob_func, edge_len=1.0, trim=True):
-    assert width >= 1 and height >= 1
+    assert width >= 2 and height >= 2
     # the corners are ordered in the array in a brick-wall pattern as if the hexagon's upper/lower points were squashed:
     #  \   / \   /
     #   \ /   \ /                     *--*--*--*--*
@@ -292,7 +292,6 @@ def polygon_to_obj(vertices: [(float, float)], center: (float, float), picture_r
                    max_vertex_1d_error=0.00051, max_texture_1d_error=0.00051, plane_scale=1.0, face_max_verts=4):
     assert face_max_verts >= 3
 
-
     # manipulate vertices into what we can build the obj from
     faces, perimeter, all_vertices, vertex_to_texture = offset_tesselate_transform_and_texture(
         vertices, center, picture_rect, offset, rotate_deg, plane_scale, face_max_verts)
@@ -371,9 +370,6 @@ def create_objs(obj_dir, board_polygon, board_center, piece_polygons, piece_cent
     board_max_x = max(p[0] for p in board_polygon)
     board_max_y = max(p[1] for p in board_polygon)
     picture_rect = ((board_min_x, board_min_y), (board_max_x, board_max_y))
-
-
-
     for i, (poly, center) in enumerate(zip([board_polygon] + piece_polygons, [board_center] + piece_centers)):
         rotate_deg = piece_rotations[i-1] if i > 0 else 0
         obj = polygon_to_obj(poly, center, picture_rect, rotate_deg=-rotate_deg, offset=0)
@@ -417,6 +413,9 @@ def make_puzzle(width, height, ratio, seed, knob_func, save_path, host_url, show
         for poly in piece_polygons:
             f.write(str([str(p) for p in poly])+'\n')
 
+    total_size = create_objs(save_path / f'{width}x{height}', board_polygon, board_center, piece_polygons,
+                             piece_centers, rotations)
+
     if show_plot:
         import matplotlib.pyplot as plt
         for polygon in piece_polygons + [board_polygon]:
@@ -430,9 +429,6 @@ def make_puzzle(width, height, ratio, seed, knob_func, save_path, host_url, show
                 connection = transform_x_to_line_seg([(0.35, 0.15), (0.65, 0.15)], c2c)
                 plt.plot([connection[0][0], connection[1][0]], [connection[0][1], connection[1][1]])
         plt.show()
-
-    total_size = create_objs(save_path / folder_name, board_polygon, board_center, piece_polygons,
-                             piece_centers, rotations)
 
     piece_data_entries = (
         f'{{solutionPosition={{x={c[0]:.6f},y=1,z={-c[1]:.6f}}},'  # TODO: this assumes plane_scale=1 for polygon_to_obj
@@ -454,11 +450,9 @@ def make_puzzle(width, height, ratio, seed, knob_func, save_path, host_url, show
         f"}}"
     print(template_data)
 
-try:
-    knob_func
-except:
-    knob_func = KnobSelector('knobs.gz').random_selector
+
 def main():
+    knob_func = KnobSelector('knobs.gz').random_selector
     save_path = pathlib.Path(r"D:\Pieces")
     host_url = 'https://raw.githubusercontent.com/CashewTTS/ttsjiggyshex/as/'
 
