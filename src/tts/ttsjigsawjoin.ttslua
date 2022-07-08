@@ -2279,14 +2279,7 @@ RNG = {
   end
 }
 
-function generatePieceData(details)
-
-  local start = os.time()
-
-  local seed = details.seed
-  local dims = details.dimensions
-  local rng = RNG:new(seed)
-  local pieceData = {}
+function generatePieceDataSquare(dims, rng, pieceData)
   for ih =  1, dims.height do
     for iw = 1, dims.width do
       local neighbors = {}
@@ -2299,6 +2292,68 @@ function generatePieceData(details)
       end
       table.insert(pieceData,{neighbors = neighbors, solutionPosition = {x=iw, y=1, z=-ih}, solutionRotation = {x=0, y=90 * rng.randbetween(0, 3), z=0}})
     end
+  end
+end
+ 
+function generatePieceDataHoneycomb(dims, rng, pieceData)
+  middle_row = dims.width -- The number of cells across the middle of the puzzle
+  total_rows = dims.height -- the number of rows of hexagons in the puzzle
+  side_length = (total_rows + 1)/2 -- The number of hexagons along any of the non-bottom/top sides
+  bottom_length = middle_row - side_length + 1 -- The number of hexagons along the bottom/top side
+  horiz_shift = 0.5 -- For every row down, the placement of the starting hexagon is this far left
+  vert_shift = 3^0.5/2 -- For every row down, the placement of the starting hexagon is this far 
+  
+  -- Change these values every row
+  row_start = {0,0}
+  row_length = bottom_length
+  toprow_start = 0 -- The index of the leftmost piece 1 row higher than current row
+  midrow_start = 1 -- The index of the leftmost piece of the current row
+  botrow_start = midrow_start + row_length -- The index of the leftmost piece 1 row below the current row
+
+  -- Loop through all pieces starting in the top left, doing one row at a time
+  for row = 1, total_rows do
+    
+    for col = 1, row_length do
+    
+      -- Add the 6 neigbours
+      local neighbors = {}
+      top_ref = toprow_start + (col - 1) - (row <= side_length and 1 or 0)
+      mid_ref = #pieceData + 1
+      bot_ref = botrow_start + (col - 1) - (row >= side_length and 1 or 0)
+      bot_row_len = row_length + (row < side_length and 1 or -1)
+      if row != 1 and top_ref >= toprow_start then table.insert(neighbors, top_ref) end
+      if row != 1 and top_ref + 1 < midrow_start then table.insert(neighbors, top_ref + 1) end
+      if mid_ref - 1 >= midrow_start then table.insert(neighbors, mid_ref - 1) end
+      if mid_ref + 1 < botrow_start then table.insert(neighbors, mid_ref + 1) end
+      if row != total_rows and bot_ref >= botrow_start then table.insert(neighbors, bot_ref) end
+      if row != total_rows and bot_ref + 1 < botrow_start + bot_row_len then table.insert(neighbors, bot_ref + 1) end
+      
+      table.insert(pieceData,{neighbors = neighbors, solutionPosition = {x = row_start[1] + col, y = 1, z = row_start[2]}, solutionRotation = {x=0, y=60 * rng.randbetween(0, 5), z=0}})
+    end
+    
+    -- Change the row values
+    row_length = row_length + (row < side_length and 1 or -1)
+    row_start = {row_start[1] + horiz_shift*(row < side_length and -1 or 1), row_start[2]-vert_shift}
+    toprow_start = midrow_start
+    midrow_start = botrow_start
+    botrow_start = midrow_start + row_length
+  end
+end
+
+function generatePieceData(details)
+  local start = os.time()
+
+  local seed = details.seed
+  local dims = details.dimensions
+  local shape = details.shape or "square"
+  local rng = RNG:new(seed)
+  local pieceData = {}
+  if shape == "square" then
+    generatePieceDataSquare(dims, rng, pieceData)
+  elseif shape == "honeycomb" then
+    generatePieceDataHoneycomb(dims, rng, pieceData)
+  else
+    error("generatePieceData: unsupported shape " .. tostring(shape))
   end
   details.pieces = pieceData
 
@@ -2732,12 +2787,68 @@ templateData['tr9x16-36x64'] = {dimensions = {width=36, height=64}, size=1605634
 templateData['tr9x16-45x80'] = {dimensions = {width=45, height=80}, size=25171270, seed=71, ratio='9x16'}
 templateData['tr9x16-54x96'] = {dimensions = {width=54, height=96}, size=36411269, seed=72, ratio='9x16'}
 
+templateData['hc16x9-8x5'] = {dimensions = {width=8, height=5}, size=201375, seed=1, ratio='16x9', shape='honeycomb'}
+templateData['hc16x9-14x9'] = {dimensions = {width=14, height=9}, size=702803, seed=2, ratio='16x9', shape='honeycomb'}
+templateData['hc16x9-23x15'] = {dimensions = {width=23, height=15}, size=2036136, seed=3, ratio='16x9', shape='honeycomb'}
+templateData['hc16x9-39x25'] = {dimensions = {width=39, height=25}, size=5959034, seed=4, ratio='16x9', shape='honeycomb'}
+templateData['hc16x9-57x37'] = {dimensions = {width=57, height=37}, size=13072685, seed=5, ratio='16x9', shape='honeycomb'}
+templateData['hc16x9-73x47'] = {dimensions = {width=73, height=47}, size=21410972, seed=6, ratio='16x9', shape='honeycomb'}
+templateData['hc3x2-4x3'] = {dimensions = {width=4, height=3}, size=46496, seed=7, ratio='3x2', shape='honeycomb'}
+templateData['hc3x2-17x13'] = {dimensions = {width=17, height=13}, size=1236894, seed=8, ratio='3x2', shape='honeycomb'}
+templateData['hc3x2-27x21'] = {dimensions = {width=27, height=21}, size=3294945, seed=9, ratio='3x2', shape='honeycomb'}
+templateData['hc3x2-40x31'] = {dimensions = {width=40, height=31}, size=7329644, seed=10, ratio='3x2', shape='honeycomb'}
+templateData['hc3x2-53x41'] = {dimensions = {width=53, height=41}, size=12970287, seed=11, ratio='3x2', shape='honeycomb'}
+templateData['hc3x2-66x51'] = {dimensions = {width=66, height=51}, size=20209411, seed=12, ratio='3x2', shape='honeycomb'}
+templateData['hc4x3-6x5'] = {dimensions = {width=6, height=5}, size=136570, seed=13, ratio='4x3', shape='honeycomb'}
+templateData['hc4x3-13x11'] = {dimensions = {width=13, height=11}, size=760966, seed=14, ratio='4x3', shape='honeycomb'}
+templateData['hc4x3-20x17'] = {dimensions = {width=20, height=17}, size=1892305, seed=15, ratio='4x3', shape='honeycomb'}
+templateData['hc4x3-31x27'] = {dimensions = {width=31, height=27}, size=4757578, seed=16, ratio='4x3', shape='honeycomb'}
+templateData['hc4x3-47x41'] = {dimensions = {width=47, height=41}, size=11126825, seed=17, ratio='4x3', shape='honeycomb'}
+templateData['hc4x3-66x57'] = {dimensions = {width=66, height=57}, size=21967173, seed=18, ratio='4x3', shape='honeycomb'}
+templateData['hc5x4-8x7'] = {dimensions = {width=8, height=7}, size=271180, seed=19, ratio='5x4', shape='honeycomb'}
+templateData['hc5x4-14x13'] = {dimensions = {width=14, height=13}, size=957731, seed=20, ratio='5x4', shape='honeycomb'}
+templateData['hc5x4-23x21'] = {dimensions = {width=23, height=21}, size=2659507, seed=21, ratio='5x4', shape='honeycomb'}
+templateData['hc5x4-33x31'] = {dimensions = {width=33, height=31}, size=5711942, seed=22, ratio='5x4', shape='honeycomb'}
+templateData['hc5x4-47x43'] = {dimensions = {width=47, height=43}, size=11514193, seed=23, ratio='5x4', shape='honeycomb'}
+templateData['hc5x4-62x57'] = {dimensions = {width=62, height=57}, size=20249287, seed=24, ratio='5x4', shape='honeycomb'}
+templateData['hc4x4-4x5'] = {dimensions = {width=4, height=5}, size=71517, seed=25, ratio='4x4', shape='honeycomb'}
+templateData['hc4x4-8x9'] = {dimensions = {width=8, height=9}, size=325574, seed=26, ratio='4x4', shape='honeycomb'}
+templateData['hc4x4-15x17'] = {dimensions = {width=15, height=17}, size=1275278, seed=27, ratio='4x4', shape='honeycomb'}
+templateData['hc4x4-25x29'] = {dimensions = {width=25, height=29}, size=3709937, seed=28, ratio='4x4', shape='honeycomb'}
+templateData['hc4x4-41x47'] = {dimensions = {width=41, height=47}, size=10129137, seed=29, ratio='4x4', shape='honeycomb'}
+templateData['hc4x4-58x67'] = {dimensions = {width=58, height=67}, size=20567234, seed=30, ratio='4x4', shape='honeycomb'}
+templateData['hc4x5-5x7'] = {dimensions = {width=5, height=7}, size=129017, seed=31, ratio='4x5', shape='honeycomb'}
+templateData['hc4x5-9x13'] = {dimensions = {width=9, height=13}, size=483136, seed=32, ratio='4x5', shape='honeycomb'}
+templateData['hc4x5-22x31'] = {dimensions = {width=22, height=31}, size=3167812, seed=33, ratio='4x5', shape='honeycomb'}
+templateData['hc4x5-30x43'] = {dimensions = {width=30, height=43}, size=6032577, seed=34, ratio='4x5', shape='honeycomb'}
+templateData['hc4x5-41x59'] = {dimensions = {width=41, height=59}, size=11424219, seed=35, ratio='4x5', shape='honeycomb'}
+templateData['hc4x5-55x79'] = {dimensions = {width=55, height=79}, size=20708535, seed=36, ratio='4x5', shape='honeycomb'}
+templateData['hc3x4-6x9'] = {dimensions = {width=6, height=9}, size=199261, seed=37, ratio='3x4', shape='honeycomb'}
+templateData['hc3x4-11x17'] = {dimensions = {width=11, height=17}, size=775580, seed=38, ratio='3x4', shape='honeycomb'}
+templateData['hc3x4-15x23'] = {dimensions = {width=15, height=23}, size=1485980, seed=39, ratio='3x4', shape='honeycomb'}
+templateData['hc3x4-24x37'] = {dimensions = {width=24, height=37}, size=3943872, seed=40, ratio='3x4', shape='honeycomb'}
+templateData['hc3x4-36x55'] = {dimensions = {width=36, height=55}, size=8982548, seed=41, ratio='3x4', shape='honeycomb'}
+templateData['hc3x4-54x83'] = {dimensions = {width=54, height=83}, size=20531685, seed=42, ratio='3x4', shape='honeycomb'}
+templateData['hc2x3-7x11'] = {dimensions = {width=7, height=11}, size=287495, seed=43, ratio='2x3', shape='honeycomb'}
+templateData['hc2x3-10x17'] = {dimensions = {width=10, height=17}, size=643112, seed=44, ratio='2x3', shape='honeycomb'}
+templateData['hc2x3-18x31'] = {dimensions = {width=18, height=31}, size=2238403, seed=45, ratio='2x3', shape='honeycomb'}
+templateData['hc2x3-25x43'] = {dimensions = {width=25, height=43}, size=4428706, seed=46, ratio='2x3', shape='honeycomb'}
+templateData['hc2x3-40x69'] = {dimensions = {width=40, height=69}, size=11576815, seed=47, ratio='2x3', shape='honeycomb'}
+templateData['hc2x3-55x95'] = {dimensions = {width=55, height=95}, size=22070526, seed=48, ratio='2x3', shape='honeycomb'}
+templateData['hc9x16-8x13'] = {dimensions = {width=8, height=13}, size=391382, seed=49, ratio='9x16', shape='honeycomb'}
+templateData['hc9x16-12x21'] = {dimensions = {width=12, height=21}, size=962278, seed=50, ratio='9x16', shape='honeycomb'}
+templateData['hc9x16-18x33'] = {dimensions = {width=18, height=33}, size=2269450, seed=51, ratio='9x16', shape='honeycomb'}
+templateData['hc9x16-26x49'] = {dimensions = {width=26, height=49}, size=4875863, seed=52, ratio='9x16', shape='honeycomb'}
+templateData['hc9x16-37x71'] = {dimensions = {width=37, height=71}, size=10028469, seed=53, ratio='9x16', shape='honeycomb'}
+templateData['hc9x16-53x103'] = {dimensions = {width=53, height=103}, size=20852852, seed=54, ratio='9x16', shape='honeycomb'}
+
 for lbl, details in pairs(templateData) do
   details.size = details.size/1000000
   details.baseUrl = PUZZLE_URL .. string.sub(lbl,1,2) .. '/' .. lbl .. '/'
 end
 
 pieceTypeList = {}
+pieceTypeList['hc'] = {name = "Honeycomb", description = "A hoard of hexagonal puzzles made by Cashew"}
 pieceTypeList['tr'] = {name = "Traditional", description = "Traditional puzzle pieces! Like Anthony used to make"}
 pieceTypeList['ca'] = {name = "Casual", description = "Made for the laid back puzzler"}
 pieceTypeList['fk'] = {name = "Funky", description = "Funky pieces that have many interesting features"}

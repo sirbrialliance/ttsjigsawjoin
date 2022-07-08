@@ -7,12 +7,16 @@ import py2d
 from gzip import GzipFile
 
 
-
 # Efficiently iterate over overlapping pairs including (last, first), e.g.:
 #   list(ring_pairs([1,2,3])) -> [(1,2),(2,3),(3,1)]
 def ring_pairs(i):
     return zip(i, itertools.chain(itertools.islice(i, 1, None), itertools.islice(i, None, 1)))
 
+def plot_polygon(poly):
+    import matplotlib.pyplot as plt
+    poly_closed = poly + poly[:1]
+    plt.plot([p[0] for p in poly_closed], [p[1] for p in poly_closed])
+    plt.show()
 
 # Transform each 2D point from the coordinate system defined by directed line segment ((0, 0), (1, 0)) to the coordinate
 # system defined by the given directed line segment:
@@ -176,45 +180,92 @@ def create_hexagon_pieces(width, height, knob_func, edge_len=1.0, trim=True):
 
     return board_polygon, board_center, piece_polygons, piece_centers, neighbors
 
+def spiralizer(max_dist):
+    # returns an iterator of x,y values that spiral around (0,0) starting at (0,0)
+    # up to a maximum integer distance of max_dist
+    dist = 0
+    direc = 4
+    count = 0
+    directions = [(0,1),(1,0),(0,-1),(-1,0)]
+    x = y = 0
+    while dist <= max_dist:
+        yield x, y
+        if direc >= 4:
+            dist += 1
+            count = 0
+            direc = 0
+            x = y = -dist
+        x += directions[direc][0]
+        y += directions[direc][1]
+        count += 1
+        if count == dist * 2:
+            direc += 1
+            count = 0
 
-#   Takes a polygon as a list of 2D vertex tuples, offsets its edges outward and tesselates it into faces, then
+
+#   Takes a polygon as a list of 2D vertex tuples, tesselates it into faces, then
 # texture-maps a picture onto the resulting vertices and transforms them by shifting them from the given center to the
 # origin, rotating them around that origin, and scaling them.
 #   The input polygon must be non-self-intersecting and with no duplicate points, but may be clockwise or
 # counterclockwise. Each output face (and the perimeter) will be counterclockwise (by screen convention: +X right, +Y
 # down), and will have between 3 and face_max_verts vertices. All outputs will contain 2D vertex tuples.
+#  The sig value is the number of decimal places the vertices need to be rounded to. The algorithm must pick rounded
+# vertices that create a new shape that can completely contain the old shape(this guarantees that pieces when put
+# together will overlap instead of having gaps. It looks nicer that way.)
 # Outputs:
 #   faces: list of faces each as a list of vertex tuples
 #   perimeter: list of just the outer vertex tuples in clockwise order (excluding any added interior points)
 #   all_vertices: set of all vertices used in the faces and perimeter
 #   vertex_to_texture: dict mapping only the face vertex tuples to texture U/V tuples
-def offset_tesselate_transform_and_texture(vertices: [(float, float)], center: (float, float),
-                                           picture_rect: ((float, float), (float, float)), offset, rotate_deg, scale,
-                                           face_max_verts):
+def tesselate_transform_and_texture(vertices: [(float, float)], center: (float, float),
+                                           picture_rect: ((float, float), (float, float)), rotate_deg, scale,
+                                           face_max_verts, sig):
     # Implementation notes:
     #   * We need to convert Vector objects to plain tuples when using them as dict indexes, because the Vector object
     #     hashing/equality functions use proximity within an epsilon instead of exact equality.
     #   * While py2d.Polygon.convex_decompose appears to not merge vertices or add interior/perimeter vertices, we act
     #     as if it might, in case we ever replace it with some other decomposer.
 
+
     # make a counterclockwise polygon from the vertex list
     polygon = py2d.Polygon.from_tuples(vertices).clone_ccw()
 
-    # TODO
-    assert offset == 0
-    offset_polygon = polygon
+    # move polygon from the given center to the origin, and scale/rotate it as requested
+    polygon_transform = py2d.Transform.move(-center[0], -center[1])
+    polygon_transform = py2d.Transform.scale(scale, scale) * polygon_transform
+    polygon_transform = py2d.Transform.rotate(math.radians(rotate_deg)) * polygon_transform
+    polygon_transformed = py2d.Polygon.from_tuples([polygon_transform * v for v in polygon])
 
-    # maintain a set of all vertices to transform and texture
-    all_vertices = set()
-    face_vertices = set()
+    # round all vertices to locations that can completely contain the original shape
+    # for each vertex, find a rounded vertex coord that lies outside the original shape and that also has lines
+    # to its neighbours that are outside the original shape
+    for i, v in enumerate(polygon_transformed):
+        v_start = py2d.Vector(round(v.x, sig), round(v.y, sig))
+        delta = 10**(-sig)
+        v_next = polygon_transformed[(i+1)%len(polygon_transformed)]
+        v_prev = polygon_transformed[i-1]
+        # search in a spiral around v_start for a valid point
+        found_replacement = 0
+        for ix, iy in spiralizer(4):
+            v_new = v_start + py2d.Vector(ix * delta, iy * delta)
+            # a rounded point v_new that will create lines lying outside the current shape satisfies the following
+            if py2d.Polygon.is_clockwise_s([v, v_next, v_new]) \
+                    and py2d.Polygon.is_clockwise_s([v, v_new, v_prev]):
+                polygon_transformed[i] = v_new
+                break
 
-    # keep the current perimeter in case tesselation adds/removes vertices
-    perimeter = offset_polygon.as_tuple_list()
-    all_vertices.update(perimeter)
+    # create the original polygon with the new vertices
+    polygon_transform = py2d.Transform.rotate(math.radians(-rotate_deg))
+    polygon_transform = py2d.Transform.scale(1/scale, 1/scale) * polygon_transform
+    polygon_transform = py2d.Transform.move(center[0], center[1]) * polygon_transform
+    polygon_offset_vertices = py2d.Polygon.from_tuples([polygon_transform * v for v in polygon_transformed])
+
+    # make a reverse index lookup for vertices so we can convert the face decomposition back into indexes
+    vertex_index = {(v[0],v[1]):i for i, v in enumerate(polygon_transformed)}
 
     # tessellate the polygon into low-count faces
     # note that py2d.Polygon.convex_decompose accepts cw or ccw and emits cw components
-    face_polygons = py2d.Polygon.convex_decompose(offset_polygon, max_vertices=face_max_verts)
+    face_polygons = py2d.Polygon.convex_decompose(polygon_transformed, max_vertices=face_max_verts)
     if len(face_polygons) == 0:
         raise ValueError('py2d.Polygon.convex_decompose failed to tessellate the given polygon')
     faces = []
@@ -224,37 +275,17 @@ def offset_tesselate_transform_and_texture(vertices: [(float, float)], center: (
                              "or offset polygons might be self-intersecting")
         if not 3 <= len(fp) <= face_max_verts:
             raise ValueError('py2d.Polygon.convex_decompose returned a face with too few/many vertices')
-        fp_tuples = list(reversed(fp.as_tuple_list()))  # make ccw tuples
-        faces.append(fp_tuples)
-        face_vertices.update(fp_tuples)
-    all_vertices.update(face_vertices)
-
-    # map all vertices to their transformed version, moving them from the given center to the origin, and
-    #   scaling/rotating them as requested
-    vertex_transform = py2d.Transform.move(-center[0], -center[1])
-    vertex_transform = py2d.Transform.scale(scale, scale) * vertex_transform
-    vertex_transform = py2d.Transform.rotate(math.radians(rotate_deg)) * vertex_transform
-    vertex_to_transformed = {v: (vertex_transform * py2d.Vector(*v)).as_tuple() for v in all_vertices}
+        fp_tuples = list(reversed(fp.as_tuple_list())) # make ccw tuples
+        faces.append([vertex_index[x] for x in fp_tuples])
 
     # map face vertices to texture coords
     picture_width = picture_rect[1][0] - picture_rect[0][0]
     picture_height = picture_rect[1][1] - picture_rect[0][1]
     texture_transform = py2d.Transform.move(-picture_rect[0][0], -picture_rect[1][1])
     texture_transform = py2d.Transform.scale(1/picture_width, -1/picture_height) * texture_transform
-    vertex_to_texture = {v: (texture_transform * py2d.Vector(*v)).as_tuple() for v in face_vertices}
+    texture_polygon = [texture_transform * v for v in polygon_offset_vertices]
 
-    # update all vertices to their transformed version
-    for i, v in enumerate(perimeter):
-        perimeter[i] = vertex_to_transformed[v]
-    for face in faces:
-        for i, v in enumerate(face):
-            face[i] = vertex_to_transformed[v]
-    all_vertices = set(vertex_to_transformed.values())
-
-    # rebase the texture map on the transformed vertices
-    vertex_to_texture = {vertex_to_transformed[v]: vertex_to_texture[v] for v in face_vertices}
-
-    return faces, perimeter, all_vertices, vertex_to_texture
+    return faces, polygon_transformed, texture_polygon
 
 
 #   Creates an extruded 3D model of a 2D polygon in Wavefront OBJ format as a string, with the 2D X/Y coordinates
@@ -288,13 +319,9 @@ def offset_tesselate_transform_and_texture(vertices: [(float, float)], center: (
 #       correspond to errors of 0.00005*(16+16)=0.0016 and 0.0005*(9+9)=0.009 respectively in the original coords.
 # Credit to Canonelis for the original version of this function.
 def polygon_to_obj(vertices: [(float, float)], center: (float, float), picture_rect: ((float, float), (float, float)),
-                   offset=0.00072, thickness_below=0.0, thickness_above=0.07, rotate_deg=0.0,
+                   thickness_below=0.0, thickness_above=0.07, rotate_deg=0.0,
                    max_vertex_1d_error=0.00051, max_texture_1d_error=0.00051, plane_scale=1.0, face_max_verts=4):
     assert face_max_verts >= 3
-
-    # manipulate vertices into what we can build the obj from
-    faces, perimeter, all_vertices, vertex_to_texture = offset_tesselate_transform_and_texture(
-        vertices, center, picture_rect, offset, rotate_deg, plane_scale, face_max_verts)
 
     # determine the decimal places needed
     picture_width = picture_rect[1][0] - picture_rect[0][0]
@@ -303,55 +330,50 @@ def polygon_to_obj(vertices: [(float, float)], center: (float, float), picture_r
     vtu_sig = math.ceil(-math.log10(max_texture_1d_error / abs(picture_width) * 2.0))
     vtv_sig = math.ceil(-math.log10(max_texture_1d_error / abs(picture_height) * 2.0))
 
+    # set a new center close to the original but that is rounded off
+    center = tuple([round(x, v_sig) for x in center])
+
+    # manipulate vertices into what we can build the obj from
+    faces, polygon, texture_polygon = tesselate_transform_and_texture(
+        vertices, center, picture_rect, rotate_deg, plane_scale, face_max_verts, v_sig)
+
     # minimize string length for decimal representation of numbers
     def fl(x, sig):
+        if abs(x) < 10 ** -sig / 2.0: return "0"
         s = f'{x:.{sig}f}'.rstrip('0').rstrip('.').lstrip('0')
         return '0' if len(s) == 0 else s
 
     # start obj output
     lines = []
 
-    # make reverse lookups so vertex tuples can be mapped to "v" and "vt" indexes (which are 1-based)
-    top_vertex_to_v_index = {}
-    bottom_vertex_to_v_index = {}
-    top_face_vertex_to_vt_index = {}
-    v_index = 1
-    vt_index = 1
-
     # top vertices, mapping 2D X/Y to 3D X/Z and extruding in the +Y direction
-    for v in all_vertices:
+    for v in polygon:
         lines.append(f'v {fl(v[0], v_sig)} {fl(thickness_above, v_sig)} {fl(v[1], v_sig)}')
-        top_vertex_to_v_index[v] = v_index
-        v_index += 1
 
     # bottom vertices, mapping 2D X/Y to 3D X/Z and extruding in the -Y direction
-    for v in all_vertices:
+    for v in polygon:
         lines.append(f'v {fl(v[0], v_sig)} {fl(-thickness_below, v_sig)} {fl(v[1], v_sig)}')
-        bottom_vertex_to_v_index[v] = v_index
-        v_index += 1
 
     # first texture coords are used where not specified (sides and bottom), so use bottom-left corner of pic for those
     lines.append(f'vt 0 0')
-    vt_index += 1
 
     # texture coords for just the top face vertices
-    for v, t in vertex_to_texture.items():
-        lines.append(f'vt {fl(t[0], vtu_sig)} {fl(t[1], vtv_sig)}')
-        top_face_vertex_to_vt_index[v] = vt_index
-        vt_index += 1
+    for v in texture_polygon:
+        lines.append(f'vt {fl(v[0], vtu_sig)} {fl(v[1], vtv_sig)}')
 
     # top faces
     for face in faces:
-        lines.append(f'f {" ".join(f"{top_vertex_to_v_index[v]}/{top_face_vertex_to_vt_index[v]}" for v in face)}')
+        lines.append(f'f {" ".join(f"{v+1}/{v+2}" for v in face)}')
 
+    l = len(polygon)
     # bottom faces
     for face in faces:
-        lines.append(f'f {" ".join(f"{bottom_vertex_to_v_index[v]}" for v in reversed(face))}')
+        lines.append(f'f {" ".join(f"{l+v+1}" for v in reversed(face))}')
 
     # side faces
-    for edge in ring_pairs(perimeter):
-        quad_indexes = (top_vertex_to_v_index[edge[0]], bottom_vertex_to_v_index[edge[0]],
-                        bottom_vertex_to_v_index[edge[1]], top_vertex_to_v_index[edge[1]])
+    for edge in ring_pairs(range(l)):
+        quad_indexes = (edge[0]+1, l+edge[0]+1,
+                        l+edge[1]+1, edge[1]+1)
         if face_max_verts >= 4:
             lines.append(f'f {" ".join(map(str, quad_indexes))}')
         else:
@@ -372,7 +394,7 @@ def create_objs(obj_dir, board_polygon, board_center, piece_polygons, piece_cent
     picture_rect = ((board_min_x, board_min_y), (board_max_x, board_max_y))
     for i, (poly, center) in enumerate(zip([board_polygon] + piece_polygons, [board_center] + piece_centers)):
         rotate_deg = piece_rotations[i-1] if i > 0 else 0
-        obj = polygon_to_obj(poly, center, picture_rect, rotate_deg=-rotate_deg, offset=0)
+        obj = polygon_to_obj(poly, center, picture_rect, rotate_deg=-rotate_deg)
         total_size += len(obj)
         path = obj_dir / ('board.obj' if i == 0 else f'piece.{i}.obj')
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -403,7 +425,7 @@ class RNG:
 
 def make_puzzle(width, height, ratio, seed, knob_func, save_path, host_url, show_plot=False):
     rng = RNG(seed)
-    edge_len = math.sqrt(1 / (1.5 * math.sqrt(3)))  # make hexagon have unit area
+    edge_len = 1 / math.sqrt(3)  # make hexagon have unit area
     board_polygon, board_center, piece_polygons, piece_centers, neighbors = create_hexagon_pieces(
         width, height, knob_func, edge_len)
     rotations = [rng.randbetween(0, 5) * 60.0 for _ in piece_polygons]
@@ -413,7 +435,7 @@ def make_puzzle(width, height, ratio, seed, knob_func, save_path, host_url, show
         for poly in piece_polygons:
             f.write(str([str(p) for p in poly])+'\n')
 
-    total_size = create_objs(save_path / f'{width}x{height}', board_polygon, board_center, piece_polygons,
+    total_size = create_objs(save_path / folder_name, board_polygon, board_center, piece_polygons,
                              piece_centers, rotations)
 
     if show_plot:
@@ -437,17 +459,11 @@ def make_puzzle(width, height, ratio, seed, knob_func, save_path, host_url, show
         for c, n, r in zip(piece_centers, neighbors, rotations)
     )
     piece_data = f'local pieceDataHex{width}x{height} = {{\n  ' + ',\n  '.join(piece_data_entries) + '\n}'
-    print(piece_data)
+    #print(piece_data)
 
     board_width = max(p[0] for p in board_polygon) - min(p[0] for p in board_polygon)
     board_height = max(p[1] for p in board_polygon) - min(p[1] for p in board_polygon)
-    template_data = \
-        f"templateData['jigsaw-hexagons-{width}x{height}'] = {{\n" \
-        f"  baseUrl = '{host_url}{width}x{height}/',\n" \
-        f"  pieces = pieceDataHex{width}x{height},\n" \
-        f"  dimensions = {{ width = {board_width:.3f}, height = {board_height:.3f} }},\n" \
-        f"  size = {total_size/2**20:.1f}\n" \
-        f"}}"
+    template_data = f"""templateData['{folder_name}'] = {{dimensions = {{width={width + height - 1}, height={height * 2 - 1}}}, size={total_size}, seed={seed}, ratio='{ratio.replace(":", "x")}', shape='honeycomb'}}"""
     print(template_data)
 
 
@@ -535,8 +551,6 @@ def main():
         for nw, nh in dims_list:
             seed_inc += 1
             make_puzzle(nw, nh, lbl, seed_inc, knob_func, save_path, host_url)
-            break
-        break
 
 if __name__ == '__main__':
     main()
