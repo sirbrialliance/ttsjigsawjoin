@@ -867,7 +867,13 @@ end
 function onClick_picture(player, button, id)
   UI.setAttribute('puzzleUrl', 'text', puzzleData[id].url)
   -- Search for a template id for the current piece set so we don't need to switch
-  replacement_id = gameState.pieceLabel .. string.sub(puzzleData[id].templateId, 3, 99)
+  replacement_id = gameState.pieceLabel .. string.sub(puzzleData[id].templateId, 3, string.find(puzzleData[id].templateId,'-')-1)
+  for tid, _ in pairs(templateData) do
+    if tid:find(replacement_id, 1, true) then
+      replacement_id = tid
+      break
+    end
+  end
   if UI.getAttribute(replacement_id, 'id') == nil then
     onClick_pieceSelection(player, button, string.sub(puzzleData[id].templateId,1,2) .. "PieceButton",
           function() onValueChanged_templateSelection(player, true, puzzleData[id].templateId) end)
