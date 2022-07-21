@@ -786,7 +786,7 @@ function populateTemplateListContainer(uiTable, pieceLabel)
                 templateData[template.id].size
               ),
             },
-            value = string.format('%d x %d', template.dimensions.width, template.dimensions.height)
+            value = templateData[template.id].label
           }
         end
       end
@@ -2501,352 +2501,353 @@ puzzleData['church-mountains-1444413'] = {
 
 
 
-templateData['jg16x9-8x5'] = {dimensions = {width=8, height=5}, size=59571, seed=17, ratio='16x9'}
-templateData['jg16x9-16x9'] = {dimensions = {width=16, height=9}, size=231385, seed=18, ratio='16x9'}
-templateData['jg16x9-23x13'] = {dimensions = {width=23, height=13}, size=492436, seed=19, ratio='16x9'}
-templateData['jg16x9-32x18'] = {dimensions = {width=32, height=18}, size=972650, seed=20, ratio='16x9'}
-templateData['jg16x9-48x27'] = {dimensions = {width=48, height=27}, size=2216814, seed=21, ratio='16x9'}
-templateData['jg16x9-64x36'] = {dimensions = {width=64, height=36}, size=4012483, seed=22, ratio='16x9'}
-templateData['jg16x9-80x45'] = {dimensions = {width=80, height=45}, size=6279935, seed=23, ratio='16x9'}
-templateData['jg16x9-96x54'] = {dimensions = {width=96, height=54}, size=9086710, seed=24, ratio='16x9'}
-templateData['jg3x2-6x4'] = {dimensions = {width=6, height=4}, size=34190, seed=49, ratio='3x2'}
-templateData['jg3x2-12x8'] = {dimensions = {width=12, height=8}, size=151535, seed=50, ratio='3x2'}
-templateData['jg3x2-21x14'] = {dimensions = {width=21, height=14}, size=483913, seed=51, ratio='3x2'}
-templateData['jg3x2-36x24'] = {dimensions = {width=36, height=24}, size=1469318, seed=52, ratio='3x2'}
-templateData['jg3x2-48x32'] = {dimensions = {width=48, height=32}, size=2663223, seed=53, ratio='3x2'}
-templateData['jg3x2-57x38'] = {dimensions = {width=57, height=38}, size=3774130, seed=54, ratio='3x2'}
-templateData['jg3x2-66x44'] = {dimensions = {width=66, height=44}, size=5068454, seed=55, ratio='3x2'}
-templateData['jg3x2-78x52'] = {dimensions = {width=78, height=52}, size=7099865, seed=56, ratio='3x2'}
-templateData['jg4x3-4x3'] = {dimensions = {width=4, height=3}, size=15540, seed=57, ratio='4x3'}
-templateData['jg4x3-12x9'] = {dimensions = {width=12, height=9}, size=171546, seed=58, ratio='4x3'}
-templateData['jg4x3-16x12'] = {dimensions = {width=16, height=12}, size=311744, seed=59, ratio='4x3'}
-templateData['jg4x3-24x18'] = {dimensions = {width=24, height=18}, size=718479, seed=60, ratio='4x3'}
-templateData['jg4x3-36x27'] = {dimensions = {width=36, height=27}, size=1657324, seed=61, ratio='4x3'}
-templateData['jg4x3-48x36'] = {dimensions = {width=48, height=36}, size=2999992, seed=62, ratio='4x3'}
-templateData['jg4x3-60x45'] = {dimensions = {width=60, height=45}, size=4700068, seed=63, ratio='4x3'}
-templateData['jg4x3-72x54'] = {dimensions = {width=72, height=54}, size=6802303, seed=64, ratio='4x3'}
-templateData['jg5x4-5x4'] = {dimensions = {width=5, height=4}, size=27903, seed=9, ratio='5x4'}
-templateData['jg5x4-10x8'] = {dimensions = {width=10, height=8}, size=124633, seed=10, ratio='5x4'}
-templateData['jg5x4-20x16'] = {dimensions = {width=20, height=16}, size=526426, seed=11, ratio='5x4'}
-templateData['jg5x4-30x24'] = {dimensions = {width=30, height=24}, size=1206901, seed=12, ratio='5x4'}
-templateData['jg5x4-40x32'] = {dimensions = {width=40, height=32}, size=2206895, seed=13, ratio='5x4'}
-templateData['jg5x4-50x40'] = {dimensions = {width=50, height=40}, size=3451831, seed=14, ratio='5x4'}
-templateData['jg5x4-60x48'] = {dimensions = {width=60, height=48}, size=5020388, seed=15, ratio='5x4'}
-templateData['jg5x4-70x56'] = {dimensions = {width=70, height=56}, size=6855277, seed=16, ratio='5x4'}
-templateData['jg4x4-4x4'] = {dimensions = {width=4, height=4}, size=21957, seed=25, ratio='4x4'}
-templateData['jg4x4-8x8'] = {dimensions = {width=8, height=8}, size=98902, seed=26, ratio='4x4'}
-templateData['jg4x4-12x12'] = {dimensions = {width=12, height=12}, size=231688, seed=27, ratio='4x4'}
-templateData['jg4x4-20x20'] = {dimensions = {width=20, height=20}, size=660651, seed=28, ratio='4x4'}
-templateData['jg4x4-30x30'] = {dimensions = {width=30, height=30}, size=1513144, seed=29, ratio='4x4'}
-templateData['jg4x4-40x40'] = {dimensions = {width=40, height=40}, size=2757755, seed=30, ratio='4x4'}
-templateData['jg4x4-50x50'] = {dimensions = {width=50, height=50}, size=4319636, seed=31, ratio='4x4'}
-templateData['jg4x4-70x70'] = {dimensions = {width=70, height=70}, size=8576198, seed=32, ratio='4x4'}
-templateData['jg4x5-4x5'] = {dimensions = {width=4, height=5}, size=28054, seed=65, ratio='4x5'}
-templateData['jg4x5-8x10'] = {dimensions = {width=8, height=10}, size=124641, seed=66, ratio='4x5'}
-templateData['jg4x5-16x20'] = {dimensions = {width=16, height=20}, size=526113, seed=67, ratio='4x5'}
-templateData['jg4x5-24x30'] = {dimensions = {width=24, height=30}, size=1206815, seed=68, ratio='4x5'}
-templateData['jg4x5-32x40'] = {dimensions = {width=32, height=40}, size=2209080, seed=69, ratio='4x5'}
-templateData['jg4x5-40x50'] = {dimensions = {width=40, height=50}, size=3452254, seed=70, ratio='4x5'}
-templateData['jg4x5-48x60'] = {dimensions = {width=48, height=60}, size=5017725, seed=71, ratio='4x5'}
-templateData['jg4x5-56x70'] = {dimensions = {width=56, height=70}, size=6853808, seed=72, ratio='4x5'}
-templateData['jg3x4-3x4'] = {dimensions = {width=3, height=4}, size=15645, seed=33, ratio='3x4'}
-templateData['jg3x4-9x12'] = {dimensions = {width=9, height=12}, size=171687, seed=34, ratio='3x4'}
-templateData['jg3x4-12x16'] = {dimensions = {width=12, height=16}, size=311800, seed=35, ratio='3x4'}
-templateData['jg3x4-18x24'] = {dimensions = {width=18, height=24}, size=718192, seed=36, ratio='3x4'}
-templateData['jg3x4-27x36'] = {dimensions = {width=27, height=36}, size=1658162, seed=37, ratio='3x4'}
-templateData['jg3x4-36x48'] = {dimensions = {width=36, height=48}, size=3000216, seed=38, ratio='3x4'}
-templateData['jg3x4-45x60'] = {dimensions = {width=45, height=60}, size=4701020, seed=39, ratio='3x4'}
-templateData['jg3x4-54x72'] = {dimensions = {width=54, height=72}, size=6805000, seed=40, ratio='3x4'}
-templateData['jg2x3-4x6'] = {dimensions = {width=4, height=6}, size=34275, seed=41, ratio='2x3'}
-templateData['jg2x3-8x12'] = {dimensions = {width=8, height=12}, size=151688, seed=42, ratio='2x3'}
-templateData['jg2x3-14x21'] = {dimensions = {width=14, height=21}, size=483926, seed=43, ratio='2x3'}
-templateData['jg2x3-24x36'] = {dimensions = {width=24, height=36}, size=1471011, seed=44, ratio='2x3'}
-templateData['jg2x3-32x48'] = {dimensions = {width=32, height=48}, size=2663119, seed=45, ratio='2x3'}
-templateData['jg2x3-38x57'] = {dimensions = {width=38, height=57}, size=3771612, seed=46, ratio='2x3'}
-templateData['jg2x3-44x66'] = {dimensions = {width=44, height=66}, size=5069113, seed=47, ratio='2x3'}
-templateData['jg2x3-52x78'] = {dimensions = {width=52, height=78}, size=7101421, seed=48, ratio='2x3'}
-templateData['jg9x16-5x8'] = {dimensions = {width=5, height=8}, size=59477, seed=1, ratio='9x16'}
-templateData['jg9x16-9x16'] = {dimensions = {width=9, height=16}, size=231433, seed=2, ratio='9x16'}
-templateData['jg9x16-13x23'] = {dimensions = {width=13, height=23}, size=493088, seed=3, ratio='9x16'}
-templateData['jg9x16-18x32'] = {dimensions = {width=18, height=32}, size=972249, seed=4, ratio='9x16'}
-templateData['jg9x16-27x48'] = {dimensions = {width=27, height=48}, size=2215225, seed=5, ratio='9x16'}
-templateData['jg9x16-36x64'] = {dimensions = {width=36, height=64}, size=4011571, seed=6, ratio='9x16'}
-templateData['jg9x16-45x80'] = {dimensions = {width=45, height=80}, size=6280405, seed=7, ratio='9x16'}
-templateData['jg9x16-54x96'] = {dimensions = {width=54, height=96}, size=9083320, seed=8, ratio='9x16'}
+templateData['jg16x9-8x5'] = {dimensions = {width=8, height=5}, size=59571, seed=17, ratio='16x9', label='8 x 5'}
+templateData['jg16x9-16x9'] = {dimensions = {width=16, height=9}, size=231385, seed=18, ratio='16x9', label='16 x 9'}
+templateData['jg16x9-23x13'] = {dimensions = {width=23, height=13}, size=492436, seed=19, ratio='16x9', label='23 x 13'}
+templateData['jg16x9-32x18'] = {dimensions = {width=32, height=18}, size=972650, seed=20, ratio='16x9', label='32 x 18'}
+templateData['jg16x9-48x27'] = {dimensions = {width=48, height=27}, size=2216814, seed=21, ratio='16x9', label='48 x 27'}
+templateData['jg16x9-64x36'] = {dimensions = {width=64, height=36}, size=4012483, seed=22, ratio='16x9', label='64 x 36'}
+templateData['jg16x9-80x45'] = {dimensions = {width=80, height=45}, size=6279935, seed=23, ratio='16x9', label='80 x 45'}
+templateData['jg16x9-96x54'] = {dimensions = {width=96, height=54}, size=9086710, seed=24, ratio='16x9', label='96 x 54'}
+templateData['jg3x2-6x4'] = {dimensions = {width=6, height=4}, size=34190, seed=49, ratio='3x2', label='6 x 4'}
+templateData['jg3x2-12x8'] = {dimensions = {width=12, height=8}, size=151535, seed=50, ratio='3x2', label='12 x 8'}
+templateData['jg3x2-21x14'] = {dimensions = {width=21, height=14}, size=483913, seed=51, ratio='3x2', label='21 x 14'}
+templateData['jg3x2-36x24'] = {dimensions = {width=36, height=24}, size=1469318, seed=52, ratio='3x2', label='36 x 24'}
+templateData['jg3x2-48x32'] = {dimensions = {width=48, height=32}, size=2663223, seed=53, ratio='3x2', label='48 x 32'}
+templateData['jg3x2-57x38'] = {dimensions = {width=57, height=38}, size=3774130, seed=54, ratio='3x2', label='57 x 38'}
+templateData['jg3x2-66x44'] = {dimensions = {width=66, height=44}, size=5068454, seed=55, ratio='3x2', label='66 x 44'}
+templateData['jg3x2-78x52'] = {dimensions = {width=78, height=52}, size=7099865, seed=56, ratio='3x2', label='78 x 52'}
+templateData['jg4x3-4x3'] = {dimensions = {width=4, height=3}, size=15540, seed=57, ratio='4x3', label='4 x 3'}
+templateData['jg4x3-12x9'] = {dimensions = {width=12, height=9}, size=171546, seed=58, ratio='4x3', label='12 x 9'}
+templateData['jg4x3-16x12'] = {dimensions = {width=16, height=12}, size=311744, seed=59, ratio='4x3', label='16 x 12'}
+templateData['jg4x3-24x18'] = {dimensions = {width=24, height=18}, size=718479, seed=60, ratio='4x3', label='24 x 18'}
+templateData['jg4x3-36x27'] = {dimensions = {width=36, height=27}, size=1657324, seed=61, ratio='4x3', label='36 x 27'}
+templateData['jg4x3-48x36'] = {dimensions = {width=48, height=36}, size=2999992, seed=62, ratio='4x3', label='48 x 36'}
+templateData['jg4x3-60x45'] = {dimensions = {width=60, height=45}, size=4700068, seed=63, ratio='4x3', label='60 x 45'}
+templateData['jg4x3-72x54'] = {dimensions = {width=72, height=54}, size=6802303, seed=64, ratio='4x3', label='72 x 54'}
+templateData['jg5x4-5x4'] = {dimensions = {width=5, height=4}, size=27903, seed=9, ratio='5x4', label='5 x 4'}
+templateData['jg5x4-10x8'] = {dimensions = {width=10, height=8}, size=124633, seed=10, ratio='5x4', label='10 x 8'}
+templateData['jg5x4-20x16'] = {dimensions = {width=20, height=16}, size=526426, seed=11, ratio='5x4', label='20 x 16'}
+templateData['jg5x4-30x24'] = {dimensions = {width=30, height=24}, size=1206901, seed=12, ratio='5x4', label='30 x 24'}
+templateData['jg5x4-40x32'] = {dimensions = {width=40, height=32}, size=2206895, seed=13, ratio='5x4', label='40 x 32'}
+templateData['jg5x4-50x40'] = {dimensions = {width=50, height=40}, size=3451831, seed=14, ratio='5x4', label='50 x 40'}
+templateData['jg5x4-60x48'] = {dimensions = {width=60, height=48}, size=5020388, seed=15, ratio='5x4', label='60 x 48'}
+templateData['jg5x4-70x56'] = {dimensions = {width=70, height=56}, size=6855277, seed=16, ratio='5x4', label='70 x 56'}
+templateData['jg4x4-4x4'] = {dimensions = {width=4, height=4}, size=21957, seed=25, ratio='4x4', label='4 x 4'}
+templateData['jg4x4-8x8'] = {dimensions = {width=8, height=8}, size=98902, seed=26, ratio='4x4', label='8 x 8'}
+templateData['jg4x4-12x12'] = {dimensions = {width=12, height=12}, size=231688, seed=27, ratio='4x4', label='12 x 12'}
+templateData['jg4x4-20x20'] = {dimensions = {width=20, height=20}, size=660651, seed=28, ratio='4x4', label='20 x 20'}
+templateData['jg4x4-30x30'] = {dimensions = {width=30, height=30}, size=1513144, seed=29, ratio='4x4', label='30 x 30'}
+templateData['jg4x4-40x40'] = {dimensions = {width=40, height=40}, size=2757755, seed=30, ratio='4x4', label='40 x 40'}
+templateData['jg4x4-50x50'] = {dimensions = {width=50, height=50}, size=4319636, seed=31, ratio='4x4', label='50 x 50'}
+templateData['jg4x4-70x70'] = {dimensions = {width=70, height=70}, size=8576198, seed=32, ratio='4x4', label='70 x 70'}
+templateData['jg4x5-4x5'] = {dimensions = {width=4, height=5}, size=28054, seed=65, ratio='4x5', label='4 x 5'}
+templateData['jg4x5-8x10'] = {dimensions = {width=8, height=10}, size=124641, seed=66, ratio='4x5', label='8 x 10'}
+templateData['jg4x5-16x20'] = {dimensions = {width=16, height=20}, size=526113, seed=67, ratio='4x5', label='16 x 20'}
+templateData['jg4x5-24x30'] = {dimensions = {width=24, height=30}, size=1206815, seed=68, ratio='4x5', label='24 x 30'}
+templateData['jg4x5-32x40'] = {dimensions = {width=32, height=40}, size=2209080, seed=69, ratio='4x5', label='32 x 40'}
+templateData['jg4x5-40x50'] = {dimensions = {width=40, height=50}, size=3452254, seed=70, ratio='4x5', label='40 x 50'}
+templateData['jg4x5-48x60'] = {dimensions = {width=48, height=60}, size=5017725, seed=71, ratio='4x5', label='48 x 60'}
+templateData['jg4x5-56x70'] = {dimensions = {width=56, height=70}, size=6853808, seed=72, ratio='4x5', label='56 x 70'}
+templateData['jg3x4-3x4'] = {dimensions = {width=3, height=4}, size=15645, seed=33, ratio='3x4', label='3 x 4'}
+templateData['jg3x4-9x12'] = {dimensions = {width=9, height=12}, size=171687, seed=34, ratio='3x4', label='9 x 12'}
+templateData['jg3x4-12x16'] = {dimensions = {width=12, height=16}, size=311800, seed=35, ratio='3x4', label='12 x 16'}
+templateData['jg3x4-18x24'] = {dimensions = {width=18, height=24}, size=718192, seed=36, ratio='3x4', label='18 x 24'}
+templateData['jg3x4-27x36'] = {dimensions = {width=27, height=36}, size=1658162, seed=37, ratio='3x4', label='27 x 36'}
+templateData['jg3x4-36x48'] = {dimensions = {width=36, height=48}, size=3000216, seed=38, ratio='3x4', label='36 x 48'}
+templateData['jg3x4-45x60'] = {dimensions = {width=45, height=60}, size=4701020, seed=39, ratio='3x4', label='45 x 60'}
+templateData['jg3x4-54x72'] = {dimensions = {width=54, height=72}, size=6805000, seed=40, ratio='3x4', label='54 x 72'}
+templateData['jg2x3-4x6'] = {dimensions = {width=4, height=6}, size=34275, seed=41, ratio='2x3', label='4 x 6'}
+templateData['jg2x3-8x12'] = {dimensions = {width=8, height=12}, size=151688, seed=42, ratio='2x3', label='8 x 12'}
+templateData['jg2x3-14x21'] = {dimensions = {width=14, height=21}, size=483926, seed=43, ratio='2x3', label='14 x 21'}
+templateData['jg2x3-24x36'] = {dimensions = {width=24, height=36}, size=1471011, seed=44, ratio='2x3', label='24 x 36'}
+templateData['jg2x3-32x48'] = {dimensions = {width=32, height=48}, size=2663119, seed=45, ratio='2x3', label='32 x 48'}
+templateData['jg2x3-38x57'] = {dimensions = {width=38, height=57}, size=3771612, seed=46, ratio='2x3', label='38 x 57'}
+templateData['jg2x3-44x66'] = {dimensions = {width=44, height=66}, size=5069113, seed=47, ratio='2x3', label='44 x 66'}
+templateData['jg2x3-52x78'] = {dimensions = {width=52, height=78}, size=7101421, seed=48, ratio='2x3', label='52 x 78'}
+templateData['jg9x16-5x8'] = {dimensions = {width=5, height=8}, size=59477, seed=1, ratio='9x16', label='5 x 8'}
+templateData['jg9x16-9x16'] = {dimensions = {width=9, height=16}, size=231433, seed=2, ratio='9x16', label='9 x 16'}
+templateData['jg9x16-13x23'] = {dimensions = {width=13, height=23}, size=493088, seed=3, ratio='9x16', label='13 x 23'}
+templateData['jg9x16-18x32'] = {dimensions = {width=18, height=32}, size=972249, seed=4, ratio='9x16', label='18 x 32'}
+templateData['jg9x16-27x48'] = {dimensions = {width=27, height=48}, size=2215225, seed=5, ratio='9x16', label='27 x 48'}
+templateData['jg9x16-36x64'] = {dimensions = {width=36, height=64}, size=4011571, seed=6, ratio='9x16', label='36 x 64'}
+templateData['jg9x16-45x80'] = {dimensions = {width=45, height=80}, size=6280405, seed=7, ratio='9x16', label='45 x 80'}
+templateData['jg9x16-54x96'] = {dimensions = {width=54, height=96}, size=9083320, seed=8, ratio='9x16', label='54 x 96'}
 
-templateData['fk16x9-8x5'] = {dimensions = {width=8, height=5}, size=151594, seed=1, ratio='16x9'}
-templateData['fk16x9-16x9'] = {dimensions = {width=16, height=9}, size=591152, seed=2, ratio='16x9'}
-templateData['fk16x9-23x13'] = {dimensions = {width=23, height=13}, size=1262379, seed=3, ratio='16x9'}
-templateData['fk16x9-32x18'] = {dimensions = {width=32, height=18}, size=2499478, seed=4, ratio='16x9'}
-templateData['fk16x9-48x27'] = {dimensions = {width=48, height=27}, size=5699702, seed=5, ratio='16x9'}
-templateData['fk16x9-64x36'] = {dimensions = {width=64, height=36}, size=10333620, seed=6, ratio='16x9'}
-templateData['fk16x9-80x45'] = {dimensions = {width=80, height=45}, size=16209602, seed=7, ratio='16x9'}
-templateData['fk16x9-96x54'] = {dimensions = {width=96, height=54}, size=23430487, seed=8, ratio='16x9'}
-templateData['fk3x2-6x4'] = {dimensions = {width=6, height=4}, size=85559, seed=9, ratio='3x2'}
-templateData['fk3x2-12x8'] = {dimensions = {width=12, height=8}, size=387842, seed=10, ratio='3x2'}
-templateData['fk3x2-21x14'] = {dimensions = {width=21, height=14}, size=1241947, seed=11, ratio='3x2'}
-templateData['fk3x2-36x24'] = {dimensions = {width=36, height=24}, size=3781070, seed=12, ratio='3x2'}
-templateData['fk3x2-48x32'] = {dimensions = {width=48, height=32}, size=6860105, seed=13, ratio='3x2'}
-templateData['fk3x2-57x38'] = {dimensions = {width=57, height=38}, size=9713411, seed=14, ratio='3x2'}
-templateData['fk3x2-66x44'] = {dimensions = {width=66, height=44}, size=13050886, seed=15, ratio='3x2'}
-templateData['fk3x2-78x52'] = {dimensions = {width=78, height=52}, size=18299332, seed=16, ratio='3x2'}
-templateData['fk4x3-4x3'] = {dimensions = {width=4, height=3}, size=38494, seed=17, ratio='4x3'}
-templateData['fk4x3-12x9'] = {dimensions = {width=12, height=9}, size=438021, seed=18, ratio='4x3'}
-templateData['fk4x3-16x12'] = {dimensions = {width=16, height=12}, size=800158, seed=19, ratio='4x3'}
-templateData['fk4x3-24x18'] = {dimensions = {width=24, height=18}, size=1841561, seed=20, ratio='4x3'}
-templateData['fk4x3-36x27'] = {dimensions = {width=36, height=27}, size=4266868, seed=21, ratio='4x3'}
-templateData['fk4x3-48x36'] = {dimensions = {width=48, height=36}, size=7728606, seed=22, ratio='4x3'}
-templateData['fk4x3-60x45'] = {dimensions = {width=60, height=45}, size=12133995, seed=23, ratio='4x3'}
-templateData['fk4x3-72x54'] = {dimensions = {width=72, height=54}, size=17527251, seed=24, ratio='4x3'}
-templateData['fk5x4-5x4'] = {dimensions = {width=5, height=4}, size=70581, seed=25, ratio='5x4'}
-templateData['fk5x4-10x8'] = {dimensions = {width=10, height=8}, size=319983, seed=26, ratio='5x4'}
-templateData['fk5x4-20x16'] = {dimensions = {width=20, height=16}, size=1354400, seed=27, ratio='5x4'}
-templateData['fk5x4-30x24'] = {dimensions = {width=30, height=24}, size=3110234, seed=28, ratio='5x4'}
-templateData['fk5x4-40x32'] = {dimensions = {width=40, height=32}, size=5702523, seed=29, ratio='5x4'}
-templateData['fk5x4-50x40'] = {dimensions = {width=50, height=40}, size=8958076, seed=30, ratio='5x4'}
-templateData['fk5x4-60x48'] = {dimensions = {width=60, height=48}, size=12947351, seed=31, ratio='5x4'}
-templateData['fk5x4-70x56'] = {dimensions = {width=70, height=56}, size=17674214, seed=32, ratio='5x4'}
-templateData['fk4x4-4x4'] = {dimensions = {width=4, height=4}, size=54555, seed=33, ratio='4x4'}
-templateData['fk4x4-8x8'] = {dimensions = {width=8, height=8}, size=252881, seed=34, ratio='4x4'}
-templateData['fk4x4-12x12'] = {dimensions = {width=12, height=12}, size=594216, seed=35, ratio='4x4'}
-templateData['fk4x4-20x20'] = {dimensions = {width=20, height=20}, size=1702543, seed=36, ratio='4x4'}
-templateData['fk4x4-30x30'] = {dimensions = {width=30, height=30}, size=3900773, seed=37, ratio='4x4'}
-templateData['fk4x4-40x40'] = {dimensions = {width=40, height=40}, size=7148141, seed=38, ratio='4x4'}
-templateData['fk4x4-50x50'] = {dimensions = {width=50, height=50}, size=11229620, seed=39, ratio='4x4'}
-templateData['fk4x4-70x70'] = {dimensions = {width=70, height=70}, size=22147799, seed=40, ratio='4x4'}
-templateData['fk4x5-4x5'] = {dimensions = {width=4, height=5}, size=70357, seed=41, ratio='4x5'}
-templateData['fk4x5-8x10'] = {dimensions = {width=8, height=10}, size=318679, seed=42, ratio='4x5'}
-templateData['fk4x5-16x20'] = {dimensions = {width=16, height=20}, size=1355408, seed=43, ratio='4x5'}
-templateData['fk4x5-24x30'] = {dimensions = {width=24, height=30}, size=3113884, seed=44, ratio='4x5'}
-templateData['fk4x5-32x40'] = {dimensions = {width=32, height=40}, size=5703460, seed=45, ratio='4x5'}
-templateData['fk4x5-40x50'] = {dimensions = {width=40, height=50}, size=8957340, seed=46, ratio='4x5'}
-templateData['fk4x5-48x60'] = {dimensions = {width=48, height=60}, size=12951768, seed=47, ratio='4x5'}
-templateData['fk4x5-56x70'] = {dimensions = {width=56, height=70}, size=17674654, seed=48, ratio='4x5'}
-templateData['fk3x4-3x4'] = {dimensions = {width=3, height=4}, size=38493, seed=49, ratio='3x4'}
-templateData['fk3x4-9x12'] = {dimensions = {width=9, height=12}, size=437007, seed=50, ratio='3x4'}
-templateData['fk3x4-12x16'] = {dimensions = {width=12, height=16}, size=799277, seed=51, ratio='3x4'}
-templateData['fk3x4-18x24'] = {dimensions = {width=18, height=24}, size=1844388, seed=52, ratio='3x4'}
-templateData['fk3x4-27x36'] = {dimensions = {width=27, height=36}, size=4270627, seed=53, ratio='3x4'}
-templateData['fk3x4-36x48'] = {dimensions = {width=36, height=48}, size=7734104, seed=54, ratio='3x4'}
-templateData['fk3x4-45x60'] = {dimensions = {width=45, height=60}, size=12139266, seed=55, ratio='3x4'}
-templateData['fk3x4-54x72'] = {dimensions = {width=54, height=72}, size=17536948, seed=56, ratio='3x4'}
-templateData['fk2x3-4x6'] = {dimensions = {width=4, height=6}, size=85375, seed=57, ratio='2x3'}
-templateData['fk2x3-8x12'] = {dimensions = {width=8, height=12}, size=386150, seed=58, ratio='2x3'}
-templateData['fk2x3-14x21'] = {dimensions = {width=14, height=21}, size=1239810, seed=59, ratio='2x3'}
-templateData['fk2x3-24x36'] = {dimensions = {width=24, height=36}, size=3781385, seed=60, ratio='2x3'}
-templateData['fk2x3-32x48'] = {dimensions = {width=32, height=48}, size=6859633, seed=61, ratio='2x3'}
-templateData['fk2x3-38x57'] = {dimensions = {width=38, height=57}, size=9712871, seed=62, ratio='2x3'}
-templateData['fk2x3-44x66'] = {dimensions = {width=44, height=66}, size=13051565, seed=63, ratio='2x3'}
-templateData['fk2x3-52x78'] = {dimensions = {width=52, height=78}, size=18295573, seed=64, ratio='2x3'}
-templateData['fk9x16-5x8'] = {dimensions = {width=5, height=8}, size=151676, seed=65, ratio='9x16'}
-templateData['fk9x16-9x16'] = {dimensions = {width=9, height=16}, size=591754, seed=66, ratio='9x16'}
-templateData['fk9x16-13x23'] = {dimensions = {width=13, height=23}, size=1262887, seed=67, ratio='9x16'}
-templateData['fk9x16-18x32'] = {dimensions = {width=18, height=32}, size=2503772, seed=68, ratio='9x16'}
-templateData['fk9x16-27x48'] = {dimensions = {width=27, height=48}, size=5709526, seed=69, ratio='9x16'}
-templateData['fk9x16-36x64'] = {dimensions = {width=36, height=64}, size=10329904, seed=70, ratio='9x16'}
-templateData['fk9x16-45x80'] = {dimensions = {width=45, height=80}, size=16218605, seed=71, ratio='9x16'}
-templateData['fk9x16-54x96'] = {dimensions = {width=54, height=96}, size=23418466, seed=72, ratio='9x16'}
+templateData['fk16x9-8x5'] = {dimensions = {width=8, height=5}, size=151594, seed=1, ratio='16x9', label='8 x 5'}
+templateData['fk16x9-16x9'] = {dimensions = {width=16, height=9}, size=591152, seed=2, ratio='16x9', label='16 x 9'}
+templateData['fk16x9-23x13'] = {dimensions = {width=23, height=13}, size=1262379, seed=3, ratio='16x9', label='23 x 13'}
+templateData['fk16x9-32x18'] = {dimensions = {width=32, height=18}, size=2499478, seed=4, ratio='16x9', label='32 x 18'}
+templateData['fk16x9-48x27'] = {dimensions = {width=48, height=27}, size=5699702, seed=5, ratio='16x9', label='48 x 27'}
+templateData['fk16x9-64x36'] = {dimensions = {width=64, height=36}, size=10333620, seed=6, ratio='16x9', label='64 x 36'}
+templateData['fk16x9-80x45'] = {dimensions = {width=80, height=45}, size=16209602, seed=7, ratio='16x9', label='80 x 45'}
+templateData['fk16x9-96x54'] = {dimensions = {width=96, height=54}, size=23430487, seed=8, ratio='16x9', label='96 x 54'}
+templateData['fk3x2-6x4'] = {dimensions = {width=6, height=4}, size=85559, seed=9, ratio='3x2', label='6 x 4'}
+templateData['fk3x2-12x8'] = {dimensions = {width=12, height=8}, size=387842, seed=10, ratio='3x2', label='12 x 8'}
+templateData['fk3x2-21x14'] = {dimensions = {width=21, height=14}, size=1241947, seed=11, ratio='3x2', label='21 x 14'}
+templateData['fk3x2-36x24'] = {dimensions = {width=36, height=24}, size=3781070, seed=12, ratio='3x2', label='36 x 24'}
+templateData['fk3x2-48x32'] = {dimensions = {width=48, height=32}, size=6860105, seed=13, ratio='3x2', label='48 x 32'}
+templateData['fk3x2-57x38'] = {dimensions = {width=57, height=38}, size=9713411, seed=14, ratio='3x2', label='57 x 38'}
+templateData['fk3x2-66x44'] = {dimensions = {width=66, height=44}, size=13050886, seed=15, ratio='3x2', label='66 x 44'}
+templateData['fk3x2-78x52'] = {dimensions = {width=78, height=52}, size=18299332, seed=16, ratio='3x2', label='78 x 52'}
+templateData['fk4x3-4x3'] = {dimensions = {width=4, height=3}, size=38494, seed=17, ratio='4x3', label='4 x 3'}
+templateData['fk4x3-12x9'] = {dimensions = {width=12, height=9}, size=438021, seed=18, ratio='4x3', label='12 x 9'}
+templateData['fk4x3-16x12'] = {dimensions = {width=16, height=12}, size=800158, seed=19, ratio='4x3', label='16 x 12'}
+templateData['fk4x3-24x18'] = {dimensions = {width=24, height=18}, size=1841561, seed=20, ratio='4x3', label='24 x 18'}
+templateData['fk4x3-36x27'] = {dimensions = {width=36, height=27}, size=4266868, seed=21, ratio='4x3', label='36 x 27'}
+templateData['fk4x3-48x36'] = {dimensions = {width=48, height=36}, size=7728606, seed=22, ratio='4x3', label='48 x 36'}
+templateData['fk4x3-60x45'] = {dimensions = {width=60, height=45}, size=12133995, seed=23, ratio='4x3', label='60 x 45'}
+templateData['fk4x3-72x54'] = {dimensions = {width=72, height=54}, size=17527251, seed=24, ratio='4x3', label='72 x 54'}
+templateData['fk5x4-5x4'] = {dimensions = {width=5, height=4}, size=70581, seed=25, ratio='5x4', label='5 x 4'}
+templateData['fk5x4-10x8'] = {dimensions = {width=10, height=8}, size=319983, seed=26, ratio='5x4', label='10 x 8'}
+templateData['fk5x4-20x16'] = {dimensions = {width=20, height=16}, size=1354400, seed=27, ratio='5x4', label='20 x 16'}
+templateData['fk5x4-30x24'] = {dimensions = {width=30, height=24}, size=3110234, seed=28, ratio='5x4', label='30 x 24'}
+templateData['fk5x4-40x32'] = {dimensions = {width=40, height=32}, size=5702523, seed=29, ratio='5x4', label='40 x 32'}
+templateData['fk5x4-50x40'] = {dimensions = {width=50, height=40}, size=8958076, seed=30, ratio='5x4', label='50 x 40'}
+templateData['fk5x4-60x48'] = {dimensions = {width=60, height=48}, size=12947351, seed=31, ratio='5x4', label='60 x 48'}
+templateData['fk5x4-70x56'] = {dimensions = {width=70, height=56}, size=17674214, seed=32, ratio='5x4', label='70 x 56'}
+templateData['fk4x4-4x4'] = {dimensions = {width=4, height=4}, size=54555, seed=33, ratio='4x4', label='4 x 4'}
+templateData['fk4x4-8x8'] = {dimensions = {width=8, height=8}, size=252881, seed=34, ratio='4x4', label='8 x 8'}
+templateData['fk4x4-12x12'] = {dimensions = {width=12, height=12}, size=594216, seed=35, ratio='4x4', label='12 x 12'}
+templateData['fk4x4-20x20'] = {dimensions = {width=20, height=20}, size=1702543, seed=36, ratio='4x4', label='20 x 20'}
+templateData['fk4x4-30x30'] = {dimensions = {width=30, height=30}, size=3900773, seed=37, ratio='4x4', label='30 x 30'}
+templateData['fk4x4-40x40'] = {dimensions = {width=40, height=40}, size=7148141, seed=38, ratio='4x4', label='40 x 40'}
+templateData['fk4x4-50x50'] = {dimensions = {width=50, height=50}, size=11229620, seed=39, ratio='4x4', label='50 x 50'}
+templateData['fk4x4-70x70'] = {dimensions = {width=70, height=70}, size=22147799, seed=40, ratio='4x4', label='70 x 70'}
+templateData['fk4x5-4x5'] = {dimensions = {width=4, height=5}, size=70357, seed=41, ratio='4x5', label='4 x 5'}
+templateData['fk4x5-8x10'] = {dimensions = {width=8, height=10}, size=318679, seed=42, ratio='4x5', label='8 x 10'}
+templateData['fk4x5-16x20'] = {dimensions = {width=16, height=20}, size=1355408, seed=43, ratio='4x5', label='16 x 20'}
+templateData['fk4x5-24x30'] = {dimensions = {width=24, height=30}, size=3113884, seed=44, ratio='4x5', label='24 x 30'}
+templateData['fk4x5-32x40'] = {dimensions = {width=32, height=40}, size=5703460, seed=45, ratio='4x5', label='32 x 40'}
+templateData['fk4x5-40x50'] = {dimensions = {width=40, height=50}, size=8957340, seed=46, ratio='4x5', label='40 x 50'}
+templateData['fk4x5-48x60'] = {dimensions = {width=48, height=60}, size=12951768, seed=47, ratio='4x5', label='48 x 60'}
+templateData['fk4x5-56x70'] = {dimensions = {width=56, height=70}, size=17674654, seed=48, ratio='4x5', label='56 x 70'}
+templateData['fk3x4-3x4'] = {dimensions = {width=3, height=4}, size=38493, seed=49, ratio='3x4', label='3 x 4'}
+templateData['fk3x4-9x12'] = {dimensions = {width=9, height=12}, size=437007, seed=50, ratio='3x4', label='9 x 12'}
+templateData['fk3x4-12x16'] = {dimensions = {width=12, height=16}, size=799277, seed=51, ratio='3x4', label='12 x 16'}
+templateData['fk3x4-18x24'] = {dimensions = {width=18, height=24}, size=1844388, seed=52, ratio='3x4', label='18 x 24'}
+templateData['fk3x4-27x36'] = {dimensions = {width=27, height=36}, size=4270627, seed=53, ratio='3x4', label='27 x 36'}
+templateData['fk3x4-36x48'] = {dimensions = {width=36, height=48}, size=7734104, seed=54, ratio='3x4', label='36 x 48'}
+templateData['fk3x4-45x60'] = {dimensions = {width=45, height=60}, size=12139266, seed=55, ratio='3x4', label='45 x 60'}
+templateData['fk3x4-54x72'] = {dimensions = {width=54, height=72}, size=17536948, seed=56, ratio='3x4', label='54 x 72'}
+templateData['fk2x3-4x6'] = {dimensions = {width=4, height=6}, size=85375, seed=57, ratio='2x3', label='4 x 6'}
+templateData['fk2x3-8x12'] = {dimensions = {width=8, height=12}, size=386150, seed=58, ratio='2x3', label='8 x 12'}
+templateData['fk2x3-14x21'] = {dimensions = {width=14, height=21}, size=1239810, seed=59, ratio='2x3', label='14 x 21'}
+templateData['fk2x3-24x36'] = {dimensions = {width=24, height=36}, size=3781385, seed=60, ratio='2x3', label='24 x 36'}
+templateData['fk2x3-32x48'] = {dimensions = {width=32, height=48}, size=6859633, seed=61, ratio='2x3', label='32 x 48'}
+templateData['fk2x3-38x57'] = {dimensions = {width=38, height=57}, size=9712871, seed=62, ratio='2x3', label='38 x 57'}
+templateData['fk2x3-44x66'] = {dimensions = {width=44, height=66}, size=13051565, seed=63, ratio='2x3', label='44 x 66'}
+templateData['fk2x3-52x78'] = {dimensions = {width=52, height=78}, size=18295573, seed=64, ratio='2x3', label='52 x 78'}
+templateData['fk9x16-5x8'] = {dimensions = {width=5, height=8}, size=151676, seed=65, ratio='9x16', label='5 x 8'}
+templateData['fk9x16-9x16'] = {dimensions = {width=9, height=16}, size=591754, seed=66, ratio='9x16', label='9 x 16'}
+templateData['fk9x16-13x23'] = {dimensions = {width=13, height=23}, size=1262887, seed=67, ratio='9x16', label='13 x 23'}
+templateData['fk9x16-18x32'] = {dimensions = {width=18, height=32}, size=2503772, seed=68, ratio='9x16', label='18 x 32'}
+templateData['fk9x16-27x48'] = {dimensions = {width=27, height=48}, size=5709526, seed=69, ratio='9x16', label='27 x 48'}
+templateData['fk9x16-36x64'] = {dimensions = {width=36, height=64}, size=10329904, seed=70, ratio='9x16', label='36 x 64'}
+templateData['fk9x16-45x80'] = {dimensions = {width=45, height=80}, size=16218605, seed=71, ratio='9x16', label='45 x 80'}
+templateData['fk9x16-54x96'] = {dimensions = {width=54, height=96}, size=23418466, seed=72, ratio='9x16', label='54 x 96'}
 
-templateData['ca16x9-8x5'] = {dimensions = {width=8, height=5}, size=195488, seed=1, ratio='16x9'}
-templateData['ca16x9-16x9'] = {dimensions = {width=16, height=9}, size=768738, seed=2, ratio='16x9'}
-templateData['ca16x9-23x13'] = {dimensions = {width=23, height=13}, size=1641104, seed=3, ratio='16x9'}
-templateData['ca16x9-32x18'] = {dimensions = {width=32, height=18}, size=3255574, seed=4, ratio='16x9'}
-templateData['ca16x9-48x27'] = {dimensions = {width=48, height=27}, size=7436725, seed=5, ratio='16x9'}
-templateData['ca16x9-64x36'] = {dimensions = {width=64, height=36}, size=13469966, seed=6, ratio='16x9'}
-templateData['ca16x9-80x45'] = {dimensions = {width=80, height=45}, size=21115493, seed=7, ratio='16x9'}
-templateData['ca16x9-96x54'] = {dimensions = {width=96, height=54}, size=30520788, seed=8, ratio='16x9'}
-templateData['ca3x2-6x4'] = {dimensions = {width=6, height=4}, size=111115, seed=9, ratio='3x2'}
-templateData['ca3x2-12x8'] = {dimensions = {width=12, height=8}, size=502870, seed=10, ratio='3x2'}
-templateData['ca3x2-21x14'] = {dimensions = {width=21, height=14}, size=1616102, seed=11, ratio='3x2'}
-templateData['ca3x2-36x24'] = {dimensions = {width=36, height=24}, size=4929607, seed=12, ratio='3x2'}
-templateData['ca3x2-48x32'] = {dimensions = {width=48, height=32}, size=8936034, seed=13, ratio='3x2'}
-templateData['ca3x2-57x38'] = {dimensions = {width=57, height=38}, size=12660382, seed=14, ratio='3x2'}
-templateData['ca3x2-66x44'] = {dimensions = {width=66, height=44}, size=17018098, seed=15, ratio='3x2'}
-templateData['ca3x2-78x52'] = {dimensions = {width=78, height=52}, size=23846324, seed=16, ratio='3x2'}
-templateData['ca4x3-4x3'] = {dimensions = {width=4, height=3}, size=49324, seed=17, ratio='4x3'}
-templateData['ca4x3-12x9'] = {dimensions = {width=12, height=9}, size=569738, seed=18, ratio='4x3'}
-templateData['ca4x3-16x12'] = {dimensions = {width=16, height=12}, size=1040526, seed=19, ratio='4x3'}
-templateData['ca4x3-24x18'] = {dimensions = {width=24, height=18}, size=2402005, seed=20, ratio='4x3'}
-templateData['ca4x3-36x27'] = {dimensions = {width=36, height=27}, size=5558292, seed=21, ratio='4x3'}
-templateData['ca4x3-48x36'] = {dimensions = {width=48, height=36}, size=10072534, seed=22, ratio='4x3'}
-templateData['ca4x3-60x45'] = {dimensions = {width=60, height=45}, size=15798025, seed=23, ratio='4x3'}
-templateData['ca4x3-72x54'] = {dimensions = {width=72, height=54}, size=22853130, seed=24, ratio='4x3'}
-templateData['ca5x4-5x4'] = {dimensions = {width=5, height=4}, size=90848, seed=25, ratio='5x4'}
-templateData['ca5x4-10x8'] = {dimensions = {width=10, height=8}, size=414131, seed=26, ratio='5x4'}
-templateData['ca5x4-20x16'] = {dimensions = {width=20, height=16}, size=1762595, seed=27, ratio='5x4'}
-templateData['ca5x4-30x24'] = {dimensions = {width=30, height=24}, size=4047384, seed=28, ratio='5x4'}
-templateData['ca5x4-40x32'] = {dimensions = {width=40, height=32}, size=7423215, seed=29, ratio='5x4'}
-templateData['ca5x4-50x40'] = {dimensions = {width=50, height=40}, size=11638367, seed=30, ratio='5x4'}
-templateData['ca5x4-60x48'] = {dimensions = {width=60, height=48}, size=16870353, seed=31, ratio='5x4'}
-templateData['ca5x4-70x56'] = {dimensions = {width=70, height=56}, size=23039204, seed=32, ratio='5x4'}
-templateData['ca4x4-4x4'] = {dimensions = {width=4, height=4}, size=70709, seed=33, ratio='4x4'}
-templateData['ca4x4-8x8'] = {dimensions = {width=8, height=8}, size=327321, seed=34, ratio='4x4'}
-templateData['ca4x4-12x12'] = {dimensions = {width=12, height=12}, size=771706, seed=35, ratio='4x4'}
-templateData['ca4x4-20x20'] = {dimensions = {width=20, height=20}, size=2215424, seed=36, ratio='4x4'}
-templateData['ca4x4-30x30'] = {dimensions = {width=30, height=30}, size=5077113, seed=37, ratio='4x4'}
-templateData['ca4x4-40x40'] = {dimensions = {width=40, height=40}, size=9300725, seed=38, ratio='4x4'}
-templateData['ca4x4-50x50'] = {dimensions = {width=50, height=50}, size=14559879, seed=39, ratio='4x4'}
-templateData['ca4x4-70x70'] = {dimensions = {width=70, height=70}, size=28829596, seed=40, ratio='4x4'}
-templateData['ca4x5-4x5'] = {dimensions = {width=4, height=5}, size=90617, seed=41, ratio='4x5'}
-templateData['ca4x5-8x10'] = {dimensions = {width=8, height=10}, size=414412, seed=42, ratio='4x5'}
-templateData['ca4x5-16x20'] = {dimensions = {width=16, height=20}, size=1762586, seed=43, ratio='4x5'}
-templateData['ca4x5-24x30'] = {dimensions = {width=24, height=30}, size=4046715, seed=44, ratio='4x5'}
-templateData['ca4x5-32x40'] = {dimensions = {width=32, height=40}, size=7423473, seed=45, ratio='4x5'}
-templateData['ca4x5-40x50'] = {dimensions = {width=40, height=50}, size=11639323, seed=46, ratio='4x5'}
-templateData['ca4x5-48x60'] = {dimensions = {width=48, height=60}, size=16870768, seed=47, ratio='4x5'}
-templateData['ca4x5-56x70'] = {dimensions = {width=56, height=70}, size=23037103, seed=48, ratio='4x5'}
-templateData['ca3x4-3x4'] = {dimensions = {width=3, height=4}, size=49621, seed=49, ratio='3x4'}
-templateData['ca3x4-9x12'] = {dimensions = {width=9, height=12}, size=569589, seed=50, ratio='3x4'}
-templateData['ca3x4-12x16'] = {dimensions = {width=12, height=16}, size=1040158, seed=51, ratio='3x4'}
-templateData['ca3x4-18x24'] = {dimensions = {width=18, height=24}, size=2402103, seed=52, ratio='3x4'}
-templateData['ca3x4-27x36'] = {dimensions = {width=27, height=36}, size=5558530, seed=53, ratio='3x4'}
-templateData['ca3x4-36x48'] = {dimensions = {width=36, height=48}, size=10073772, seed=54, ratio='3x4'}
-templateData['ca3x4-45x60'] = {dimensions = {width=45, height=60}, size=15798122, seed=55, ratio='3x4'}
-templateData['ca3x4-54x72'] = {dimensions = {width=54, height=72}, size=22853139, seed=56, ratio='3x4'}
-templateData['ca2x3-4x6'] = {dimensions = {width=4, height=6}, size=111090, seed=57, ratio='2x3'}
-templateData['ca2x3-8x12'] = {dimensions = {width=8, height=12}, size=502637, seed=58, ratio='2x3'}
-templateData['ca2x3-14x21'] = {dimensions = {width=14, height=21}, size=1616247, seed=59, ratio='2x3'}
-templateData['ca2x3-24x36'] = {dimensions = {width=24, height=36}, size=4927151, seed=60, ratio='2x3'}
-templateData['ca2x3-32x48'] = {dimensions = {width=32, height=48}, size=8935668, seed=61, ratio='2x3'}
-templateData['ca2x3-38x57'] = {dimensions = {width=38, height=57}, size=12660440, seed=62, ratio='2x3'}
-templateData['ca2x3-44x66'] = {dimensions = {width=44, height=66}, size=17014076, seed=63, ratio='2x3'}
-templateData['ca2x3-52x78'] = {dimensions = {width=52, height=78}, size=23845937, seed=64, ratio='2x3'}
-templateData['ca9x16-5x8'] = {dimensions = {width=5, height=8}, size=195964, seed=65, ratio='9x16'}
-templateData['ca9x16-9x16'] = {dimensions = {width=9, height=16}, size=767328, seed=66, ratio='9x16'}
-templateData['ca9x16-13x23'] = {dimensions = {width=13, height=23}, size=1642195, seed=67, ratio='9x16'}
-templateData['ca9x16-18x32'] = {dimensions = {width=18, height=32}, size=3256587, seed=68, ratio='9x16'}
-templateData['ca9x16-27x48'] = {dimensions = {width=27, height=48}, size=7439222, seed=69, ratio='9x16'}
-templateData['ca9x16-36x64'] = {dimensions = {width=36, height=64}, size=13465725, seed=70, ratio='9x16'}
-templateData['ca9x16-45x80'] = {dimensions = {width=45, height=80}, size=21118377, seed=71, ratio='9x16'}
-templateData['ca9x16-54x96'] = {dimensions = {width=54, height=96}, size=30525874, seed=72, ratio='9x16'}
+templateData['ca16x9-8x5'] = {dimensions = {width=8, height=5}, size=195488, seed=1, ratio='16x9', label='8 x 5'}
+templateData['ca16x9-16x9'] = {dimensions = {width=16, height=9}, size=768738, seed=2, ratio='16x9', label='16 x 9'}
+templateData['ca16x9-23x13'] = {dimensions = {width=23, height=13}, size=1641104, seed=3, ratio='16x9', label='23 x 13'}
+templateData['ca16x9-32x18'] = {dimensions = {width=32, height=18}, size=3255574, seed=4, ratio='16x9', label='32 x 18'}
+templateData['ca16x9-48x27'] = {dimensions = {width=48, height=27}, size=7436725, seed=5, ratio='16x9', label='48 x 27'}
+templateData['ca16x9-64x36'] = {dimensions = {width=64, height=36}, size=13469966, seed=6, ratio='16x9', label='64 x 36'}
+templateData['ca16x9-80x45'] = {dimensions = {width=80, height=45}, size=21115493, seed=7, ratio='16x9', label='80 x 45'}
+templateData['ca16x9-96x54'] = {dimensions = {width=96, height=54}, size=30520788, seed=8, ratio='16x9', label='96 x 54'}
+templateData['ca3x2-6x4'] = {dimensions = {width=6, height=4}, size=111115, seed=9, ratio='3x2', label='6 x 4'}
+templateData['ca3x2-12x8'] = {dimensions = {width=12, height=8}, size=502870, seed=10, ratio='3x2', label='12 x 8'}
+templateData['ca3x2-21x14'] = {dimensions = {width=21, height=14}, size=1616102, seed=11, ratio='3x2', label='21 x 14'}
+templateData['ca3x2-36x24'] = {dimensions = {width=36, height=24}, size=4929607, seed=12, ratio='3x2', label='36 x 24'}
+templateData['ca3x2-48x32'] = {dimensions = {width=48, height=32}, size=8936034, seed=13, ratio='3x2', label='48 x 32'}
+templateData['ca3x2-57x38'] = {dimensions = {width=57, height=38}, size=12660382, seed=14, ratio='3x2', label='57 x 38'}
+templateData['ca3x2-66x44'] = {dimensions = {width=66, height=44}, size=17018098, seed=15, ratio='3x2', label='66 x 44'}
+templateData['ca3x2-78x52'] = {dimensions = {width=78, height=52}, size=23846324, seed=16, ratio='3x2', label='78 x 52'}
+templateData['ca4x3-4x3'] = {dimensions = {width=4, height=3}, size=49324, seed=17, ratio='4x3', label='4 x 3'}
+templateData['ca4x3-12x9'] = {dimensions = {width=12, height=9}, size=569738, seed=18, ratio='4x3', label='12 x 9'}
+templateData['ca4x3-16x12'] = {dimensions = {width=16, height=12}, size=1040526, seed=19, ratio='4x3', label='16 x 12'}
+templateData['ca4x3-24x18'] = {dimensions = {width=24, height=18}, size=2402005, seed=20, ratio='4x3', label='24 x 18'}
+templateData['ca4x3-36x27'] = {dimensions = {width=36, height=27}, size=5558292, seed=21, ratio='4x3', label='36 x 27'}
+templateData['ca4x3-48x36'] = {dimensions = {width=48, height=36}, size=10072534, seed=22, ratio='4x3', label='48 x 36'}
+templateData['ca4x3-60x45'] = {dimensions = {width=60, height=45}, size=15798025, seed=23, ratio='4x3', label='60 x 45'}
+templateData['ca4x3-72x54'] = {dimensions = {width=72, height=54}, size=22853130, seed=24, ratio='4x3', label='72 x 54'}
+templateData['ca5x4-5x4'] = {dimensions = {width=5, height=4}, size=90848, seed=25, ratio='5x4', label='5 x 4'}
+templateData['ca5x4-10x8'] = {dimensions = {width=10, height=8}, size=414131, seed=26, ratio='5x4', label='10 x 8'}
+templateData['ca5x4-20x16'] = {dimensions = {width=20, height=16}, size=1762595, seed=27, ratio='5x4', label='20 x 16'}
+templateData['ca5x4-30x24'] = {dimensions = {width=30, height=24}, size=4047384, seed=28, ratio='5x4', label='30 x 24'}
+templateData['ca5x4-40x32'] = {dimensions = {width=40, height=32}, size=7423215, seed=29, ratio='5x4', label='40 x 32'}
+templateData['ca5x4-50x40'] = {dimensions = {width=50, height=40}, size=11638367, seed=30, ratio='5x4', label='50 x 40'}
+templateData['ca5x4-60x48'] = {dimensions = {width=60, height=48}, size=16870353, seed=31, ratio='5x4', label='60 x 48'}
+templateData['ca5x4-70x56'] = {dimensions = {width=70, height=56}, size=23039204, seed=32, ratio='5x4', label='70 x 56'}
+templateData['ca4x4-4x4'] = {dimensions = {width=4, height=4}, size=70709, seed=33, ratio='4x4', label='4 x 4'}
+templateData['ca4x4-8x8'] = {dimensions = {width=8, height=8}, size=327321, seed=34, ratio='4x4', label='8 x 8'}
+templateData['ca4x4-12x12'] = {dimensions = {width=12, height=12}, size=771706, seed=35, ratio='4x4', label='12 x 12'}
+templateData['ca4x4-20x20'] = {dimensions = {width=20, height=20}, size=2215424, seed=36, ratio='4x4', label='20 x 20'}
+templateData['ca4x4-30x30'] = {dimensions = {width=30, height=30}, size=5077113, seed=37, ratio='4x4', label='30 x 30'}
+templateData['ca4x4-40x40'] = {dimensions = {width=40, height=40}, size=9300725, seed=38, ratio='4x4', label='40 x 40'}
+templateData['ca4x4-50x50'] = {dimensions = {width=50, height=50}, size=14559879, seed=39, ratio='4x4', label='50 x 50'}
+templateData['ca4x4-70x70'] = {dimensions = {width=70, height=70}, size=28829596, seed=40, ratio='4x4', label='70 x 70'}
+templateData['ca4x5-4x5'] = {dimensions = {width=4, height=5}, size=90617, seed=41, ratio='4x5', label='4 x 5'}
+templateData['ca4x5-8x10'] = {dimensions = {width=8, height=10}, size=414412, seed=42, ratio='4x5', label='8 x 10'}
+templateData['ca4x5-16x20'] = {dimensions = {width=16, height=20}, size=1762586, seed=43, ratio='4x5', label='16 x 20'}
+templateData['ca4x5-24x30'] = {dimensions = {width=24, height=30}, size=4046715, seed=44, ratio='4x5', label='24 x 30'}
+templateData['ca4x5-32x40'] = {dimensions = {width=32, height=40}, size=7423473, seed=45, ratio='4x5', label='32 x 40'}
+templateData['ca4x5-40x50'] = {dimensions = {width=40, height=50}, size=11639323, seed=46, ratio='4x5', label='40 x 50'}
+templateData['ca4x5-48x60'] = {dimensions = {width=48, height=60}, size=16870768, seed=47, ratio='4x5', label='48 x 60'}
+templateData['ca4x5-56x70'] = {dimensions = {width=56, height=70}, size=23037103, seed=48, ratio='4x5', label='56 x 70'}
+templateData['ca3x4-3x4'] = {dimensions = {width=3, height=4}, size=49621, seed=49, ratio='3x4', label='3 x 4'}
+templateData['ca3x4-9x12'] = {dimensions = {width=9, height=12}, size=569589, seed=50, ratio='3x4', label='9 x 12'}
+templateData['ca3x4-12x16'] = {dimensions = {width=12, height=16}, size=1040158, seed=51, ratio='3x4', label='12 x 16'}
+templateData['ca3x4-18x24'] = {dimensions = {width=18, height=24}, size=2402103, seed=52, ratio='3x4', label='18 x 24'}
+templateData['ca3x4-27x36'] = {dimensions = {width=27, height=36}, size=5558530, seed=53, ratio='3x4', label='27 x 36'}
+templateData['ca3x4-36x48'] = {dimensions = {width=36, height=48}, size=10073772, seed=54, ratio='3x4', label='36 x 48'}
+templateData['ca3x4-45x60'] = {dimensions = {width=45, height=60}, size=15798122, seed=55, ratio='3x4', label='45 x 60'}
+templateData['ca3x4-54x72'] = {dimensions = {width=54, height=72}, size=22853139, seed=56, ratio='3x4', label='54 x 72'}
+templateData['ca2x3-4x6'] = {dimensions = {width=4, height=6}, size=111090, seed=57, ratio='2x3', label='4 x 6'}
+templateData['ca2x3-8x12'] = {dimensions = {width=8, height=12}, size=502637, seed=58, ratio='2x3', label='8 x 12'}
+templateData['ca2x3-14x21'] = {dimensions = {width=14, height=21}, size=1616247, seed=59, ratio='2x3', label='14 x 21'}
+templateData['ca2x3-24x36'] = {dimensions = {width=24, height=36}, size=4927151, seed=60, ratio='2x3', label='24 x 36'}
+templateData['ca2x3-32x48'] = {dimensions = {width=32, height=48}, size=8935668, seed=61, ratio='2x3', label='32 x 48'}
+templateData['ca2x3-38x57'] = {dimensions = {width=38, height=57}, size=12660440, seed=62, ratio='2x3', label='38 x 57'}
+templateData['ca2x3-44x66'] = {dimensions = {width=44, height=66}, size=17014076, seed=63, ratio='2x3', label='44 x 66'}
+templateData['ca2x3-52x78'] = {dimensions = {width=52, height=78}, size=23845937, seed=64, ratio='2x3', label='52 x 78'}
+templateData['ca9x16-5x8'] = {dimensions = {width=5, height=8}, size=195964, seed=65, ratio='9x16', label='5 x 8'}
+templateData['ca9x16-9x16'] = {dimensions = {width=9, height=16}, size=767328, seed=66, ratio='9x16', label='9 x 16'}
+templateData['ca9x16-13x23'] = {dimensions = {width=13, height=23}, size=1642195, seed=67, ratio='9x16', label='13 x 23'}
+templateData['ca9x16-18x32'] = {dimensions = {width=18, height=32}, size=3256587, seed=68, ratio='9x16', label='18 x 32'}
+templateData['ca9x16-27x48'] = {dimensions = {width=27, height=48}, size=7439222, seed=69, ratio='9x16', label='27 x 48'}
+templateData['ca9x16-36x64'] = {dimensions = {width=36, height=64}, size=13465725, seed=70, ratio='9x16', label='36 x 64'}
+templateData['ca9x16-45x80'] = {dimensions = {width=45, height=80}, size=21118377, seed=71, ratio='9x16', label='45 x 80'}
+templateData['ca9x16-54x96'] = {dimensions = {width=54, height=96}, size=30525874, seed=72, ratio='9x16', label='54 x 96'}
 
-templateData['tr16x9-8x5'] = {dimensions = {width=8, height=5}, size=233059, seed=1, ratio='16x9'}
-templateData['tr16x9-16x9'] = {dimensions = {width=16, height=9}, size=913118, seed=2, ratio='16x9'}
-templateData['tr16x9-23x13'] = {dimensions = {width=23, height=13}, size=1949874, seed=3, ratio='16x9'}
-templateData['tr16x9-32x18'] = {dimensions = {width=32, height=18}, size=3884366, seed=4, ratio='16x9'}
-templateData['tr16x9-48x27'] = {dimensions = {width=48, height=27}, size=8883635, seed=5, ratio='16x9'}
-templateData['tr16x9-64x36'] = {dimensions = {width=64, height=36}, size=16037245, seed=6, ratio='16x9'}
-templateData['tr16x9-80x45'] = {dimensions = {width=80, height=45}, size=25179848, seed=7, ratio='16x9'}
-templateData['tr16x9-96x54'] = {dimensions = {width=96, height=54}, size=36421443, seed=8, ratio='16x9'}
-templateData['tr3x2-6x4'] = {dimensions = {width=6, height=4}, size=133721, seed=9, ratio='3x2'}
-templateData['tr3x2-12x8'] = {dimensions = {width=12, height=8}, size=599374, seed=10, ratio='3x2'}
-templateData['tr3x2-21x14'] = {dimensions = {width=21, height=14}, size=1925972, seed=11, ratio='3x2'}
-templateData['tr3x2-36x24'] = {dimensions = {width=36, height=24}, size=5885626, seed=12, ratio='3x2'}
-templateData['tr3x2-48x32'] = {dimensions = {width=48, height=32}, size=10650605, seed=13, ratio='3x2'}
-templateData['tr3x2-57x38'] = {dimensions = {width=57, height=38}, size=15074826, seed=14, ratio='3x2'}
-templateData['tr3x2-66x44'] = {dimensions = {width=66, height=44}, size=20308365, seed=15, ratio='3x2'}
-templateData['tr3x2-78x52'] = {dimensions = {width=78, height=52}, size=28440531, seed=16, ratio='3x2'}
-templateData['tr4x3-4x3'] = {dimensions = {width=4, height=3}, size=60265, seed=17, ratio='4x3'}
-templateData['tr4x3-12x9'] = {dimensions = {width=12, height=9}, size=680131, seed=18, ratio='4x3'}
-templateData['tr4x3-16x12'] = {dimensions = {width=16, height=12}, size=1233907, seed=19, ratio='4x3'}
-templateData['tr4x3-24x18'] = {dimensions = {width=24, height=18}, size=2861587, seed=20, ratio='4x3'}
-templateData['tr4x3-36x27'] = {dimensions = {width=36, height=27}, size=6629901, seed=21, ratio='4x3'}
-templateData['tr4x3-48x36'] = {dimensions = {width=48, height=36}, size=11992227, seed=22, ratio='4x3'}
-templateData['tr4x3-60x45'] = {dimensions = {width=60, height=45}, size=18836787, seed=23, ratio='4x3'}
-templateData['tr4x3-72x54'] = {dimensions = {width=72, height=54}, size=27257025, seed=24, ratio='4x3'}
-templateData['tr5x4-5x4'] = {dimensions = {width=5, height=4}, size=107242, seed=25, ratio='5x4'}
-templateData['tr5x4-10x8'] = {dimensions = {width=10, height=8}, size=491881, seed=26, ratio='5x4'}
-templateData['tr5x4-20x16'] = {dimensions = {width=20, height=16}, size=2102172, seed=27, ratio='5x4'}
-templateData['tr5x4-30x24'] = {dimensions = {width=30, height=24}, size=4844496, seed=28, ratio='5x4'}
-templateData['tr5x4-40x32'] = {dimensions = {width=40, height=32}, size=8841400, seed=29, ratio='5x4'}
-templateData['tr5x4-50x40'] = {dimensions = {width=50, height=40}, size=13893434, seed=30, ratio='5x4'}
-templateData['tr5x4-60x48'] = {dimensions = {width=60, height=48}, size=20108678, seed=31, ratio='5x4'}
-templateData['tr5x4-70x56'] = {dimensions = {width=70, height=56}, size=27486443, seed=32, ratio='5x4'}
-templateData['tr4x4-4x4'] = {dimensions = {width=4, height=4}, size=83358, seed=33, ratio='4x4'}
-templateData['tr4x4-8x8'] = {dimensions = {width=8, height=8}, size=390842, seed=34, ratio='4x4'}
-templateData['tr4x4-12x12'] = {dimensions = {width=12, height=12}, size=919492, seed=35, ratio='4x4'}
-templateData['tr4x4-20x20'] = {dimensions = {width=20, height=20}, size=2648759, seed=36, ratio='4x4'}
-templateData['tr4x4-30x30'] = {dimensions = {width=30, height=30}, size=6073319, seed=37, ratio='4x4'}
-templateData['tr4x4-40x40'] = {dimensions = {width=40, height=40}, size=11078309, seed=38, ratio='4x4'}
-templateData['tr4x4-50x50'] = {dimensions = {width=50, height=50}, size=17395065, seed=39, ratio='4x4'}
-templateData['tr4x4-70x70'] = {dimensions = {width=70, height=70}, size=34411809, seed=40, ratio='4x4'}
-templateData['tr4x5-4x5'] = {dimensions = {width=4, height=5}, size=108654, seed=41, ratio='4x5'}
-templateData['tr4x5-8x10'] = {dimensions = {width=8, height=10}, size=491621, seed=42, ratio='4x5'}
-templateData['tr4x5-16x20'] = {dimensions = {width=16, height=20}, size=2101900, seed=43, ratio='4x5'}
-templateData['tr4x5-24x30'] = {dimensions = {width=24, height=30}, size=4833959, seed=44, ratio='4x5'}
-templateData['tr4x5-32x40'] = {dimensions = {width=32, height=40}, size=8841161, seed=45, ratio='4x5'}
-templateData['tr4x5-40x50'] = {dimensions = {width=40, height=50}, size=13878011, seed=46, ratio='4x5'}
-templateData['tr4x5-48x60'] = {dimensions = {width=48, height=60}, size=20111519, seed=47, ratio='4x5'}
-templateData['tr4x5-56x70'] = {dimensions = {width=56, height=70}, size=27486293, seed=48, ratio='4x5'}
-templateData['tr3x4-3x4'] = {dimensions = {width=3, height=4}, size=58475, seed=49, ratio='3x4'}
-templateData['tr3x4-9x12'] = {dimensions = {width=9, height=12}, size=673148, seed=50, ratio='3x4'}
-templateData['tr3x4-12x16'] = {dimensions = {width=12, height=16}, size=1237756, seed=51, ratio='3x4'}
-templateData['tr3x4-18x24'] = {dimensions = {width=18, height=24}, size=2878816, seed=52, ratio='3x4'}
-templateData['tr3x4-27x36'] = {dimensions = {width=27, height=36}, size=6637942, seed=53, ratio='3x4'}
-templateData['tr3x4-36x48'] = {dimensions = {width=36, height=48}, size=11992319, seed=54, ratio='3x4'}
-templateData['tr3x4-45x60'] = {dimensions = {width=45, height=60}, size=18804763, seed=55, ratio='3x4'}
-templateData['tr3x4-54x72'] = {dimensions = {width=54, height=72}, size=27266057, seed=56, ratio='3x4'}
-templateData['tr2x3-4x6'] = {dimensions = {width=4, height=6}, size=132496, seed=57, ratio='2x3'}
-templateData['tr2x3-8x12'] = {dimensions = {width=8, height=12}, size=594938, seed=58, ratio='2x3'}
-templateData['tr2x3-14x21'] = {dimensions = {width=14, height=21}, size=1924848, seed=59, ratio='2x3'}
-templateData['tr2x3-24x36'] = {dimensions = {width=24, height=36}, size=5882115, seed=60, ratio='2x3'}
-templateData['tr2x3-32x48'] = {dimensions = {width=32, height=48}, size=10638293, seed=61, ratio='2x3'}
-templateData['tr2x3-38x57'] = {dimensions = {width=38, height=57}, size=15076191, seed=62, ratio='2x3'}
-templateData['tr2x3-44x66'] = {dimensions = {width=44, height=66}, size=20266676, seed=63, ratio='2x3'}
-templateData['tr2x3-52x78'] = {dimensions = {width=52, height=78}, size=28439508, seed=64, ratio='2x3'}
-templateData['tr9x16-5x8'] = {dimensions = {width=5, height=8}, size=233276, seed=65, ratio='9x16'}
-templateData['tr9x16-9x16'] = {dimensions = {width=9, height=16}, size=914300, seed=66, ratio='9x16'}
-templateData['tr9x16-13x23'] = {dimensions = {width=13, height=23}, size=1961821, seed=67, ratio='9x16'}
-templateData['tr9x16-18x32'] = {dimensions = {width=18, height=32}, size=3881233, seed=68, ratio='9x16'}
-templateData['tr9x16-27x48'] = {dimensions = {width=27, height=48}, size=8879706, seed=69, ratio='9x16'}
-templateData['tr9x16-36x64'] = {dimensions = {width=36, height=64}, size=16056342, seed=70, ratio='9x16'}
-templateData['tr9x16-45x80'] = {dimensions = {width=45, height=80}, size=25171270, seed=71, ratio='9x16'}
-templateData['tr9x16-54x96'] = {dimensions = {width=54, height=96}, size=36411269, seed=72, ratio='9x16'}
+templateData['tr16x9-8x5'] = {dimensions = {width=8, height=5}, size=233059, seed=1, ratio='16x9', label='8 x 5'}
+templateData['tr16x9-16x9'] = {dimensions = {width=16, height=9}, size=913118, seed=2, ratio='16x9', label='16 x 9'}
+templateData['tr16x9-23x13'] = {dimensions = {width=23, height=13}, size=1949874, seed=3, ratio='16x9', label='23 x 13'}
+templateData['tr16x9-32x18'] = {dimensions = {width=32, height=18}, size=3884366, seed=4, ratio='16x9', label='32 x 18'}
+templateData['tr16x9-48x27'] = {dimensions = {width=48, height=27}, size=8883635, seed=5, ratio='16x9', label='48 x 27'}
+templateData['tr16x9-64x36'] = {dimensions = {width=64, height=36}, size=16037245, seed=6, ratio='16x9', label='64 x 36'}
+templateData['tr16x9-80x45'] = {dimensions = {width=80, height=45}, size=25179848, seed=7, ratio='16x9', label='80 x 45'}
+templateData['tr16x9-96x54'] = {dimensions = {width=96, height=54}, size=36421443, seed=8, ratio='16x9', label='96 x 54'}
+templateData['tr3x2-6x4'] = {dimensions = {width=6, height=4}, size=133721, seed=9, ratio='3x2', label='6 x 4'}
+templateData['tr3x2-12x8'] = {dimensions = {width=12, height=8}, size=599374, seed=10, ratio='3x2', label='12 x 8'}
+templateData['tr3x2-21x14'] = {dimensions = {width=21, height=14}, size=1925972, seed=11, ratio='3x2', label='21 x 14'}
+templateData['tr3x2-36x24'] = {dimensions = {width=36, height=24}, size=5885626, seed=12, ratio='3x2', label='36 x 24'}
+templateData['tr3x2-48x32'] = {dimensions = {width=48, height=32}, size=10650605, seed=13, ratio='3x2', label='48 x 32'}
+templateData['tr3x2-57x38'] = {dimensions = {width=57, height=38}, size=15074826, seed=14, ratio='3x2', label='57 x 38'}
+templateData['tr3x2-66x44'] = {dimensions = {width=66, height=44}, size=20308365, seed=15, ratio='3x2', label='66 x 44'}
+templateData['tr3x2-78x52'] = {dimensions = {width=78, height=52}, size=28440531, seed=16, ratio='3x2', label='78 x 52'}
+templateData['tr4x3-4x3'] = {dimensions = {width=4, height=3}, size=60265, seed=17, ratio='4x3', label='4 x 3'}
+templateData['tr4x3-12x9'] = {dimensions = {width=12, height=9}, size=680131, seed=18, ratio='4x3', label='12 x 9'}
+templateData['tr4x3-16x12'] = {dimensions = {width=16, height=12}, size=1233907, seed=19, ratio='4x3', label='16 x 12'}
+templateData['tr4x3-24x18'] = {dimensions = {width=24, height=18}, size=2861587, seed=20, ratio='4x3', label='24 x 18'}
+templateData['tr4x3-36x27'] = {dimensions = {width=36, height=27}, size=6629901, seed=21, ratio='4x3', label='36 x 27'}
+templateData['tr4x3-48x36'] = {dimensions = {width=48, height=36}, size=11992227, seed=22, ratio='4x3', label='48 x 36'}
+templateData['tr4x3-60x45'] = {dimensions = {width=60, height=45}, size=18836787, seed=23, ratio='4x3', label='60 x 45'}
+templateData['tr4x3-72x54'] = {dimensions = {width=72, height=54}, size=27257025, seed=24, ratio='4x3', label='72 x 54'}
+templateData['tr5x4-5x4'] = {dimensions = {width=5, height=4}, size=107242, seed=25, ratio='5x4', label='5 x 4'}
+templateData['tr5x4-10x8'] = {dimensions = {width=10, height=8}, size=491881, seed=26, ratio='5x4', label='10 x 8'}
+templateData['tr5x4-20x16'] = {dimensions = {width=20, height=16}, size=2102172, seed=27, ratio='5x4', label='20 x 16'}
+templateData['tr5x4-30x24'] = {dimensions = {width=30, height=24}, size=4844496, seed=28, ratio='5x4', label='30 x 24'}
+templateData['tr5x4-40x32'] = {dimensions = {width=40, height=32}, size=8841400, seed=29, ratio='5x4', label='40 x 32'}
+templateData['tr5x4-50x40'] = {dimensions = {width=50, height=40}, size=13893434, seed=30, ratio='5x4', label='50 x 40'}
+templateData['tr5x4-60x48'] = {dimensions = {width=60, height=48}, size=20108678, seed=31, ratio='5x4', label='60 x 48'}
+templateData['tr5x4-70x56'] = {dimensions = {width=70, height=56}, size=27486443, seed=32, ratio='5x4', label='70 x 56'}
+templateData['tr4x4-4x4'] = {dimensions = {width=4, height=4}, size=83358, seed=33, ratio='4x4', label='4 x 4'}
+templateData['tr4x4-8x8'] = {dimensions = {width=8, height=8}, size=390842, seed=34, ratio='4x4', label='8 x 8'}
+templateData['tr4x4-12x12'] = {dimensions = {width=12, height=12}, size=919492, seed=35, ratio='4x4', label='12 x 12'}
+templateData['tr4x4-20x20'] = {dimensions = {width=20, height=20}, size=2648759, seed=36, ratio='4x4', label='20 x 20'}
+templateData['tr4x4-30x30'] = {dimensions = {width=30, height=30}, size=6073319, seed=37, ratio='4x4', label='30 x 30'}
+templateData['tr4x4-40x40'] = {dimensions = {width=40, height=40}, size=11078309, seed=38, ratio='4x4', label='40 x 40'}
+templateData['tr4x4-50x50'] = {dimensions = {width=50, height=50}, size=17395065, seed=39, ratio='4x4', label='50 x 50'}
+templateData['tr4x4-70x70'] = {dimensions = {width=70, height=70}, size=34411809, seed=40, ratio='4x4', label='70 x 70'}
+templateData['tr4x5-4x5'] = {dimensions = {width=4, height=5}, size=108654, seed=41, ratio='4x5', label='4 x 5'}
+templateData['tr4x5-8x10'] = {dimensions = {width=8, height=10}, size=491621, seed=42, ratio='4x5', label='8 x 10'}
+templateData['tr4x5-16x20'] = {dimensions = {width=16, height=20}, size=2101900, seed=43, ratio='4x5', label='16 x 20'}
+templateData['tr4x5-24x30'] = {dimensions = {width=24, height=30}, size=4833959, seed=44, ratio='4x5', label='24 x 30'}
+templateData['tr4x5-32x40'] = {dimensions = {width=32, height=40}, size=8841161, seed=45, ratio='4x5', label='32 x 40'}
+templateData['tr4x5-40x50'] = {dimensions = {width=40, height=50}, size=13878011, seed=46, ratio='4x5', label='40 x 50'}
+templateData['tr4x5-48x60'] = {dimensions = {width=48, height=60}, size=20111519, seed=47, ratio='4x5', label='48 x 60'}
+templateData['tr4x5-56x70'] = {dimensions = {width=56, height=70}, size=27486293, seed=48, ratio='4x5', label='56 x 70'}
+templateData['tr3x4-3x4'] = {dimensions = {width=3, height=4}, size=58475, seed=49, ratio='3x4', label='3 x 4'}
+templateData['tr3x4-9x12'] = {dimensions = {width=9, height=12}, size=673148, seed=50, ratio='3x4', label='9 x 12'}
+templateData['tr3x4-12x16'] = {dimensions = {width=12, height=16}, size=1237756, seed=51, ratio='3x4', label='12 x 16'}
+templateData['tr3x4-18x24'] = {dimensions = {width=18, height=24}, size=2878816, seed=52, ratio='3x4', label='18 x 24'}
+templateData['tr3x4-27x36'] = {dimensions = {width=27, height=36}, size=6637942, seed=53, ratio='3x4', label='27 x 36'}
+templateData['tr3x4-36x48'] = {dimensions = {width=36, height=48}, size=11992319, seed=54, ratio='3x4', label='36 x 48'}
+templateData['tr3x4-45x60'] = {dimensions = {width=45, height=60}, size=18804763, seed=55, ratio='3x4', label='45 x 60'}
+templateData['tr3x4-54x72'] = {dimensions = {width=54, height=72}, size=27266057, seed=56, ratio='3x4', label='54 x 72'}
+templateData['tr2x3-4x6'] = {dimensions = {width=4, height=6}, size=132496, seed=57, ratio='2x3', label='4 x 6'}
+templateData['tr2x3-8x12'] = {dimensions = {width=8, height=12}, size=594938, seed=58, ratio='2x3', label='8 x 12'}
+templateData['tr2x3-14x21'] = {dimensions = {width=14, height=21}, size=1924848, seed=59, ratio='2x3', label='14 x 21'}
+templateData['tr2x3-24x36'] = {dimensions = {width=24, height=36}, size=5882115, seed=60, ratio='2x3', label='24 x 36'}
+templateData['tr2x3-32x48'] = {dimensions = {width=32, height=48}, size=10638293, seed=61, ratio='2x3', label='32 x 48'}
+templateData['tr2x3-38x57'] = {dimensions = {width=38, height=57}, size=15076191, seed=62, ratio='2x3', label='38 x 57'}
+templateData['tr2x3-44x66'] = {dimensions = {width=44, height=66}, size=20266676, seed=63, ratio='2x3', label='44 x 66'}
+templateData['tr2x3-52x78'] = {dimensions = {width=52, height=78}, size=28439508, seed=64, ratio='2x3', label='52 x 78'}
+templateData['tr9x16-5x8'] = {dimensions = {width=5, height=8}, size=233276, seed=65, ratio='9x16', label='5 x 8'}
+templateData['tr9x16-9x16'] = {dimensions = {width=9, height=16}, size=914300, seed=66, ratio='9x16', label='9 x 16'}
+templateData['tr9x16-13x23'] = {dimensions = {width=13, height=23}, size=1961821, seed=67, ratio='9x16', label='13 x 23'}
+templateData['tr9x16-18x32'] = {dimensions = {width=18, height=32}, size=3881233, seed=68, ratio='9x16', label='18 x 32'}
+templateData['tr9x16-27x48'] = {dimensions = {width=27, height=48}, size=8879706, seed=69, ratio='9x16', label='27 x 48'}
+templateData['tr9x16-36x64'] = {dimensions = {width=36, height=64}, size=16056342, seed=70, ratio='9x16', label='36 x 64'}
+templateData['tr9x16-45x80'] = {dimensions = {width=45, height=80}, size=25171270, seed=71, ratio='9x16', label='45 x 80'}
+templateData['tr9x16-54x96'] = {dimensions = {width=54, height=96}, size=36411269, seed=72, ratio='9x16', label='54 x 96'}
 
-templateData['hc16x9-8x5'] = {dimensions = {width=8, height=5}, size=201375, seed=1, ratio='16x9', shape='honeycomb'}
-templateData['hc16x9-14x9'] = {dimensions = {width=14, height=9}, size=702803, seed=2, ratio='16x9', shape='honeycomb'}
-templateData['hc16x9-23x15'] = {dimensions = {width=23, height=15}, size=2036136, seed=3, ratio='16x9', shape='honeycomb'}
-templateData['hc16x9-39x25'] = {dimensions = {width=39, height=25}, size=5959034, seed=4, ratio='16x9', shape='honeycomb'}
-templateData['hc16x9-57x37'] = {dimensions = {width=57, height=37}, size=13072685, seed=5, ratio='16x9', shape='honeycomb'}
-templateData['hc16x9-73x47'] = {dimensions = {width=73, height=47}, size=21410972, seed=6, ratio='16x9', shape='honeycomb'}
-templateData['hc3x2-4x3'] = {dimensions = {width=4, height=3}, size=46496, seed=7, ratio='3x2', shape='honeycomb'}
-templateData['hc3x2-17x13'] = {dimensions = {width=17, height=13}, size=1236894, seed=8, ratio='3x2', shape='honeycomb'}
-templateData['hc3x2-27x21'] = {dimensions = {width=27, height=21}, size=3294945, seed=9, ratio='3x2', shape='honeycomb'}
-templateData['hc3x2-40x31'] = {dimensions = {width=40, height=31}, size=7329644, seed=10, ratio='3x2', shape='honeycomb'}
-templateData['hc3x2-53x41'] = {dimensions = {width=53, height=41}, size=12970287, seed=11, ratio='3x2', shape='honeycomb'}
-templateData['hc3x2-66x51'] = {dimensions = {width=66, height=51}, size=20209411, seed=12, ratio='3x2', shape='honeycomb'}
-templateData['hc4x3-6x5'] = {dimensions = {width=6, height=5}, size=136570, seed=13, ratio='4x3', shape='honeycomb'}
-templateData['hc4x3-13x11'] = {dimensions = {width=13, height=11}, size=760966, seed=14, ratio='4x3', shape='honeycomb'}
-templateData['hc4x3-20x17'] = {dimensions = {width=20, height=17}, size=1892305, seed=15, ratio='4x3', shape='honeycomb'}
-templateData['hc4x3-31x27'] = {dimensions = {width=31, height=27}, size=4757578, seed=16, ratio='4x3', shape='honeycomb'}
-templateData['hc4x3-47x41'] = {dimensions = {width=47, height=41}, size=11126825, seed=17, ratio='4x3', shape='honeycomb'}
-templateData['hc4x3-66x57'] = {dimensions = {width=66, height=57}, size=21967173, seed=18, ratio='4x3', shape='honeycomb'}
-templateData['hc5x4-8x7'] = {dimensions = {width=8, height=7}, size=271180, seed=19, ratio='5x4', shape='honeycomb'}
-templateData['hc5x4-14x13'] = {dimensions = {width=14, height=13}, size=957731, seed=20, ratio='5x4', shape='honeycomb'}
-templateData['hc5x4-23x21'] = {dimensions = {width=23, height=21}, size=2659507, seed=21, ratio='5x4', shape='honeycomb'}
-templateData['hc5x4-33x31'] = {dimensions = {width=33, height=31}, size=5711942, seed=22, ratio='5x4', shape='honeycomb'}
-templateData['hc5x4-47x43'] = {dimensions = {width=47, height=43}, size=11514193, seed=23, ratio='5x4', shape='honeycomb'}
-templateData['hc5x4-62x57'] = {dimensions = {width=62, height=57}, size=20249287, seed=24, ratio='5x4', shape='honeycomb'}
-templateData['hc4x4-4x5'] = {dimensions = {width=4, height=5}, size=71517, seed=25, ratio='4x4', shape='honeycomb'}
-templateData['hc4x4-8x9'] = {dimensions = {width=8, height=9}, size=325574, seed=26, ratio='4x4', shape='honeycomb'}
-templateData['hc4x4-15x17'] = {dimensions = {width=15, height=17}, size=1275278, seed=27, ratio='4x4', shape='honeycomb'}
-templateData['hc4x4-25x29'] = {dimensions = {width=25, height=29}, size=3709937, seed=28, ratio='4x4', shape='honeycomb'}
-templateData['hc4x4-41x47'] = {dimensions = {width=41, height=47}, size=10129137, seed=29, ratio='4x4', shape='honeycomb'}
-templateData['hc4x4-58x67'] = {dimensions = {width=58, height=67}, size=20567234, seed=30, ratio='4x4', shape='honeycomb'}
-templateData['hc4x5-5x7'] = {dimensions = {width=5, height=7}, size=129017, seed=31, ratio='4x5', shape='honeycomb'}
-templateData['hc4x5-9x13'] = {dimensions = {width=9, height=13}, size=483136, seed=32, ratio='4x5', shape='honeycomb'}
-templateData['hc4x5-22x31'] = {dimensions = {width=22, height=31}, size=3167812, seed=33, ratio='4x5', shape='honeycomb'}
-templateData['hc4x5-30x43'] = {dimensions = {width=30, height=43}, size=6032577, seed=34, ratio='4x5', shape='honeycomb'}
-templateData['hc4x5-41x59'] = {dimensions = {width=41, height=59}, size=11424219, seed=35, ratio='4x5', shape='honeycomb'}
-templateData['hc4x5-55x79'] = {dimensions = {width=55, height=79}, size=20708535, seed=36, ratio='4x5', shape='honeycomb'}
-templateData['hc3x4-6x9'] = {dimensions = {width=6, height=9}, size=199261, seed=37, ratio='3x4', shape='honeycomb'}
-templateData['hc3x4-11x17'] = {dimensions = {width=11, height=17}, size=775580, seed=38, ratio='3x4', shape='honeycomb'}
-templateData['hc3x4-15x23'] = {dimensions = {width=15, height=23}, size=1485980, seed=39, ratio='3x4', shape='honeycomb'}
-templateData['hc3x4-24x37'] = {dimensions = {width=24, height=37}, size=3943872, seed=40, ratio='3x4', shape='honeycomb'}
-templateData['hc3x4-36x55'] = {dimensions = {width=36, height=55}, size=8982548, seed=41, ratio='3x4', shape='honeycomb'}
-templateData['hc3x4-54x83'] = {dimensions = {width=54, height=83}, size=20531685, seed=42, ratio='3x4', shape='honeycomb'}
-templateData['hc2x3-7x11'] = {dimensions = {width=7, height=11}, size=287495, seed=43, ratio='2x3', shape='honeycomb'}
-templateData['hc2x3-10x17'] = {dimensions = {width=10, height=17}, size=643112, seed=44, ratio='2x3', shape='honeycomb'}
-templateData['hc2x3-18x31'] = {dimensions = {width=18, height=31}, size=2238403, seed=45, ratio='2x3', shape='honeycomb'}
-templateData['hc2x3-25x43'] = {dimensions = {width=25, height=43}, size=4428706, seed=46, ratio='2x3', shape='honeycomb'}
-templateData['hc2x3-40x69'] = {dimensions = {width=40, height=69}, size=11576815, seed=47, ratio='2x3', shape='honeycomb'}
-templateData['hc2x3-55x95'] = {dimensions = {width=55, height=95}, size=22070526, seed=48, ratio='2x3', shape='honeycomb'}
-templateData['hc9x16-8x13'] = {dimensions = {width=8, height=13}, size=391382, seed=49, ratio='9x16', shape='honeycomb'}
-templateData['hc9x16-12x21'] = {dimensions = {width=12, height=21}, size=962278, seed=50, ratio='9x16', shape='honeycomb'}
-templateData['hc9x16-18x33'] = {dimensions = {width=18, height=33}, size=2269450, seed=51, ratio='9x16', shape='honeycomb'}
-templateData['hc9x16-26x49'] = {dimensions = {width=26, height=49}, size=4875863, seed=52, ratio='9x16', shape='honeycomb'}
-templateData['hc9x16-37x71'] = {dimensions = {width=37, height=71}, size=10028469, seed=53, ratio='9x16', shape='honeycomb'}
-templateData['hc9x16-53x103'] = {dimensions = {width=53, height=103}, size=20852852, seed=54, ratio='9x16', shape='honeycomb'}
+templateData['hc16x9-8x5'] = {dimensions = {width=8, height=5}, size=201375, seed=1, ratio='16x9', shape='honeycomb', label='6x3x3'}
+templateData['hc16x9-14x9'] = {dimensions = {width=14, height=9}, size=702803, seed=2, ratio='16x9', shape='honeycomb', label='10x5x5'}
+templateData['hc16x9-23x15'] = {dimensions = {width=23, height=15}, size=2036136, seed=3, ratio='16x9', shape='honeycomb', label='16x8x8'}
+templateData['hc16x9-39x25'] = {dimensions = {width=39, height=25}, size=5959034, seed=4, ratio='16x9', shape='honeycomb', label='27x13x13'}
+templateData['hc16x9-57x37'] = {dimensions = {width=57, height=37}, size=13072685, seed=5, ratio='16x9', shape='honeycomb', label='39x19x19'}
+templateData['hc16x9-73x47'] = {dimensions = {width=73, height=47}, size=21410972, seed=6, ratio='16x9', shape='honeycomb', label='50x24x24'}
+templateData['hc3x2-4x3'] = {dimensions = {width=4, height=3}, size=46496, seed=7, ratio='3x2', shape='honeycomb', label='3x2x2'}
+templateData['hc3x2-17x13'] = {dimensions = {width=17, height=13}, size=1236894, seed=8, ratio='3x2', shape='honeycomb', label='11x7x7'}
+templateData['hc3x2-27x21'] = {dimensions = {width=27, height=21}, size=3294945, seed=9, ratio='3x2', shape='honeycomb', label='17x11x11'}
+templateData['hc3x2-40x31'] = {dimensions = {width=40, height=31}, size=7329644, seed=10, ratio='3x2', shape='honeycomb', label='25x16x16'}
+templateData['hc3x2-53x41'] = {dimensions = {width=53, height=41}, size=12970287, seed=11, ratio='3x2', shape='honeycomb', label='33x21x21'}
+templateData['hc3x2-66x51'] = {dimensions = {width=66, height=51}, size=20209411, seed=12, ratio='3x2', shape='honeycomb', label='41x26x26'}
+templateData['hc4x3-6x5'] = {dimensions = {width=6, height=5}, size=136570, seed=13, ratio='4x3', shape='honeycomb', label='4x3x3'}
+templateData['hc4x3-13x11'] = {dimensions = {width=13, height=11}, size=760966, seed=14, ratio='4x3', shape='honeycomb', label='8x6x6'}
+templateData['hc4x3-20x17'] = {dimensions = {width=20, height=17}, size=1892305, seed=15, ratio='4x3', shape='honeycomb', label='12x9x9'}
+templateData['hc4x3-31x27'] = {dimensions = {width=31, height=27}, size=4757578, seed=16, ratio='4x3', shape='honeycomb', label='18x14x14'}
+templateData['hc4x3-47x41'] = {dimensions = {width=47, height=41}, size=11126825, seed=17, ratio='4x3', shape='honeycomb', label='27x21x21'}
+templateData['hc4x3-66x57'] = {dimensions = {width=66, height=57}, size=21967173, seed=18, ratio='4x3', shape='honeycomb', label='38x29x29'}
+templateData['hc5x4-8x7'] = {dimensions = {width=8, height=7}, size=271180, seed=19, ratio='5x4', shape='honeycomb', label='5x4x4'}
+templateData['hc5x4-14x13'] = {dimensions = {width=14, height=13}, size=957731, seed=20, ratio='5x4', shape='honeycomb', label='8x7x7'}
+templateData['hc5x4-23x21'] = {dimensions = {width=23, height=21}, size=2659507, seed=21, ratio='5x4', shape='honeycomb', label='13x11x11'}
+templateData['hc5x4-33x31'] = {dimensions = {width=33, height=31}, size=5711942, seed=22, ratio='5x4', shape='honeycomb', label='18x16x16'}
+templateData['hc5x4-47x43'] = {dimensions = {width=47, height=43}, size=11514193, seed=23, ratio='5x4', shape='honeycomb', label='26x22x22'}
+templateData['hc5x4-62x57'] = {dimensions = {width=62, height=57}, size=20249287, seed=24, ratio='5x4', shape='honeycomb', label='34x29x29'}
+templateData['hc4x4-4x5'] = {dimensions = {width=4, height=5}, size=71517, seed=25, ratio='4x4', shape='honeycomb', label='2x3x3'}
+templateData['hc4x4-8x9'] = {dimensions = {width=8, height=9}, size=325574, seed=26, ratio='4x4', shape='honeycomb', label='4x5x5'}
+templateData['hc4x4-15x17'] = {dimensions = {width=15, height=17}, size=1275278, seed=27, ratio='4x4', shape='honeycomb', label='7x9x9'}
+templateData['hc4x4-25x29'] = {dimensions = {width=25, height=29}, size=3709937, seed=28, ratio='4x4', shape='honeycomb', label='11x15x15'}
+templateData['hc4x4-41x47'] = {dimensions = {width=41, height=47}, size=10129137, seed=29, ratio='4x4', shape='honeycomb', label='18x24x24'}
+templateData['hc4x4-58x67'] = {dimensions = {width=58, height=67}, size=20567234, seed=30, ratio='4x4', shape='honeycomb', label='25x34x34'}
+templateData['hc4x5-5x7'] = {dimensions = {width=5, height=7}, size=129017, seed=31, ratio='4x5', shape='honeycomb', label='2x4x4'}
+templateData['hc4x5-9x13'] = {dimensions = {width=9, height=13}, size=483136, seed=32, ratio='4x5', shape='honeycomb', label='3x7x7'}
+templateData['hc4x5-22x31'] = {dimensions = {width=22, height=31}, size=3167812, seed=33, ratio='4x5', shape='honeycomb', label='7x16x16'}
+templateData['hc4x5-30x43'] = {dimensions = {width=30, height=43}, size=6032577, seed=34, ratio='4x5', shape='honeycomb', label='9x22x22'}
+templateData['hc4x5-41x59'] = {dimensions = {width=41, height=59}, size=11424219, seed=35, ratio='4x5', shape='honeycomb', label='12x30x30'}
+templateData['hc4x5-55x79'] = {dimensions = {width=55, height=79}, size=20708535, seed=36, ratio='4x5', shape='honeycomb', label='16x40x40'}
+templateData['hc3x4-6x9'] = {dimensions = {width=6, height=9}, size=199261, seed=37, ratio='3x4', shape='honeycomb', label='2x5x5'}
+templateData['hc3x4-11x17'] = {dimensions = {width=11, height=17}, size=775580, seed=38, ratio='3x4', shape='honeycomb', label='3x9x9'}
+templateData['hc3x4-15x23'] = {dimensions = {width=15, height=23}, size=1485980, seed=39, ratio='3x4', shape='honeycomb', label='4x12x12'}
+templateData['hc3x4-24x37'] = {dimensions = {width=24, height=37}, size=3943872, seed=40, ratio='3x4', shape='honeycomb', label='6x19x19'}
+templateData['hc3x4-36x55'] = {dimensions = {width=36, height=55}, size=8982548, seed=41, ratio='3x4', shape='honeycomb', label='9x28x28'}
+templateData['hc3x4-54x83'] = {dimensions = {width=54, height=83}, size=20531685, seed=42, ratio='3x4', shape='honeycomb', label='13x42x42'}
+templateData['hc2x3-7x11'] = {dimensions = {width=7, height=11}, size=287495, seed=43, ratio='2x3', shape='honeycomb', label='2x6x6'}
+templateData['hc2x3-10x17'] = {dimensions = {width=10, height=17}, size=643112, seed=44, ratio='2x3', shape='honeycomb', label='2x9x9'}
+templateData['hc2x3-18x31'] = {dimensions = {width=18, height=31}, size=2238403, seed=45, ratio='2x3', shape='honeycomb', label='3x16x16'}
+templateData['hc2x3-25x43'] = {dimensions = {width=25, height=43}, size=4428706, seed=46, ratio='2x3', shape='honeycomb', label='4x22x22'}
+templateData['hc2x3-40x69'] = {dimensions = {width=40, height=69}, size=11576815, seed=47, ratio='2x3', shape='honeycomb', label='6x35x35'}
+templateData['hc2x3-55x95'] = {dimensions = {width=55, height=95}, size=22070526, seed=48, ratio='2x3', shape='honeycomb', label='8x48x48'}
+templateData['hc9x16-8x13'] = {dimensions = {width=8, height=13}, size=391382, seed=49, ratio='9x16', shape='honeycomb', label='2x7x7'}
+templateData['hc9x16-12x21'] = {dimensions = {width=12, height=21}, size=962278, seed=50, ratio='9x16', shape='honeycomb', label='2x11x11'}
+templateData['hc9x16-18x33'] = {dimensions = {width=18, height=33}, size=2269450, seed=51, ratio='9x16', shape='honeycomb', label='2x17x17'}
+templateData['hc9x16-26x49'] = {dimensions = {width=26, height=49}, size=4875863, seed=52, ratio='9x16', shape='honeycomb', label='2x25x25'}
+templateData['hc9x16-37x71'] = {dimensions = {width=37, height=71}, size=10028469, seed=53, ratio='9x16', shape='honeycomb', label='2x36x36'}
+templateData['hc9x16-53x103'] = {dimensions = {width=53, height=103}, size=20852852, seed=54, ratio='9x16', shape='honeycomb', label='2x52x52'}
+
 
 for lbl, details in pairs(templateData) do
   details.size = details.size/1000000
