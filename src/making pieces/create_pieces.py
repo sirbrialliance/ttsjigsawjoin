@@ -6,6 +6,9 @@ import pathlib
 import py2d
 from gzip import GzipFile
 
+# This hex piece creation script was created by Cashew
+# This script produces hexagonal boards and pieces given the dimensions of two side-lengths of the board
+# Calling the make_puzzle function with all these parameters creates a final puzzle that can be used in Tabletop Simulator
 
 # Efficiently iterate over overlapping pairs including (last, first), e.g.:
 #   list(ring_pairs([1,2,3])) -> [(1,2),(2,3),(3,1)]
