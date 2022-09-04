@@ -1,9 +1,9 @@
 {
-  "SaveName": "Jigsaw Join 2 Version 16",
+  "SaveName": "Jigsaw Join 2 Version 16.1",
   "EpochTime": 1655583878,
   "Date": "6/18/2022 2:24:38 PM",
   "VersionNumber": "v13.1.1",
-  "GameMode": "[e7e52c]Jigsaw Join 2[-] [aaaaaa]Version 16[-]",
+  "GameMode": "[e7e52c]Jigsaw Join 2[-] [aaaaaa]Version 16.1[-]",
   "GameType": "Game",
   "GameComplexity": "Low Complexity",
   "PlayingTime": [
@@ -26,7 +26,7 @@
   "PlayArea": 2.5,
   "Table": "Table_None",
   "Sky": "Sky_Forest",
-  "SkyURL": "https://drive.brainsick.com/tts/lights-panorama-3-4000x2000-bw.jpg",
+  "SkyURL": "https://raw.githubusercontent.com/Canonelis/ttsjiggys/main/res/images/lights-panorama-3-4000x2000-bw.jpg",
   "Note": "",
   "TabStates": {
     "0": {
@@ -236,63 +236,67 @@
   "CustomUIAssets": [
     {
       "Name": "baking-bread-357627",
-      "URL": "https://drive.brainsick.com/tts/jigsaw-pictures/baking-bread-357627-150x113.jpg"
+      "URL": "https://raw.githubusercontent.com/Canonelis/ttsjiggys/main/res/puzzles/baking-bread-357627-150x113.jpg"
     },
     {
       "Name": "graffiti-569265",
-      "URL": "https://drive.brainsick.com/tts/jigsaw-pictures/graffiti-569265-150x113.jpg"
+      "URL": "https://raw.githubusercontent.com/Canonelis/ttsjiggys/main/res/puzzles/graffiti-569265-150x113.jpg"
     },
     {
       "Name": "feather-1476011",
-      "URL": "https://drive.brainsick.com/tts/jigsaw-pictures/feather-1476011-150x113.jpg"
+      "URL": "https://raw.githubusercontent.com/Canonelis/ttsjiggys/main/res/puzzles/feather-1476011-150x113.jpg"
     },
     {
       "Name": "graffiti-door-1410006",
-      "URL": "https://drive.brainsick.com/tts/jigsaw-pictures/graffiti-door-1410006-150x120.jpg"
+      "URL": "https://raw.githubusercontent.com/Canonelis/ttsjiggys/main/res/puzzles/graffiti-door-1410006-150x120.jpg"
     },
     {
       "Name": "spice-kitchen-1162194",
-      "URL": "https://drive.brainsick.com/tts/jigsaw-pictures/spice-kitchen-1162194-150x120.jpg"
+      "URL": "https://raw.githubusercontent.com/Canonelis/ttsjiggys/main/res/puzzles/spice-kitchen-1162194-150x120.jpg"
     },
     {
       "Name": "BigBuckBunny",
-      "URL": "https://drive.brainsick.com/tts/jigsaw-pictures/BigBuckBunny-150x84.jpg"
+      "URL": "https://raw.githubusercontent.com/Canonelis/ttsjiggys/main/res/puzzles/BigBuckBunny-150x84.jpg"
     },
     {
       "Name": "city-3378773",
-      "URL": "https://drive.brainsick.com/tts/jigsaw-pictures/city-3378773-150x84.jpg"
+      "URL": "https://raw.githubusercontent.com/Canonelis/ttsjiggys/main/res/puzzles/city-3378773-150x84.jpg"
     },
     {
       "Name": "rock-pebble-540831",
-      "URL": "https://drive.brainsick.com/tts/jigsaw-pictures/rock-pebble-540831-150x84.jpg"
+      "URL": "https://raw.githubusercontent.com/Canonelis/ttsjiggys/main/res/puzzles/rock-pebble-540831-150x84.jpg"
     },
     {
       "Name": "heart-line-color-910338",
-      "URL": "https://drive.brainsick.com/tts/jigsaw-pictures/heart-line-color-910338-150x94.jpg"
+      "URL": "https://raw.githubusercontent.com/Canonelis/ttsjiggys/main/res/puzzles/heart-line-color-910338-150x94.jpg"
     },
     {
       "Name": "lost-places-2759275",
-      "URL": "https://drive.brainsick.com/tts/jigsaw-pictures/lost-places-2759275-150x94.jpg"
+      "URL": "https://raw.githubusercontent.com/Canonelis/ttsjiggys/main/res/puzzles/lost-places-2759275-150x94.jpg"
     },
     {
       "Name": "food-vendor-759704",
-      "URL": "https://drive.brainsick.com/tts/jigsaw-pictures/food-vendor-759704-150x94.jpg"
+      "URL": "https://raw.githubusercontent.com/Canonelis/ttsjiggys/main/res/puzzles/food-vendor-759704-150x94.jpg"
     },
     {
       "Name": "china-2790936",
-      "URL": "https://drive.brainsick.com/tts/jigsaw-pictures/china-2790936-150x94.jpg"
+      "URL": "https://raw.githubusercontent.com/Canonelis/ttsjiggys/main/res/puzzles/china-2790936-150x94.jpg"
     },
     {
       "Name": "earth-162611",
-      "URL": "https://drive.brainsick.com/tts/jigsaw-pictures/earth-162611-113x150.jpg"
+      "URL": "https://raw.githubusercontent.com/Canonelis/ttsjiggys/main/res/puzzles/earth-162611-113x150.jpg"
     },
     {
       "Name": "space-5239295",
-      "URL": "https://drive.brainsick.com/tts/jigsaw-pictures/space-5239295-113x150.jpg"
+      "URL": "https://raw.githubusercontent.com/Canonelis/ttsjiggys/main/res/puzzles/space-5239295-113x150.jpg"
     },
     {
       "Name": "church-mountains-1444413",
-      "URL": "https://drive.brainsick.com/tts/jigsaw-pictures/church-mountains-1444413-120x150.jpg"
+      "URL": "https://raw.githubusercontent.com/Canonelis/ttsjiggys/main/res/puzzles/church-mountains-1444413-120x150.jpg"
+    },
+    {
+      "Name": "hcPieceButton",
+      "URL": "https://raw.githubusercontent.com/Canonelis/ttsjiggys/main/res/pieces/hc-sample.jpg"
     },
     {
       "Name": "trPieceButton",
@@ -803,7 +807,7 @@
       "Hands": false,
       "CustomMesh": {
         "MeshURL": "http://cloud-3.steamusercontent.com/ugc/1701784456924019297/E6BD6A9D7C6C935C2281036FA5535123AE6C4C49/",
-        "DiffuseURL": "https://drive.brainsick.com/tts/debut_dark_@2X.png",
+        "DiffuseURL": "https://raw.githubusercontent.com/Canonelis/ttsjiggys/main/res/images/debut_dark_@2X.png",
         "NormalURL": "",
         "ColliderURL": "",
         "Convex": true,
@@ -863,7 +867,7 @@
       "Hands": false,
       "CustomMesh": {
         "MeshURL": "http://cloud-3.steamusercontent.com/ugc/1701784456924019297/E6BD6A9D7C6C935C2281036FA5535123AE6C4C49/",
-        "DiffuseURL": "https://drive.brainsick.com/tts/debut_dark_@2X.png",
+        "DiffuseURL": "https://raw.githubusercontent.com/Canonelis/ttsjiggys/main/res/images/debut_dark_@2X.png",
         "NormalURL": "",
         "ColliderURL": "",
         "Convex": true,
@@ -923,7 +927,7 @@
       "Hands": false,
       "CustomMesh": {
         "MeshURL": "http://cloud-3.steamusercontent.com/ugc/1701784456924019297/E6BD6A9D7C6C935C2281036FA5535123AE6C4C49/",
-        "DiffuseURL": "https://drive.brainsick.com/tts/debut_dark_@2X.png",
+        "DiffuseURL": "https://raw.githubusercontent.com/Canonelis/ttsjiggys/main/res/images/debut_dark_@2X.png",
         "NormalURL": "",
         "ColliderURL": "",
         "Convex": true,
@@ -983,7 +987,7 @@
       "Hands": false,
       "CustomMesh": {
         "MeshURL": "http://cloud-3.steamusercontent.com/ugc/1701784456924019297/E6BD6A9D7C6C935C2281036FA5535123AE6C4C49/",
-        "DiffuseURL": "https://drive.brainsick.com/tts/debut_dark_@2X.png",
+        "DiffuseURL": "https://raw.githubusercontent.com/Canonelis/ttsjiggys/main/res/images/debut_dark_@2X.png",
         "NormalURL": "",
         "ColliderURL": "",
         "Convex": true,
@@ -1043,7 +1047,7 @@
       "Hands": false,
       "CustomMesh": {
         "MeshURL": "http://cloud-3.steamusercontent.com/ugc/1701784456924019297/E6BD6A9D7C6C935C2281036FA5535123AE6C4C49/",
-        "DiffuseURL": "https://drive.brainsick.com/tts/debut_dark_@2X.png",
+        "DiffuseURL": "https://raw.githubusercontent.com/Canonelis/ttsjiggys/main/res/images/debut_dark_@2X.png",
         "NormalURL": "",
         "ColliderURL": "",
         "Convex": true,
@@ -1103,7 +1107,7 @@
       "Hands": false,
       "CustomMesh": {
         "MeshURL": "http://cloud-3.steamusercontent.com/ugc/1701784456924019297/E6BD6A9D7C6C935C2281036FA5535123AE6C4C49/",
-        "DiffuseURL": "https://drive.brainsick.com/tts/debut_dark_@2X.png",
+        "DiffuseURL": "https://raw.githubusercontent.com/Canonelis/ttsjiggys/main/res/images/debut_dark_@2X.png",
         "NormalURL": "",
         "ColliderURL": "",
         "Convex": true,

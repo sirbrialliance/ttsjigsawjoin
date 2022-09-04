@@ -241,6 +241,18 @@ function printTable(t,return_as_string,table_id_list)
 	end
 end
 
+function inplaceShuffle(arr)
+  n = #arr
+  for i = 1, n do
+    r = i + math.random(0, n - i)
+    if r != i then
+      tmp = arr[i]
+      arr[i] = arr[r]
+      arr[r] = tmp
+    end
+  end
+end
+
 -- this is 300% faster than JSON.encode(gameState) without caching
 pieceTextCache = ''
 function serializeGameStateJSON()
@@ -825,6 +837,9 @@ function populatePuzzleListContainer(uiTable)
       url = puzzleData[puzzleId].thumbnail
     }
   end
+  
+  -- Randomize puzzleList
+  inplaceShuffle(puzzleList)
 
   local puzzleListContainer = findElementById(uiTable, 'puzzleListContainer')
   puzzleListContainer.attributes.width = string.format('%d', tonumber(UI.getAttribute('puzzleListContainer','height')) * #puzzleList)
@@ -1468,7 +1483,7 @@ function onClick_RecoverDeletedPieces(player, button, id)
    -- Show a random problematic piece to the player
   if #objectsToShow > 0 then
     local o = objectsToShow[math.random(#objectsToShow)]
-    player.lookAt({position = {o.getPosition().x, 1, o.getPosition().z}, pitch = 80, yaw = 0, distance = 15})
+    player.lookAt({position = {o.getPosition().x, 1, o.getPosition().z} + Vector(0, -3.5, 2.937), pitch = 80, yaw = 0, distance = 15})
     o.highlightOn({1,1,0}, 3)
   end
 
@@ -2119,6 +2134,7 @@ function onChat(msg,player)
             if next(joinPieceQueue) then
               Wait.frames(doNextJoinPieces,20)
             else
+              mainpiece.object.locked = false
               onCheckSolutionRequest()
             end
           end
@@ -2373,24 +2389,24 @@ function generatePieceData(details)
 end
 
 puzzleData['baking-bread-357627'] = {
-  url = 'https://drive.brainsick.com/tts/jigsaw-pictures/baking-bread-357627-5120x3840.jpg',
-  thumbnail = 'https://drive.brainsick.com/tts/jigsaw-pictures/baking-bread-357627-150x113.jpg',
+  url = PUZZLE_URL .. 'res/puzzles/baking-bread-357627-5120x3840.jpg',
+  thumbnail = PUZZLE_URL .. 'res/puzzles/baking-bread-357627-150x113.jpg',
   resolution = '5120x3840',
   size = 4.2,
   --sourceUrl = 'https://www.pexels.com/photo/bake-bakery-baking-bread-357627/',
   templateId = 'fk4x3-16x12'
 }
 puzzleData['graffiti-569265'] = {
-  url = 'https://drive.brainsick.com/tts/jigsaw-pictures/graffiti-569265-3264x2448.jpg',
-  thumbnail = 'https://drive.brainsick.com/tts/jigsaw-pictures/graffiti-569265-150x113.jpg',
+  url = PUZZLE_URL .. 'res/puzzles/graffiti-569265-3264x2448.jpg',
+  thumbnail = PUZZLE_URL .. 'res/puzzles/graffiti-569265-150x113.jpg',
   resolution = '3264x2448',
   size = 3.2,
   --sourceUrl = 'https://pixabay.com/photos/graffiti-wall-mural-painting-arts-569265/',
   templateId = 'fk4x3-24x18'
 }
 puzzleData['feather-1476011'] = {
-  url = 'https://drive.brainsick.com/tts/jigsaw-pictures/feather-1476011-8192x6144.jpg',
-  thumbnail = 'https://drive.brainsick.com/tts/jigsaw-pictures/feather-1476011-150x113.jpg',
+  url = PUZZLE_URL .. 'res/puzzles/feather-1476011-8192x6144.jpg',
+  thumbnail = PUZZLE_URL .. 'res/puzzles/feather-1476011-150x113.jpg',
   resolution = '8192x6144',
   size = 21.7,
   --sourceUrl = 'https://pixabay.com/illustrations/feather-fractal-artistic-design-1476011/',
@@ -2398,16 +2414,16 @@ puzzleData['feather-1476011'] = {
 }
 
 puzzleData['graffiti-door-1410006'] = {
-  url = 'https://drive.brainsick.com/tts/jigsaw-pictures/graffiti-door-1410006-3635x2908.jpg',
-  thumbnail = 'https://drive.brainsick.com/tts/jigsaw-pictures/graffiti-door-1410006-150x120.jpg',
+  url = PUZZLE_URL .. 'res/puzzles/graffiti-door-1410006-3635x2908.jpg',
+  thumbnail = PUZZLE_URL .. 'res/puzzles/graffiti-door-1410006-150x120.jpg',
   resolution = '3635x2908',
   size = 4.2,
   --sourceUrl = 'https://pxhere.com/en/photo/1410006',
   templateId = 'fk5x4-20x16'
 }
 puzzleData['spice-kitchen-1162194'] = {
-  url = 'https://drive.brainsick.com/tts/jigsaw-pictures/spice-kitchen-1162194-4013x3210.jpg',
-  thumbnail = 'https://drive.brainsick.com/tts/jigsaw-pictures/spice-kitchen-1162194-150x120.jpg',
+  url = PUZZLE_URL .. 'res/puzzles/spice-kitchen-1162194-4013x3210.jpg',
+  thumbnail = PUZZLE_URL .. 'res/puzzles/spice-kitchen-1162194-150x120.jpg',
   resolution = '4013x3210',
   size = 5.9,
   --sourceUrl = 'https://pxhere.com/en/photo/1162194',
@@ -2416,23 +2432,23 @@ puzzleData['spice-kitchen-1162194'] = {
 
 puzzleData['BigBuckBunny'] = {
   url = 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-  thumbnail = 'https://drive.brainsick.com/tts/jigsaw-pictures/BigBuckBunny-150x84.jpg',
+  thumbnail = PUZZLE_URL .. 'res/puzzles/BigBuckBunny-150x84.jpg',
   resolution = '1280x720',
   size = 150,
   --sourceUrl = 'https://peach.blender.org/',
   templateId = 'fk16x9-16x9'
 }
 puzzleData['city-3378773'] = {
-  url = 'https://drive.brainsick.com/tts/jigsaw-pictures/city-3378773-6000x3375.jpg',
-  thumbnail = 'https://drive.brainsick.com/tts/jigsaw-pictures/city-3378773-150x84.jpg',
+  url = PUZZLE_URL .. 'res/puzzles/city-3378773-6000x3375.jpg',
+  thumbnail = PUZZLE_URL .. 'res/puzzles/city-3378773-150x84.jpg',
   resolution = '6000x3375',
   size = 11.5,
   --sourceUrl = 'https://pixabay.com/photos/city-houses-small-town-architecture-3378773/',
   templateId = 'fk16x9-48x27'
 }
 puzzleData['rock-pebble-540831'] = {
-  url = 'https://drive.brainsick.com/tts/jigsaw-pictures/rock-pebble-540831-10000x5625.jpg',
-  thumbnail = 'https://drive.brainsick.com/tts/jigsaw-pictures/rock-pebble-540831-150x84.jpg',
+  url = PUZZLE_URL .. 'res/puzzles/rock-pebble-540831-10000x5625.jpg',
+  thumbnail = PUZZLE_URL .. 'res/puzzles/rock-pebble-540831-150x84.jpg',
   resolution = '10000x5625',
   size = 13.4,
   --sourceUrl = 'https://pxhere.com/en/photo/540831',
@@ -2440,32 +2456,32 @@ puzzleData['rock-pebble-540831'] = {
 }
 
 puzzleData['heart-line-color-910338'] = {
-  url = 'https://drive.brainsick.com/tts/jigsaw-pictures/heart-line-color-910338-4000x2500.jpg',
-  thumbnail = 'https://drive.brainsick.com/tts/jigsaw-pictures/heart-line-color-910338-150x94.jpg',
+  url = PUZZLE_URL .. 'res/puzzles/heart-line-color-910338-4000x2500.jpg',
+  thumbnail = PUZZLE_URL .. 'res/puzzles/heart-line-color-910338-150x94.jpg',
   resolution = '4000x2500',
   size = 2.2,
   --sourceUrl = 'https://pxhere.com/en/photo/910338',
   templateId = 'fk16x9-8x5'
 }
 puzzleData['lost-places-2759275'] = {
-  url = 'https://drive.brainsick.com/tts/jigsaw-pictures/lost-places-2759275-5943x3714.jpg',
-  thumbnail = 'https://drive.brainsick.com/tts/jigsaw-pictures/lost-places-2759275-150x94.jpg',
+  url = PUZZLE_URL .. 'res/puzzles/lost-places-2759275-5943x3714.jpg',
+  thumbnail = PUZZLE_URL .. 'res/puzzles/lost-places-2759275-150x94.jpg',
   resolution = '5943x3714',
   size = 10.8,
   --sourceUrl = 'https://pixabay.com/photos/lost-places-heiligendam-villa-ruin-2759275/',
   templateId = 'fk16x9-32x18'
 }
 puzzleData['food-vendor-759704'] = {
-  url = 'https://drive.brainsick.com/tts/jigsaw-pictures/food-vendor-759704-7360x4600.jpg',
-  thumbnail = 'https://drive.brainsick.com/tts/jigsaw-pictures/food-vendor-759704-150x94.jpg',
+  url = PUZZLE_URL .. 'res/puzzles/food-vendor-759704-7360x4600.jpg',
+  thumbnail = PUZZLE_URL .. 'res/puzzles/food-vendor-759704-150x94.jpg',
   resolution = '7360x4600',
   size = 8,
   --sourceUrl = 'https://pxhere.com/en/photo/759704',
   templateId = 'fk16x9-32x18'
 }
 puzzleData['china-2790936'] = {
-  url = 'https://drive.brainsick.com/tts/jigsaw-pictures/china-2790936-9818x6136.jpg',
-  thumbnail = 'https://drive.brainsick.com/tts/jigsaw-pictures/china-2790936-150x94.jpg',
+  url = PUZZLE_URL .. 'res/puzzles/china-2790936-9818x6136.jpg',
+  thumbnail = PUZZLE_URL .. 'res/puzzles/china-2790936-150x94.jpg',
   resolution = '9818x6136',
   size = 18.1,
   --sourceUrl = 'https://pixabay.com/photos/china-old-town-child-2790936/',
@@ -2473,26 +2489,24 @@ puzzleData['china-2790936'] = {
 }
 
 puzzleData['earth-162611'] = {
-  url = 'https://drive.brainsick.com/tts/jigsaw-pictures/earth-162611-2098x2797.jpg',
-  thumbnail = 'https://drive.brainsick.com/tts/jigsaw-pictures/earth-162611-113x150.jpg',
+  url = PUZZLE_URL .. 'res/puzzles/earth-162611-2098x2797.jpg',
+  thumbnail = PUZZLE_URL .. 'res/puzzles/earth-162611-113x150.jpg',
   resolution = '2098x2797',
   size = 0.7,
   --sourceUrl = 'https://www.jpl.nasa.gov/visions-of-the-future/',
   templateId = 'fk3x4-12x16'
 }
 puzzleData['space-5239295'] = {
-  url = 'https://drive.brainsick.com/tts/jigsaw-pictures/space-5239295-6300x8400.jpg',
-  thumbnail = 'https://drive.brainsick.com/tts/jigsaw-pictures/space-5239295-113x150.jpg',
+  url = PUZZLE_URL .. 'res/puzzles/space-5239295-6300x8400.jpg',
+  thumbnail = PUZZLE_URL .. 'res/puzzles/space-5239295-113x150.jpg',
   resolution = '6300x8400',
   size = 7.3,
   --sourceUrl = 'https://pixabay.com/illustrations/space-astronaut-earth-universe-5239295/',
   templateId = 'fk3x4-27x36'
 }
-
-
 puzzleData['church-mountains-1444413'] = {
-  url = 'https://drive.brainsick.com/tts/jigsaw-pictures/church-mountains-1444413-5715x7144.jpg',
-  thumbnail = 'https://drive.brainsick.com/tts/jigsaw-pictures/church-mountains-1444413-120x150.jpg',
+  url = PUZZLE_URL .. 'res/puzzles/church-mountains-1444413-5715x7144.jpg',
+  thumbnail = PUZZLE_URL .. 'res/puzzles/church-mountains-1444413-120x150.jpg',
   resolution = '5715x7144',
   size = 17.1,
   --sourceUrl = 'https://pxhere.com/en/photo/1444413',
