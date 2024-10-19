@@ -291,7 +291,7 @@
     color="rgba(0.75, 0.75, 0.75, 1)"
     fontSize="24" />
 </Defaults>
-<TableLayout id="greetings" class="greetingsBackground" visibility="None">
+<TableLayout id="greetings" class="greetingsBackground" visibility="None" active="false">
   <Row>
     <Cell raycastTarget="true">
       <VerticalLayout ignoreLayout="true" childAlignment="MiddleCenter" childForceExpandHeight="false" childForceExpandWidth="false" spacing="48" width="60%">

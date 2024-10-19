@@ -54,6 +54,7 @@ function onLoad(save_state)
 
   if gameState.templateId then
     generatePieceData(templateData[gameState.templateId])
+    addObjectsActions()
   end
 
   if gameState.pieceLabel == nil then
@@ -179,14 +180,14 @@ function onSave()
   --local gameStateJSON = JSON.encode(gameState)
   local gameStateJSON = serializeGameStateJSON()
 
-  if gameState.debug_level >= 3 then
+  if gameState.debug_level >= 5 then
     debugPrint(string.format(
       'onSave elapsed: %.2f, gameStateJSON.len: %d',
       os.time() - start,
       string.len(gameStateJSON)
     ))
   end
-  if gameState.debug_level >= 4 then
+  if gameState.debug_level >= 5 then
     debugPrint(string.format(
       'onSave gameStateJSON: %s',
       gameStateJSON
@@ -258,8 +259,8 @@ pieceTextCache = ''
 function serializeGameStateJSON()
   local player_names = {}
   local player_names_dict = {}
-  
-  
+
+
   local players = {}
   for playerName, playerData in pairs(gameState.players) do
     players[#players + 1] = string.format(
@@ -342,7 +343,7 @@ function onObjectRandomize(object, player_color)
   if randomizedPiece == nil then return end
 
   local pieceRotation = randomizedPiece.object.getRotation()
-  pieceRotation.y = math.random(-180, 180)
+  pieceRotation.y = math.random(0, 4) * 90
   randomizedPiece.object.setRotationSmooth(pieceRotation)
 
   if gameState.debug_level >= 2 then
@@ -383,7 +384,6 @@ function onObjectDropped(player_color, object)
       object.setRotationSmooth({object.getRotation().x, new_rotation, object.getRotation().z}, true, true)
     end
   end
-
 
   if gameState.debug_level >= 3 then
     debugPrint(string.format(
@@ -498,6 +498,8 @@ end
 
 lastPlayerWarning = {}
 function checkPlayerSelection(player, objects)
+  do return true end
+
   local start = os.time()
 
   -- Check the player's selection and reduce it if it is too high
@@ -837,7 +839,7 @@ function populatePuzzleListContainer(uiTable)
       url = puzzleData[puzzleId].thumbnail
     }
   end
-  
+
   -- Randomize puzzleList
   inplaceShuffle(puzzleList)
 
@@ -1009,10 +1011,10 @@ function spawnPuzzle(templateId, picture)
     material = 3
   })
 
+  local paddingFactor = 1.5
 
-
-  local boardOffsetX = templateData[gameState.templateId].dimensions.width / 2 + 1.5
-  local boardOffsetZ = templateData[gameState.templateId].dimensions.height / 2 + 1.5
+  local boardOffsetX = templateData[gameState.templateId].dimensions.width / 2 * paddingFactor + 1.5
+  local boardOffsetZ = templateData[gameState.templateId].dimensions.height / 2 * paddingFactor + 1.5
 
   -- https://stackoverflow.com/questions/13894715/draw-equidistant-points-on-a-spiral
   local arc = 1.6
@@ -1063,7 +1065,7 @@ function spawnPuzzle(templateId, picture)
     local piece = spawnObject({
       type = 'Custom_Model',
       position = shuffledPositions[x],
-      rotation = { x = 0, y = math.random(-180, 180), z = 0 },
+      rotation = { x = 0, y = math.random(0, 4) * 90, z = 0 },
       callback_function = function(o) gameState.guidCatalog[getPieceId(o)] = o.guid end
     })
     piece.setCustomObject({
@@ -1074,6 +1076,8 @@ function spawnPuzzle(templateId, picture)
     })
     piece.sticky = false
   end
+
+  addObjectsActions()
 end
 
 function _pairsBySorted(t, sort_func)
@@ -1579,7 +1583,7 @@ end
 currentPlayerScoreBoardData = {}
 function updatePlayerScoreBoard()
   local start = os.time()
-  
+
   if update_scoreboard_delay != nil and os.time() < update_scoreboard_delay then
     if gameState.debug_level >= 2 then
       debugPrint(string.format(
@@ -1772,7 +1776,7 @@ function getPiece(objectOrId)
       end
     else
       local checkId = getPieceId(objectOrId)
-      
+
       -- if checkId is nil then this object is not a piece
       if checkId != nil then
         piece = {
@@ -1848,12 +1852,12 @@ function snapPieces(droppedPiece, targetPiece)
     x = projectedObjectPosition.x,
     y = droppedPiece.object.getPosition().y,
     z = projectedObjectPosition.z
-  })
+  }, true)
 
   local targetRotationDelta = targetPiece.object.getRotation() - targetPiece.solutionRotation
   local snapRotation = targetRotationDelta + droppedPiece.solutionRotation
 
-  droppedPiece.object.setRotationSmooth({ x = 0, y = snapRotation.y, z = 0 })
+  droppedPiece.object.setRotationSmooth({ x = 0, y = snapRotation.y, z = 0 }, true)
 
   if gameState.debug_level >= 2 then
     debugPrint(string.format(
@@ -2316,15 +2320,15 @@ function generatePieceDataSquare(dims, rng, pieceData)
     end
   end
 end
- 
+
 function generatePieceDataHoneycomb(dims, rng, pieceData)
   middle_row = dims.width -- The number of cells across the middle of the puzzle
   total_rows = dims.height -- the number of rows of hexagons in the puzzle
   side_length = (total_rows + 1)/2 -- The number of hexagons along any of the non-bottom/top sides
   bottom_length = middle_row - side_length + 1 -- The number of hexagons along the bottom/top side
   horiz_shift = 0.5 -- For every row down, the placement of the starting hexagon is this far left
-  vert_shift = 3^0.5/2 -- For every row down, the placement of the starting hexagon is this far 
-  
+  vert_shift = 3^0.5/2 -- For every row down, the placement of the starting hexagon is this far
+
   -- Change these values every row
   row_start = {0,0}
   row_length = bottom_length
@@ -2334,9 +2338,9 @@ function generatePieceDataHoneycomb(dims, rng, pieceData)
 
   -- Loop through all pieces starting in the top left, doing one row at a time
   for row = 1, total_rows do
-    
+
     for col = 1, row_length do
-    
+
       -- Add the 6 neigbours
       local neighbors = {}
       top_ref = toprow_start + (col - 1) - (row <= side_length and 1 or 0)
@@ -2349,10 +2353,10 @@ function generatePieceDataHoneycomb(dims, rng, pieceData)
       if mid_ref + 1 < botrow_start then table.insert(neighbors, mid_ref + 1) end
       if row != total_rows and bot_ref >= botrow_start then table.insert(neighbors, bot_ref) end
       if row != total_rows and bot_ref + 1 < botrow_start + bot_row_len then table.insert(neighbors, bot_ref + 1) end
-      
+
       table.insert(pieceData,{neighbors = neighbors, solutionPosition = {x = row_start[1] + col, y = 1, z = row_start[2]}, solutionRotation = {x=0, y=60 * rng.randbetween(0, 5), z=0}})
     end
-    
+
     -- Change the row values
     row_length = row_length + (row < side_length and 1 or -1)
     row_start = {row_start[1] + horiz_shift*(row < side_length and -1 or 1), row_start[2]-vert_shift}
@@ -2387,6 +2391,98 @@ function generatePieceData(details)
     ))
   end
 end
+
+function getPlayerByColor(color)
+  for index, player in ipairs(Player.getPlayers()) do
+    if player.color == color then
+      return player
+    end
+  end
+end
+
+function addObjectsActions()
+  for index, object in ipairs(getObjects()) do
+    if getPiece(object) then
+      addPieceActions(object)
+    elseif isBoard(object) then
+      addBoardActions(object)
+    end
+  end
+end
+
+function addPieceActions(obj)
+  local spacing = 1.6
+
+  function gridAlign(color, pos, focusedObj)
+    local objects = getPlayerByColor(color).getSelectedObjects()
+
+    for i, obj in ipairs(objects) do
+      p = obj.getPosition()
+      p.x = math.floor(p.x / spacing + .5) * spacing
+      p.z = math.floor(p.z / spacing + .5) * spacing
+      obj.setPositionSmooth(p, false)
+    end
+  end
+  obj.addContextMenuItem("Align: To Grid", gridAlign)
+
+  function rowAlign(color, pos, focusedObj)
+    local objects = getPlayerByColor(color).getSelectedObjects()
+    inplaceShuffle(objects)
+
+    local p0 = focusedObj.getPosition()
+
+    for i, obj in ipairs(objects) do
+      obj.setPositionSmooth({p0.x + (i - 1) * spacing, p0.y, p0.z}, false)
+    end
+  end
+  obj.addContextMenuItem("Align: Row", rowAlign)
+
+  function squareAlign(color, pos, focusedObj)
+    local objects = getPlayerByColor(color).getSelectedObjects()
+    inplaceShuffle(objects)
+
+    local p0 = focusedObj.getPosition()
+    local width = math.ceil(math.sqrt(#objects))
+
+    for i, obj in ipairs(objects) do
+      obj.setPositionSmooth({
+        p0.x + (i - 1) % width * spacing,
+        p0.y,
+        p0.z - math.floor((i - 1) / width) * spacing
+      }, false)
+    end
+  end
+  obj.addContextMenuItem("Align: Square", squareAlign)
+
+end
+
+function addBoardActions(board)
+
+  function selectEdges(color, pos, focusedObj)
+    getPlayerByColor(color).clearSelectedObjects()
+
+    local edgeObjects = {}
+
+    for pieceId, info in pairs(templateData[gameState.templateId].pieces) do
+      if #info.neighbors <= 5 and gameState.pieces[pieceId].joinedTo == nil then
+        local piece = getPiece(pieceId)
+        if piece and piece.object ~= nil and piece.object.locked == false then
+          table.insert(edgeObjects, piece.object)
+        end
+      end
+    end
+
+    inplaceShuffle(edgeObjects)
+    for i, object in ipairs(edgeObjects) do
+      object.addToPlayerSelection(color)
+    end
+
+  end
+  board.addContextMenuItem("Cheat: Select edges", selectEdges)
+
+
+end
+
 
 puzzleData['baking-bread-357627'] = {
   url = PUZZLE_URL .. 'res/puzzles/baking-bread-357627-5120x3840.jpg',
