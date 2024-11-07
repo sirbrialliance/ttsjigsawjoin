@@ -463,7 +463,8 @@ function onPlayerAction(player, action, objects)
       Player.Action.Under
     }) then
       local playerState = getPlayerState(player.steam_name)
-      local playerAllowance = playerState.score + 1
+      -- local playerAllowance = playerState.score + 1
+      local playerAllowance = 999999
 
       local handObjects = player.getHoldingObjects() or {}
       local selObjects = player.getSelectedObjects() or {}
@@ -2392,14 +2393,6 @@ function generatePieceData(details)
   end
 end
 
-function getPlayerByColor(color)
-  for index, player in ipairs(Player.getPlayers()) do
-    if player.color == color then
-      return player
-    end
-  end
-end
-
 function addObjectsActions()
   for index, object in ipairs(getObjects()) do
     if getPiece(object) then
@@ -2413,32 +2406,8 @@ end
 function addPieceActions(obj)
   local spacing = 1.6
 
-  function gridAlign(color, pos, focusedObj)
-    local objects = getPlayerByColor(color).getSelectedObjects()
-
-    for i, obj in ipairs(objects) do
-      p = obj.getPosition()
-      p.x = math.floor(p.x / spacing + .5) * spacing
-      p.z = math.floor(p.z / spacing + .5) * spacing
-      obj.setPositionSmooth(p, false)
-    end
-  end
-  obj.addContextMenuItem("Align: To Grid", gridAlign)
-
-  function rowAlign(color, pos, focusedObj)
-    local objects = getPlayerByColor(color).getSelectedObjects()
-    inplaceShuffle(objects)
-
-    local p0 = focusedObj.getPosition()
-
-    for i, obj in ipairs(objects) do
-      obj.setPositionSmooth({p0.x + (i - 1) * spacing, p0.y, p0.z}, false)
-    end
-  end
-  obj.addContextMenuItem("Align: Row", rowAlign)
-
   function squareAlign(color, pos, focusedObj)
-    local objects = getPlayerByColor(color).getSelectedObjects()
+    local objects = Player[color].getSelectedObjects()
     inplaceShuffle(objects)
 
     local p0 = focusedObj.getPosition()
@@ -2452,14 +2421,48 @@ function addPieceActions(obj)
       }, false)
     end
   end
-  obj.addContextMenuItem("Align: Square", squareAlign)
+  obj.addContextMenuItem("Arrange: Square", squareAlign)
 
+  function rowAlign(color, pos, focusedObj)
+    local objects = Player[color].getSelectedObjects()
+    inplaceShuffle(objects)
+
+    local p0 = focusedObj.getPosition()
+
+    for i, obj in ipairs(objects) do
+      obj.setPositionSmooth({p0.x + (i - 1) * spacing, p0.y, p0.z}, false)
+    end
+  end
+  obj.addContextMenuItem("Arrange: Row", rowAlign)
+
+  function gridAlign(color, pos, focusedObj)
+    local objects = Player[color].getSelectedObjects()
+
+    for i, obj in ipairs(objects) do
+      p = obj.getPosition()
+      p.x = math.floor(p.x / spacing + .5) * spacing
+      p.z = math.floor(p.z / spacing + .5) * spacing
+      obj.setPositionSmooth(p, false)
+    end
+  end
+  obj.addContextMenuItem("Align: To grid", gridAlign)
+
+  function solveAlign(color, pos, focusedObj)
+    local objects = Player[color].getSelectedObjects()
+
+    for i, obj in ipairs(objects) do
+      local piece = getPiece(obj)
+      if piece then
+        obj.setRotationSmooth(piece.solutionRotation)
+      end
+    end
+  end
+  obj.addContextMenuItem("Cheat: Align", solveAlign)
 end
 
 function addBoardActions(board)
-
   function selectEdges(color, pos, focusedObj)
-    getPlayerByColor(color).clearSelectedObjects()
+    Player[color].clearSelectedObjects()
 
     local edgeObjects = {}
 
@@ -2479,6 +2482,82 @@ function addBoardActions(board)
 
   end
   board.addContextMenuItem("Cheat: Select edges", selectEdges)
+
+  local lastPiecePick = nil
+  function gatherPieces(color, pos, focusedObj)
+    -- todo: may only work right for rectangular puzzles
+    local player = Player[color]
+
+    --Try to figure out where on the puzzle they clicked
+    --Wait, no, it's not useful because the pointer is already not where they opened the context menu,
+    --but where they clicked onthe menu.
+    --[[local pointerPos = player.getPointerPosition()
+    local bounds = focusedObj.getBoundsNormalized()
+    bounds.left = bounds.center.x - bounds.size.x / 2
+    bounds.right = bounds.center.x + bounds.size.x / 2
+    bounds.far = bounds.center.z + bounds.size.z / 2
+    bounds.near = bounds.center.z - bounds.size.z / 2
+
+    local puzzlePos = {
+      x = (pointerPos.x - bounds.left) / bounds.size.x,
+      y = (pointerPos.z - bounds.near) / bounds.size.z,
+    }
+
+    log("Pointer is at " .. printTable(pointerPos, true))
+    log("Bounds are " .. printTable(bounds, true))
+    log("puzzlePos " .. printTable(puzzlePos, true)) ]]
+
+    local bounds = focusedObj.getBounds()
+
+    local hits = Physics.cast({
+      origin = bounds.center,
+      direction = focusedObj.getTransformUp(),
+      type = 3,--box
+      size = bounds.size,
+      -- debug = true,
+    })
+
+    local piece = nil
+    for i, hit in ipairs(hits) do
+      if getPiece(hit.hit_object) then
+        piece = getPiece(hit.hit_object)
+      end
+    end
+
+
+    if not piece then
+      player.showInfoDialog("Place a piece on top of the puzzle")
+    else
+      lastPiecePick = piece
+      -- log("regarding piece at " .. printTable(lastPiecePick.solutionPosition, true))
+      player.showInputDialog("Collect how far from this piece?", "10", countConfirmed)
+    end
+
+    function countConfirmed(text, color)
+      local range = text + 0
+      local rangeSq = range * range
+      -- log("piece at " .. printTable(lastPiecePick.solutionPosition, true))
+
+      Player[color].clearSelectedObjects()
+
+      local targetPos = lastPiecePick.solutionPosition
+      for i, piece in ipairs(getAllPieces()) do
+        local distSq = math.pow(piece.solutionPosition.x - targetPos.x, 2) + math.pow(piece.solutionPosition.z - targetPos.z, 2)
+        if distSq <= rangeSq then
+          -- log("piece at " .. printTable(piece, true) .. " is " .. distSq .. " <= " .. rangeSq)
+          -- piece.object.addToPlayerSelection(color)
+          piece.object.setPosition({
+            (math.random() - .5) * range,
+            math.random() * range + 2,
+            (math.random() - .5) * range,
+          }, true)
+          piece.object.setVelocity({0, math.random() * 2, 0})
+        end
+      end
+
+    end
+  end
+  board.addContextMenuItem("Cheat: Gather pieces", gatherPieces)
 
 
 end
