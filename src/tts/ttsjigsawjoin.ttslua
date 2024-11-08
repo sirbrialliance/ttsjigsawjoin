@@ -2466,6 +2466,23 @@ function addPieceActions(obj)
 end
 
 function addBoardActions(board)
+  function changeTableColor(color, pos, focusedObj)
+    function colorPicked(pickedColor, playerColor)
+      for i, obj in pairs(tableSurfaces) do
+        local settings = obj.getCustomObject()
+        settings.diffuse = ""
+        obj.setCustomObject(settings)
+
+        obj.setColorTint(pickedColor)
+
+        tableSurfaces[i] = obj.reload()
+      end
+    end
+    Player[color].showColorDialog(tableSurfaces[0].getColorTint(), colorPicked)
+  end
+  board.addContextMenuItem("Change table color", changeTableColor)
+
+
   function selectEdges(color, pos, focusedObj)
     Player[color].clearSelectedObjects()
 
