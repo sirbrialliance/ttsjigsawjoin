@@ -1,0 +1,130 @@
+
+function getVisualBoundsWorld(obj)
+  -- This is made harder by bounds not being a thing we can just simply rotate...
+  local bounds = obj.getVisualBoundsNormalized()
+
+  local corners = {}
+
+  for cornerFlag = 0, 7 do
+    local signs = {x = 1, y = 1, z = 1}
+    if bit32.band(cornerFlag, 0x1) == 0 then signs.x = -1 end
+    if bit32.band(cornerFlag, 0x2) == 0 then signs.y = -1 end
+    if bit32.band(cornerFlag, 0x4) == 0 then signs.z = -1 end
+
+    -- How offset and center and local position works in TTS is kinda unintuitive.
+    local worldPos = obj.positionToWorld(Vector({
+      -bounds.offset.x + signs.x * bounds.size.x / 2,
+      -bounds.offset.y + signs.y * bounds.size.y / 2,
+      -bounds.offset.z + signs.z * bounds.size.z / 2,
+    }))
+
+    table.insert(corners, worldPos)
+  end
+
+  -- debugDrawBounds(obj.getBounds(), {0, 1, 0})
+  -- debugDrawLine({
+  --   points = corners,
+  --   color = {0, 1, 1},
+  --   thickness = .01,
+  -- })
+  -- debugDrawLine({
+  --   points = {obj.getPosition() + Vector({-.3, 0, -.3}), obj.getPosition(), obj.getPosition() + Vector({.3, 0, -.3})},
+  --   color = {0, 1, 1},
+  -- })
+
+  -- Find the new AABB
+  local edges = {
+    x0 = corners[1].x,
+    x1 = corners[1].x,
+    y0 = corners[1].y,
+    y1 = corners[1].y,
+    z0 = corners[1].z,
+    z1 = corners[1].z,
+  }
+
+  for i = 2, 7 do
+    edges.x0 = math.min(edges.x0, corners[i].x)
+    edges.x1 = math.max(edges.x1, corners[i].x)
+    edges.y0 = math.min(edges.y0, corners[i].y)
+    edges.y1 = math.max(edges.y1, corners[i].y)
+    edges.z0 = math.min(edges.z0, corners[i].z)
+    edges.z1 = math.max(edges.z1, corners[i].z)
+  end
+
+  local ret = {
+    center = Vector({(edges.x1 + edges.x0) / 2, (edges.y1 + edges.y0) / 2, (edges.z1 + edges.z0) / 2}),
+    size = Vector({edges.x1 - edges.x0, edges.y1 - edges.y0, edges.z1 - edges.z0}),
+    offset = nil,
+  }
+  ret.offset = obj.getPosition() - ret.center
+
+  -- debugDrawBounds(ret, {0, 1, 1})
+
+  return ret
+
+  -- And after all that, obj.getBounds() is often very close to if not the same as our result. :-(
+end
+
+function debugDrawLine(line)
+  local vectors = Global.getVectorLines() or {}
+
+  local offsetPoints = {}
+  for i = 1, #line.points do
+    offsetPoints[i] = Vector(line.points[i]) + Vector({0, .1, 0})
+  end
+  line.points = offsetPoints
+
+  table.insert(vectors, line)
+  Global.setVectorLines(vectors)
+end
+
+function debugDrawBounds(bounds, color)
+  -- local bc = Vector({bounds.center.x + bounds.offset.x, bounds.center.y + bounds.offset.y, bounds.center.z + bounds.offset.z})
+  local bc = bounds.center
+  local top = bc.y + bounds.size.y / 2
+  local p = {
+    tl = Vector({bc.x - bounds.size.x / 2, top, bc.z + bounds.size.z / 2}),
+    tr = Vector({bc.x + bounds.size.x / 2, top, bc.z + bounds.size.z / 2}),
+    br = Vector({bc.x + bounds.size.x / 2, top, bc.z - bounds.size.z / 2}),
+    bl = Vector({bc.x - bounds.size.x / 2, top, bc.z - bounds.size.z / 2}),
+  }
+
+  debugDrawLine({
+    points = {p.tl, p.tr, p.br, p.bl, p.tl},
+    color = color,
+    thickness = .01,
+  })
+
+  local objCenter = bounds.center + bounds.offset
+  debugDrawLine({
+    points = {objCenter + Vector(-.3, 0, .3), objCenter, objCenter + Vector(.3, 0, .3)},
+    color = color,
+    thickness = .02,
+  })
+end
+
+-- Returns a practical spacing to use between the given pieces (taking into account actual piece size)
+function getPieceSpacing(objects, includeHeight)
+  local spacing = 1
+
+  for i, obj in ipairs(objects) do
+    local bounds = getVisualBoundsWorld(obj)
+    spacing = math.max(spacing, bounds.size.x)
+    if includeHeight == true then
+      spacing = math.max(spacing, bounds.size.z)
+    end
+  end
+
+  return spacing + .2
+end
+
+--- Moves the visual bounds center of the given piece to the given point.
+function setPieceCenter(obj, pos, fast)
+  local bounds = getVisualBoundsWorld(obj)
+
+  pos = Vector(pos)
+  pos.x = pos.x + bounds.offset.x
+  pos.z = pos.z + bounds.offset.z
+
+  obj.setPositionSmooth(pos, fast)
+end

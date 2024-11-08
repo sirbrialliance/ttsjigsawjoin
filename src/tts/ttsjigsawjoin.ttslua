@@ -2393,6 +2393,8 @@ function generatePieceData(details)
   end
 end
 
+require("src/tts/boundshandling")
+
 function addObjectsActions()
   for index, object in ipairs(getObjects()) do
     if getPiece(object) then
@@ -2404,17 +2406,17 @@ function addObjectsActions()
 end
 
 function addPieceActions(obj)
-  local spacing = 1.6
 
   function squareAlign(color, pos, focusedObj)
     local objects = Player[color].getSelectedObjects()
     inplaceShuffle(objects)
+    local spacing = getPieceSpacing(objects, true)
 
     local p0 = focusedObj.getPosition()
     local width = math.ceil(math.sqrt(#objects))
 
     for i, obj in ipairs(objects) do
-      obj.setPositionSmooth({
+      setPieceCenter(obj, {
         p0.x + (i - 1) % width * spacing,
         p0.y,
         p0.z - math.floor((i - 1) / width) * spacing
@@ -2426,23 +2428,25 @@ function addPieceActions(obj)
   function rowAlign(color, pos, focusedObj)
     local objects = Player[color].getSelectedObjects()
     inplaceShuffle(objects)
+    local spacing = getPieceSpacing(objects, false)
 
     local p0 = focusedObj.getPosition()
 
     for i, obj in ipairs(objects) do
-      obj.setPositionSmooth({p0.x + (i - 1) * spacing, p0.y, p0.z}, false)
+      setPieceCenter(obj, {p0.x + (i - 1) * spacing, p0.y, p0.z}, false)
     end
   end
   obj.addContextMenuItem("Arrange: Row", rowAlign)
 
   function gridAlign(color, pos, focusedObj)
     local objects = Player[color].getSelectedObjects()
+    local spacing = getPieceSpacing(objects, true)
 
     for i, obj in ipairs(objects) do
       p = obj.getPosition()
       p.x = math.floor(p.x / spacing + .5) * spacing
       p.z = math.floor(p.z / spacing + .5) * spacing
-      obj.setPositionSmooth(p, false)
+      setPieceCenter(obj, p, false)
     end
   end
   obj.addContextMenuItem("Align: To grid", gridAlign)
@@ -2457,7 +2461,7 @@ function addPieceActions(obj)
       end
     end
   end
-  obj.addContextMenuItem("Cheat: Align", solveAlign)
+  obj.addContextMenuItem("Cheat: Rotate Right", solveAlign)
 end
 
 function addBoardActions(board)
