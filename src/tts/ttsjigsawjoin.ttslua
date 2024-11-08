@@ -2461,6 +2461,8 @@ function addPieceActions(obj)
         obj.setRotationSmooth(piece.solutionRotation)
       end
     end
+
+    broadcastToAll("Cheat: " .. Player[color].steam_name .. " rotated " .. #objects .. " piece(s) the right way.")
   end
   obj.addContextMenuItem("Cheat: Rotate Right", solveAlign)
 end
@@ -2502,6 +2504,7 @@ function addBoardActions(board)
       object.addToPlayerSelection(color)
     end
 
+    broadcastToAll("Cheat: " .. Player[color].steam_name .. " selected edges.")
   end
   board.addContextMenuItem("Cheat: Select edges", selectEdges)
 
@@ -2563,9 +2566,10 @@ function addBoardActions(board)
       Player[color].clearSelectedObjects()
 
       local targetPos = lastPiecePick.solutionPosition
+      local count = 0
       for i, piece in ipairs(getAllPieces()) do
         local distSq = math.pow(piece.solutionPosition.x - targetPos.x, 2) + math.pow(piece.solutionPosition.z - targetPos.z, 2)
-        if distSq <= rangeSq then
+        if distSq <= rangeSq and not piece.object.locked then
           -- log("piece at " .. printTable(piece, true) .. " is " .. distSq .. " <= " .. rangeSq)
           -- piece.object.addToPlayerSelection(color)
           piece.object.setPosition({
@@ -2574,9 +2578,11 @@ function addBoardActions(board)
             (math.random() - .5) * range,
           }, true)
           piece.object.setVelocity({0, math.random() * 2, 0})
+          count = count + 1
         end
       end
 
+      broadcastToAll("Cheat: " .. Player[color].steam_name .. " gathered " .. count .. " piece(s).")
     end
   end
   board.addContextMenuItem("Cheat: Gather pieces", gatherPieces)
