@@ -1616,7 +1616,10 @@ class RNG:
 def generateFiles(puzz_func, prefix):
     save_path = Path(r"D:\Pieces")
     save_path.mkdir(parents = True, exist_ok=True)
-    (save_path / "data.txt").unlink()
+    try:
+        (save_path / "data.txt").unlink()
+    except FileNotFoundError:
+        pass
 
     puzzles_to_do = [("4:3",[
                         [16,9]])]
@@ -1751,7 +1754,7 @@ def generateFiles(puzz_func, prefix):
                 hi = i // nw
 
                 # save outline of piece
-                fout_piece_outlines.write(f"{i+1}: " + ', '.join([f"({x:.10f},{y:.10f})" for x,y in piece.as_tuple_list()])+'\n')
+                # fout_piece_outlines.write(f"{i+1}: " + ', '.join([f"({x:.10f},{y:.10f})" for x,y in piece.as_tuple_list()])+'\n')
                 
                 # center the piece on 0,0
                 piece = [py2d.Transform.move(-wi-0.5, -hi-0.5) * p for p in piece]
@@ -1770,12 +1773,12 @@ def generateFiles(puzz_func, prefix):
                     
             total_size= 0
             for f in folder_path.iterdir():
-                total_size += f.lstat.st_size
+                total_size += f.lstat().st_size
             with (save_path / "data.txt").open("a") as fout:
                 fout.write(f"{folder_name} width={nw} height={nh} size={total_size} seed={seed_inc}\n")
             del puzz
             # Checking the size clears away the deleted variables and frees memory
-            for obj in locals().keys():
+            for obj in tuple(locals().keys()):
                 print(obj,sys.getsizeof(locals()[obj]))
                 
             
