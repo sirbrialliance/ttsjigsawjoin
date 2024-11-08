@@ -1,2 +1,9 @@
 .idea
 *.pyc
+.eggs
+*.egg-info
+build
+py2d/*.c
+py2d/*.so
+py2d/Math/*.c
+py2d/Math/*.so

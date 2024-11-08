@@ -11,9 +11,12 @@ import py2d
 import pygame
 import numpy as np
 import io
+from gzip import GzipFile
+
+# NB: we are importing the local, modified copy of py2d
+# You can debug "install" it wtih `pip install -e src/` from the project root.
 from py2d import Bezier
 from py2d.Math import Vector
-from gzip import GzipFile
 
 random.seed(1)
 
