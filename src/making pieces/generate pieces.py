@@ -195,7 +195,7 @@ def generateObjFromVertices(verts, rot, wi, hi, nw, nh):
         scale_y = 1.0 / nh
         offset_x = scale_x * (wi + 0.5)
         offset_y = scale_y * (hi + 0.5)
-        file_text += f"vt {fl(offset_x + v[0] * scale_x, 2 + int(math.ceil(math.log10(nw)-0.5)))} {fl(1 - (offset_y + v[1] * scale_y), 2 + int(math.ceil(math.log10(nh)-0.5)))}\n"
+        file_text += f"vt {fl(offset_x + v[0] * scale_x, 7)} {fl(1 - (offset_y + v[1] * scale_y), 7)}\n"
 
     #file_text += "s off\n"
 
