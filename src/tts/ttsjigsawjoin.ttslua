@@ -2441,11 +2441,12 @@ function addPieceActions(obj)
   function gridAlign(color, pos, focusedObj)
     local objects = Player[color].getSelectedObjects()
     local spacing = getPieceSpacing(objects, true)
+    local origin = Vector(pos)
 
     for i, obj in ipairs(objects) do
       p = obj.getPosition()
-      p.x = math.floor(p.x / spacing + .5) * spacing
-      p.z = math.floor(p.z / spacing + .5) * spacing
+      p.x = math.floor((p.x - origin.x) / spacing + .5) * spacing + origin.x
+      p.z = math.floor((p.z - origin.z) / spacing + .5) * spacing + origin.z
       setPieceCenter(obj, p, false)
     end
   end
