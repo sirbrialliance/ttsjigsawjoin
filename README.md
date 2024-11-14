@@ -1,6 +1,6 @@
 # Jigsaw Join Family Edition for Tabletop Simulator
 
-This is a branch of [Canonelis/ttsjiggys](https://github.com/Canonelis/ttsjiggys) altered for a more family/friends approach to puzzle solving with added features.
+This is a branch of [Canonelis/ttsjiggys](https://github.com/Canonelis/ttsjigsawjoin) altered for a more family/friends approach to puzzle solving with added features.
 
 ## Notable Changes
 
