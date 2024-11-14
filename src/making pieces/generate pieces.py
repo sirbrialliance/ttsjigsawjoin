@@ -87,6 +87,13 @@ def getConvexDecomposition(verts, method = 2):
         return b
         
 
+def triangulateConvexPoly(poly):
+    # Quick and lazy triangulate. (Won't work with concave ngons)
+    ret = []
+    for i in range(1, len(poly) - 1):
+        ret.append((poly[0], poly[i], poly[i + 1]))
+    return ret
+
 def displayDecompFromFile(f):
     if isPyGameStarted:
         gameDisplay.fill(black)
@@ -199,15 +206,28 @@ def generateObjFromVertices(verts, rot, wi, hi, nw, nh):
 
     #file_text += "s off\n"
 
-    decomp = getConvexDecomposition(verts.as_tuple_list())
-    if len(decomp) == 0:
+    decomp_raw = getConvexDecomposition(verts.as_tuple_list())
+
+    if len(decomp_raw) == 0:
         print(wi, hi, nw, nh)
-        Exception("no decomp")
+        raise Exception("no decomp")
+
+    # TTS can handle quads in the .obj fine, but it doesn't support any n-gon.
+    # Prefer quads when we can, since it makes the file smaller, but do further breakdown
+    # on larger n-gons
+    decomp = []
+    for group in decomp_raw:
+        if len(group) > 4:
+            subdecomp = triangulateConvexPoly(group)
+            decomp += subdecomp
+        else:
+            decomp.append(group)
+
     # make top faces
     for group in decomp:
         if len(group) > 4:
-            print(wi, hi, nw, nh)
-            Exception("group > 4")
+            print("Overlarge group", len(group), wi, hi, nw, nh)
+            raise Exception("group > 4")
         txt = "f"
         group = py2d.Polygon.from_tuples(group).clone_ccw()
         for v in group:
