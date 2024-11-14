@@ -115,7 +115,7 @@ function getPieceSpacing(objects, includeHeight)
     end
   end
 
-  return spacing + .2
+  return spacing + .1
 end
 
 --- Moves the visual bounds center of the given piece to the given point.

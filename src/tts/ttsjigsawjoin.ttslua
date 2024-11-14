@@ -2478,6 +2478,7 @@ function addBoardActions(board)
         obj.setColorTint(pickedColor)
 
         tableSurfaces[i] = obj.reload()
+        tableSurfaces[i].interactable = false
       end
     end
     Player[color].showColorDialog(tableSurfaces[0].getColorTint(), colorPicked)
