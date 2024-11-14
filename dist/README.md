@@ -1,8 +1,13 @@
 # Creating the TTS workshop mod
 
-In `src\tts`, `ttsjigsawjoin_TEMPLATE.json` contains the initial room setup (e.g. extended table) but without the Lua script or UI XML, so those can be source-controlled separately as `ttsjigsawjoin.ttslua` and `ttsjigsawjoin.xml`.
+To set scripts in a TTS save file:
 
-Use `build_json.py` to insert those into the template and build the full savefile here as `ttsjigsawjoin.json`. Then you can copy that over an existing savefile in e.g. `C:\Users\<YOU>\Documents\My Games\Tabletop Simulator\Saves\TS_Save_1.json`, load it in TTS, and upload to the workshop. Alternatively to replacing an existing savefile, you can instead edit e.g. `C:\Users\<YOU>\Documents\My Games\Tabletop Simulator\Saves\SaveFileInfos.json` and insert a reference to the new one.
+- Set the global lua script to `require("src/tts/ttsjigsawjoin")`
+- Set the global UI XML to `<Include src="src/tts/ttsjigsawjoin.xml"/>`
+
+Then to set or update the scripts using your IDE of choice to upload them into an active TTS file. For example, with Visual Studio Code with the "Tabletop Simulator Lua" plugin installed use the `TTSLua: Save and Play` command with a puzzle (or to-be puzzle) save file loaded in TTS. Your IDE will flatten all the file includes and send the results over to TTS.
+
+The `ttsjigsawjoin_TEMPLATE.json` and `build_json.py` files aren't used in this branch, but they are in the original.
 
 To explain how your new workshop mod will be bootstrapped with a clean scoreboard and other defaults...
 
