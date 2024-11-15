@@ -455,10 +455,10 @@ class CasualPuzzle:
 
         # print("inside_corners", self.inside_corners)
         # print("outside_corners", self.outside_corners)
-        print("piece_nubinfo", simplify_nubinfo(self.piece_nubinfo))
+        # print("piece_nubinfo", simplify_nubinfo(self.piece_nubinfo))
         # print("piece_dict", self.piece_dict)
 
-        return pieces
+        return (pieces, simplify_nubinfo(self.piece_nubinfo))
 
 
 class FunkyPuzzle(CasualPuzzle):
@@ -674,9 +674,9 @@ def generateJaggedPuzzle(width, height):
             break
 
 
-    print(simplify_nubinfo(piece_nubinfo))
+    # print(simplify_nubinfo(piece_nubinfo))
 
-    return pieces
+    return (pieces, simplify_nubinfo(piece_nubinfo))
 
 
 

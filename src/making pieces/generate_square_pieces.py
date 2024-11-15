@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import random
 import sys
+import json
 
 # import poly_decomp as pd
 import py2d
@@ -375,11 +376,9 @@ def generateFiles(puzz_func, prefix):
 
 
     # puzzles_to_do = [("4:3", [[16,9]])]
-    puzzles_to_do = [("4:4", [[4,4]])]
+    # puzzles_to_do = [("4:4", [[4,4]])]
     
 
-
-    found = 1
     seed_inc = 0
     for lbl, dims_list in puzzles_to_do:
         for nw, nh in dims_list:
@@ -392,13 +391,7 @@ def generateFiles(puzz_func, prefix):
 
             folder_name = prefix + new_label.replace(":","x") + f"-{nw}x{nh}"
             
-            if "peanuts" in folder_name:
-                found = 1
-                continue
-            if not found:
-                continue
-            
-            folder_path = save_path / folder_name
+            folder_path = save_path / prefix / folder_name
             folder_path.mkdir(parents=True, exist_ok=True)
 
             print("== Processing", folder_name, "==")
@@ -408,7 +401,7 @@ def generateFiles(puzz_func, prefix):
                 fout.write(obj_text)
             
             
-            puzz = puzz_func(nw, nh)
+            puzz, nubinfo = puzz_func(nw, nh)
             
             #fout_piece_outlines = (folder_path / "piece_outlines.txt").open('w')
 
@@ -433,6 +426,9 @@ def generateFiles(puzz_func, prefix):
                 with (folder_path / f"piece.{i + 1}.obj").open('w') as fout:
                     fout.write(obj_text)
 
+                # Update nubinfo with our new rotation so nub data matches our raw/unsolved rotation
+                nubinfo[i] = ''.join(np.roll(list(nubinfo[i]), -rot))
+
             #fout_piece_outlines.close()
                     
             total_size= 0
@@ -441,11 +437,10 @@ def generateFiles(puzz_func, prefix):
             with (save_path / "data.txt").open("a") as fout:
                 fout.write(f"{folder_name} width={nw} height={nh} size={total_size} seed={seed_inc}\n")
 
+            with (folder_path / "nubinfo.json").open('w') as fout:
+                json.dump(nubinfo, fout)
 
             print(f"{len(puzz)} pieces handled")
-            # with (folder_path / "directions.txt").open('w') as fout:
-            #     pass
-
             del puzz
             # Checking the size clears away the deleted variables and frees memory
             for obj in tuple(locals().keys()):
@@ -453,14 +448,12 @@ def generateFiles(puzz_func, prefix):
                 sys.getsizeof(locals()[obj])
 
 
-            return
-                
-            
+
 #print(generateObjFromVertices(test_vertices))
-# puzz = generateFunkyPuzzle(4, 4, 5)
-#puzz = generateCasualPuzzle(7, 7, 38)
-#puzz = generateJaggedPuzzle(60, 60)
-# puzz = generateTraditionalPuzzle(6, 6)
+# puzz, _ = generateFunkyPuzzle(4, 4, 5)
+#puzz, _ = generateCasualPuzzle(7, 7, 38)
+#puzz, _ = generateJaggedPuzzle(60, 60)
+# puzz, _ = generateTraditionalPuzzle(6, 6)
 #print(puzz)
 generateFiles(lambda w, h: puzz_gen.generateFunkyPuzzle(w,h,5),"fk")
 generateFiles(lambda w, h: puzz_gen.generateCasualPuzzle(w,h,7),"ca")
