@@ -44,6 +44,6 @@ See [dist/README.md](dist/README.md)
 
 Not well documented, dig around in `src/making pieces`. You'll need to fiddle with hardcoded paths and target actions. Note that you need to use the locally included version of `py2d`, not the normal version available through `pip`.
 
-`create pieces.py` makes the square pieces, `create_pieces.py` makes the hexagonal ones. Updated pieces need to be hosted somewhere and `PUZZLE_URL` in the main Lua script needs to changed (before generating a puzzle).
+`generate_square_pieces.py` makes the square pieces, `create_pieces.py` makes the hexagonal ones. Updated pieces need to be hosted somewhere and `PUZZLE_URL` in the main Lua script needs to changed (before generating a puzzle).
 
 `src/blender`, I believe, is an older, unmaintained method for generating the pieces.

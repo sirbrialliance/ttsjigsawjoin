@@ -9,6 +9,16 @@ function alignPiecesByShape(origin, objects, allowRotate)
   local spacing = getPieceSpacing(objects, true)
   local groups = {}
 
+	--- mumpy.roll(), but for 4 character strings
+	function rotateString(shape, rot)
+		local ret = ""
+		for i=0, 3 do
+			local idx = (i + rot) % 4 + 1
+			ret = ret .. shape:sub(idx, idx)
+		end
+		return ret
+	end
+
   for i, obj in ipairs(objects) do
 		local id = getPieceId(obj)
     local shape = nubinfo[id] or "????"
@@ -16,11 +26,7 @@ function alignPiecesByShape(origin, objects, allowRotate)
 		-- take into account the rotation
 		local rot = (math.floor(-obj.getRotation().y / 90 + 4.5) + 2) % 4
 
-		local currentShape = ""
-		for i=0, 3 do
-			local idx = (i + rot) % 4 + 1
-			currentShape = currentShape .. shape:sub(idx, idx)
-		end
+		local currentShape = rotateString(shape, rot)
 
 		-- print("Shape is " .. shape .. " and spin is " .. obj.getRotation().y .. " so active shape is " .. currentShape)
 
@@ -29,14 +35,69 @@ function alignPiecesByShape(origin, objects, allowRotate)
     table.insert(groups[currentShape], obj)
   end
 
-  -- printTable(groups)
+	if allowRotate then
+		local targetGroups = {
+			"oooo", "ooio", "oioi", "ooii",
+			"oiii", "iiii",
+		}
 
+		--- Returns how many steps to rotate a by to get b. false if you can't.
+		function shapeCanRotate(a, b)
+			if a == b then return 0 end
+			for shift=1,3 do
+				if rotateString(a, shift) == b then return shift end
+			end
+			return false
+		end
+
+		for groupName, pieces in pairs(groups) do
+			local rot = false
+			local transferGroup = nil
+			-- Check to see if there's a targetGroup we can rotate this group into:
+			for _, targetGroup in ipairs(targetGroups) do
+				rot = shapeCanRotate(groupName, targetGroup)
+				if rot ~= false then
+					transferGroup = targetGroup
+					break
+				end
+			end
+
+			if rot == 0 then
+				-- We are the target group, no-op
+			elseif rot ~= false then
+				-- We can rotate this to match a the target group ("transferGroup")
+				groups[transferGroup] = groups[transferGroup] or {}
+				groups[groupName] = {}
+
+				-- Spin pieces and move them to the other group
+				for _, piece in ipairs(pieces) do
+					local spin = piece.getRotation().y
+					spin = spin + -rot * 90
+
+					piece.setRotationSmooth(Vector(0, spin, 0), false, true)
+					table.insert(groups[transferGroup], piece)
+				end
+
+				print("from " .. groupName .. " to " .. transferGroup .. " rot " .. rot)
+				printTable(groups[groupName])
+				printTable(groups[transferGroup])
+			end
+		end
+	end
+
+	-- determine what order to arrange them
+	local groupList = {}
+	for name, _ in pairs(groups) do table.insert(groupList, name) end
+	table.sort(groupList, function(a, b) return a > b end)
+
+	-- Arrange
   local row = 0
-  for shape, group in pairs(groups) do
-    for i, obj in ipairs(group) do
+  for _, groupName in ipairs(groupList) do
+    for i, obj in ipairs(groups[groupName]) do
       setPieceCenter(obj, {origin.x + (i - 1) * spacing, origin.y, origin.z - row * spacing}, false)
     end
-    row = row + 1
+
+		if #groups[groupName] > 0 then row = row + 1 end
   end
 
 	return true
@@ -105,7 +166,7 @@ function addPieceActions(obj)
 			local ret = alignPiecesByShape(focusedObj.getPosition(), objects, true)
 			if ret == false then noNubinfoApologize(Player[color]) end
 		end
-		-- obj.addContextMenuItem("Arr & Rot: By Shape", shapeSpinAlign)
+		obj.addContextMenuItem("Arr & Rot: By Shape", shapeSpinAlign)
 	end
 
   function gridAlign(color, pos, focusedObj)
