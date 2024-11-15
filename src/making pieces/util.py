@@ -9,7 +9,6 @@ from gzip import GzipFile
 from py2d import Bezier
 from py2d.Math import Vector
 
-rejig_bad_pieces = 1
 
 
 def v_extend(angle, dist):
@@ -98,3 +97,40 @@ class KnobSelector:
         return knob
 
 trNubs = KnobSelector('knobs.gz')
+
+class PieceList:
+    height, width = None, None
+    plist = None
+    def __init__(self, h, w):
+        self.height, self.width = h, w
+        self.plist = []
+        for hi in range(self.height):
+            for wi in range(self.width):
+                self.plist.append((hi,wi))
+    def length(self):
+        return len(self.plist)
+    def pop(self):
+        return self.plist.pop()
+    def add(self, p):
+        self.plist.append(p)
+    def add_around(self, h, w):
+        for dx in range(-1, 2):
+            for dy in range(-1, 2):
+                if 0 <= h+dy < self.height and 0 <= w+dx < self.width:
+                    self.plist.append((h+dy,w+dx))
+                    
+
+def simplify_nubinfo(data):
+    ret = []
+    for piece in data:
+        s = ['?', '?', '?', '?'] # CSS convention: top, right, bottom, left
+        if 'N' in piece: s[0] = piece['N']
+        if 'E' in piece: s[1] = piece['E']
+        if 'S' in piece: s[2] = piece['S']
+        if 'W' in piece: s[3] = piece['W']
+
+        ret.append(''.join(s))
+
+    return ret
+
+

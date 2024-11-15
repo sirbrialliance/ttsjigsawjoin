@@ -3,27 +3,8 @@ Helper stuff for generating various puzzle (piece shape) types.
 """
 from util import * 
 
-class PieceList:
-    height, width = None, None
-    plist = None
-    def __init__(self, h, w):
-        self.height, self.width = h, w
-        self.plist = []
-        for hi in range(self.height):
-            for wi in range(self.width):
-                self.plist.append((hi,wi))
-    def length(self):
-        return len(self.plist)
-    def pop(self):
-        return self.plist.pop()
-    def add(self, p):
-        self.plist.append(p)
-    def add_around(self, h, w):
-        for dx in range(-1, 2):
-            for dy in range(-1, 2):
-                if 0 <= h+dy < self.height and 0 <= w+dx < self.width:
-                    self.plist.append((h+dy,w+dx))
-                    
+rejig_bad_pieces = 1
+
 
 class CasualPuzzle:
     def __init__(self, POINT_COUNT):
@@ -160,7 +141,10 @@ class CasualPuzzle:
 
             if rejig_bad_pieces and rp.is_self_intersecting():
                 continue
-            rp = [Vector(x, rndir*y) for x,y in rp.as_tuple_list()[:-2]]
+            # rp = [Vector(x, rndir*y) for x,y in rp.as_tuple_list()[:-2]]
+            rp = py2d.Polygon.from_tuples((Vector(x, rndir*y) for x,y in rp.as_tuple_list()[:-2]))
+
+            rp._isInnie = rndir < 0
             break
             
 
@@ -173,13 +157,19 @@ class CasualPuzzle:
 
     def genVertNub(self, i_row, i_column):
         t1 = py2d.Transform.move(i_column + 0.5, i_row + 1)
-        return [t1 * p for p in self.genNub()]
+        nub = self.genNub()
+        ret = py2d.Polygon.from_tuples((t1 * p for p in nub))
+        ret._isInnie = nub._isInnie
+        return ret
 
     def genHorizNub(self, i_row, i_column):
         t1 = py2d.Transform.move(i_column + 1, i_row + 0.5)
         t2 = py2d.Transform.rotate(math.pi/2)
         t3 = py2d.Transform.mirror_y()
-        return [t1 * t2 * t3 * p for p in self.genNub()]
+        nub = self.genNub()
+        ret = py2d.Polygon.from_tuples((t1 * t2 * t3 * p for p in nub))
+        ret._isInnie = nub._isInnie
+        return ret
     
     def isEdgeShort(self, rc1, rc2):
         return True # always do this for casual puzzle
@@ -282,10 +272,18 @@ class CasualPuzzle:
             rx = nub_point.x + self.OUTSIDE_CORNER_MAX_SLOPE*random.uniform(-nub_dist, nub_dist)
         return Vector(rx,ry)
 
+    def annotateNub(self, hi, wi, side, type):
+        """Mark the N/E/S/W edge of the given piece as an edge (e), innie (i), or outie (o)"""
+        idx = wi + hi * self.width
+        if type == True: type = "i"
+        elif type == False: type = "o"
+        self.piece_nubinfo[idx][side] = type
 
     def generate(self, width, height):
         self.width = width
         self.height = height
+
+        self.piece_nubinfo = [{} for i in range(width * height)]
 
         self.vert_nubs = []
         for hi in range(height - 1):
@@ -342,6 +340,10 @@ class CasualPuzzle:
             # Left nub
             if wi != 0:
                 p.add_points(self.horiz_nubs[hi][wi - 1])
+                self.annotateNub(hi, wi, "W", not self.horiz_nubs[hi][wi - 1]._isInnie)
+            else:
+                self.annotateNub(hi, wi, "W", "e")
+
                 
             # Top left corner
             if hi == height - 1:
@@ -359,6 +361,9 @@ class CasualPuzzle:
             # Top nub
             if hi != height - 1:
                 p.add_points(self.vert_nubs[hi][wi])
+                self.annotateNub(hi, wi, "S", self.vert_nubs[hi][wi]._isInnie)
+            else:
+                self.annotateNub(hi, wi, "S", "e")
 
             # Top right corner
             if hi == height - 1:
@@ -376,6 +381,9 @@ class CasualPuzzle:
             # Right nub
             if wi != width - 1:
                 p.add_points(list(reversed(self.horiz_nubs[hi][wi])))
+                self.annotateNub(hi, wi, "E", self.horiz_nubs[hi][wi]._isInnie)
+            else:
+                self.annotateNub(hi, wi, "E", "e")
                 
             # Bottom right corner
             if hi == 0:
@@ -393,6 +401,9 @@ class CasualPuzzle:
             # Bottom nub
             if hi != 0:
                 p.add_points(list(reversed(self.vert_nubs[hi - 1][wi])))
+                self.annotateNub(hi, wi, "N", not self.vert_nubs[hi - 1][wi]._isInnie)
+            else:
+                self.annotateNub(hi, wi, "N", "e")
 
             # check if piece is self-intersecting
             if rejig_bad_pieces and (p.is_self_intersecting() or p.get_closest_distance_to_self() < 0.07):
@@ -441,6 +452,12 @@ class CasualPuzzle:
         for hi in range(height):
             for wi in range(width):
                 pieces.append(piece_dict[(hi, wi)])
+
+        # print("inside_corners", self.inside_corners)
+        # print("outside_corners", self.outside_corners)
+        print("piece_nubinfo", simplify_nubinfo(self.piece_nubinfo))
+        # print("piece_dict", self.piece_dict)
+
         return pieces
 
 
@@ -505,9 +522,12 @@ class TraditionalPuzzle(CasualPuzzle):
         nub = [t * p for p in nub]
         isInnie = random.random() > 0.5 # Decide whether nub is an innie or an outie
         if isInnie:
-            return py2d.Polygon.from_tuples([(x, -y) for x,y in nub])
+            ret = py2d.Polygon.from_tuples([(x, -y) for x,y in nub])
         else:
-            return py2d.Polygon.from_tuples(nub)
+            ret = py2d.Polygon.from_tuples(nub)
+
+        ret._isInnie = isInnie
+        return ret
 
 
 
@@ -554,13 +574,27 @@ def generateJaggedPuzzle(width, height):
         rp.add_point(py2d.Vector(rndir*(rnheight + rnskew), rnpos - rnsize))
         rp.add_point(py2d.Vector(rndir*(rnheight - rnskew), rnpos + rnsize))
         rp.add_point(py2d.Vector(0, rpos+rsize))
+
+        rp._isInnie = rndir > 0
         return rp
 
     def genVertOpening():
         t1 = py2d.Transform.rotate(math.pi/2)
         t2 = py2d.Transform.mirror_y()
-        return py2d.Polygon.from_tuples([t1 * t2 * p for p in genHorizOpening()])
+        horiz = genHorizOpening()
+        rp = py2d.Polygon.from_tuples([t1 * t2 * p for p in horiz])
+        rp._isInnie = horiz._isInnie
+        return rp
         
+    piece_nubinfo = [{} for _ in range(width * height)]
+    def annotateNub(hi, wi, side, type):
+        """Mark the N/E/S/W edge of the given piece as an edge (e), innie (i), or outie (o)"""
+        idx = wi + hi * width
+        if type == True: type = "i"
+        elif type == False: type = "o"
+        piece_nubinfo[idx][side] = type
+
+
     corners = []
     for hi in range(height + 1):
         c = []
@@ -594,18 +628,33 @@ def generateJaggedPuzzle(width, height):
                 if wi != 0:
                     rp = horiz_openings[hi][wi - 1]
                     p.add_points([py2d.Transform.move(0, 0.5) * v for v in rp])
+                    annotateNub(hi, wi, "W", rp._isInnie)
+                else:
+                    annotateNub(hi, wi, "W", "e")
+
                 p.add_point(py2d.Transform.move(0, 1) * corners[hi + 1][wi])
                 if hi != height - 1:
                     rp = vert_openings[hi][wi]
                     p.add_points([py2d.Transform.move(0.5, 1) * v for v in rp])
+                    annotateNub(hi, wi, "S", not rp._isInnie)
+                else:
+                    annotateNub(hi, wi, "S", "e")
+
                 p.add_point(py2d.Transform.move(1, 1) * corners[hi + 1][wi + 1])
                 if wi != width - 1:
                     rp = horiz_openings[hi][wi]
                     p.add_points([py2d.Transform.move(1, 0.5) * v for v in rp.clone().flip()])
+                    annotateNub(hi, wi, "E", not rp._isInnie)
+                else:
+                    annotateNub(hi, wi, "E", "e")
+
                 p.add_point(py2d.Transform.move(1, 0) * corners[hi][wi + 1])
                 if hi != 0:
                     rp = vert_openings[hi - 1][wi]
                     p.add_points([py2d.Transform.move(0.5, 0) * v for v in rp.clone().flip()])
+                    annotateNub(hi, wi, "N", rp._isInnie)
+                else:
+                    annotateNub(hi, wi, "N", "e")
 
                 # check if piece is self-intersecting
                 if p.is_self_intersecting():
@@ -623,6 +672,10 @@ def generateJaggedPuzzle(width, height):
                 pieces += [py2d.Polygon.from_tuples([py2d.Transform.move(wi, hi) * q for q in p])]
         if not has_self_intersecting:
             break
+
+
+    print(simplify_nubinfo(piece_nubinfo))
+
     return pieces
 
 
