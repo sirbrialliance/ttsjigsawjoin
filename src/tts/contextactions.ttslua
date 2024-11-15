@@ -77,10 +77,6 @@ function alignPiecesByShape(origin, objects, allowRotate)
 					piece.setRotationSmooth(Vector(0, spin, 0), false, true)
 					table.insert(groups[transferGroup], piece)
 				end
-
-				print("from " .. groupName .. " to " .. transferGroup .. " rot " .. rot)
-				printTable(groups[groupName])
-				printTable(groups[transferGroup])
 			end
 		end
 	end

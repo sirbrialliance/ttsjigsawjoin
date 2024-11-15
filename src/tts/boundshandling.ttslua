@@ -4,6 +4,15 @@ function getVisualBoundsWorld(obj)
   local bounds = obj.getVisualBoundsNormalized()
 
   local corners = {}
+  local deltaSpin = 0
+
+  if obj.getRotationSmooth() ~= nil then
+    -- Try to return the data for once we finish a pending rotation.
+    -- ...it's not perfect but also not too important.
+    local pendingSpin = obj.getRotationSmooth().y
+    local spin = obj.getRotation().y
+    deltaSpin = math.rad(spin - pendingSpin)
+  end
 
   for cornerFlag = 0, 7 do
     local signs = {x = 1, y = 1, z = 1}
@@ -12,14 +21,26 @@ function getVisualBoundsWorld(obj)
     if bit32.band(cornerFlag, 0x4) == 0 then signs.z = -1 end
 
     -- How offset and center and local position works in TTS is kinda unintuitive.
-    local worldPos = obj.positionToWorld(Vector({
+    local localPos = Vector({
       -bounds.offset.x + signs.x * bounds.size.x / 2,
       -bounds.offset.y + signs.y * bounds.size.y / 2,
       -bounds.offset.z + signs.z * bounds.size.z / 2,
-    }))
+    })
+
+    if deltaSpin ~= 0 then
+      localPos = Vector({
+        localPos.x * math.cos(deltaSpin) - localPos.z * math.sin(deltaSpin),
+        localPos.y,
+        localPos.x * math.sin(deltaSpin) - localPos.z * math.cos(deltaSpin),
+      })
+    end
+
+    local worldPos = obj.positionToWorld(localPos)
 
     table.insert(corners, worldPos)
   end
+
+
 
   -- debugDrawBounds(obj.getBounds(), {0, 1, 0})
   -- debugDrawLine({
