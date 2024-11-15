@@ -1759,6 +1759,8 @@ def generateFiles(puzz_func, prefix):
             folder_path = save_path / folder_name
             folder_path.mkdir(parents=True, exist_ok=True)
 
+            print("== Processing", folder_name, "==")
+
             with (folder_path / "board.obj").open('w') as fout:
                 obj_text = generateObjBoard(nw, nh)
                 fout.write(obj_text)

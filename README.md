@@ -14,7 +14,7 @@ This is a branch of [Canonelis/ttsjiggys](https://github.com/Canonelis/ttsjigsaw
 
 Todo/not complete/etc.:
 
-- Move the starting puzzle board to the side and shrink it down. I never want to full puzzle image underneath the pieces I'm working on and hopefully you don't either.
+- Move the starting puzzle board to the side and shrink it down. I never want the full puzzle image underneath the pieces I'm working on and hopefully you don't either.
 - Regenerate pieces with higher accuracy UV data so the image on pieces isn't distorted when inspected closely.
 - Ability to arrange pieces by shape (e.g. all tabs in, two adjacent tabes out the other two in, etc.)
 
