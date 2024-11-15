@@ -1,4 +1,47 @@
 
+function alignPiecesByShape(origin, objects, allowRotate)
+	local nubinfo = templateData[gameState.templateId].nubinfo
+
+	if nubinfo == nil then 
+		return false
+	end
+
+  local spacing = getPieceSpacing(objects, true)
+  local groups = {}
+
+  for i, obj in ipairs(objects) do
+		local id = getPieceId(obj)
+    local shape = nubinfo[id] or "????"
+
+		-- take into account the rotation
+		local rot = (math.floor(-obj.getRotation().y / 90 + 4.5) + 2) % 4
+
+		local currentShape = ""
+		for i=0, 3 do
+			local idx = (i + rot) % 4 + 1
+			currentShape = currentShape .. shape:sub(idx, idx)
+		end
+
+		-- print("Shape is " .. shape .. " and spin is " .. obj.getRotation().y .. " so active shape is " .. currentShape)
+
+		-- record result
+    groups[currentShape] = groups[currentShape] or {}
+    table.insert(groups[currentShape], obj)
+  end
+
+  -- printTable(groups)
+
+  local row = 0
+  for shape, group in pairs(groups) do
+    for i, obj in ipairs(group) do
+      setPieceCenter(obj, {origin.x + (i - 1) * spacing, origin.y, origin.z - row * spacing}, false)
+    end
+    row = row + 1
+  end
+
+	return true
+end
+
 function addObjectsActions()
   for index, object in ipairs(getObjects()) do
     if getPiece(object) then
@@ -41,6 +84,29 @@ function addPieceActions(obj)
     end
   end
   obj.addContextMenuItem("Arrange: Row", rowAlign)
+
+	-- Only supported on square puzzles:
+	if (templateData[gameState.templateId].shape or "square") == "square" then
+		function noNubinfoApologize(player) 
+			player.showInfoDialog("Sorry, nub/tab data isn't available.")
+		end
+		function shapeAlign(color, pos, focusedObj)
+			local objects = Player[color].getSelectedObjects()
+			inplaceShuffle(objects)
+			local ret = alignPiecesByShape(focusedObj.getPosition(), objects, false)
+			if ret == false then noNubinfoApologize(Player[color]) end
+		end
+		obj.addContextMenuItem("Arrange: By Shape", shapeAlign)
+		
+		function shapeSpinAlign(color, pos, focusedObj)
+			local objects = Player[color].getSelectedObjects()
+			inplaceShuffle(objects)
+	
+			local ret = alignPiecesByShape(focusedObj.getPosition(), objects, true)
+			if ret == false then noNubinfoApologize(Player[color]) end
+		end
+		-- obj.addContextMenuItem("Arr & Rot: By Shape", shapeSpinAlign)
+	end
 
   function gridAlign(color, pos, focusedObj)
     local objects = Player[color].getSelectedObjects()
@@ -153,7 +219,6 @@ function addBoardActions(board)
         piece = getPiece(hit.hit_object)
       end
     end
-
 
     if not piece then
       player.showInfoDialog("Place a piece on top of the puzzle")

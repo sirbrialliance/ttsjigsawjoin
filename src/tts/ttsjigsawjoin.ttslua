@@ -2306,6 +2306,26 @@ RNG = {
   end
 }
 
+--- Handler for getting the nubinfo for puzzle data
+function handler_getNubinfo(req)
+  if req.is_error or req.response_code ~= 200 then
+    print("nubinfo request failed")
+    return
+  end
+
+  local details = templateData[gameState.templateId]
+  if req.url ~= details.baseUrl .. 'nubinfo.json' then
+    print("Stale nubinfo request finished, ignoring")
+    return
+  end
+
+  -- nubinfo is an array of strings. First element is piece.1, etc.
+  -- Values are four letters. For "oiei" the piece in its unsolved rotation has these sides:
+  -- top=outie, right=innie, bottom=edge, left=innie
+  details.nubinfo = JSON.decode(req.text)
+end
+
+
 function generatePieceDataSquare(dims, rng, pieceData)
   for ih =  1, dims.height do
     for iw = 1, dims.width do
@@ -2377,6 +2397,9 @@ function generatePieceData(details)
   local pieceData = {}
   if shape == "square" then
     generatePieceDataSquare(dims, rng, pieceData)
+    
+    -- NB: doesn't work with file:///, so test locally with a webserver
+    WebRequest.get(details.baseUrl .. 'nubinfo.json', handler_getNubinfo)
   elseif shape == "honeycomb" then
     generatePieceDataHoneycomb(dims, rng, pieceData)
   else
