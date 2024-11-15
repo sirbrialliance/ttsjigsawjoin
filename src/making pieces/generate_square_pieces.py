@@ -442,6 +442,7 @@ def generateFiles(puzz_func, prefix):
                 fout.write(f"{folder_name} width={nw} height={nh} size={total_size} seed={seed_inc}\n")
 
 
+            print(f"{len(puzz)} pieces handled")
             # with (folder_path / "directions.txt").open('w') as fout:
             #     pass
 
