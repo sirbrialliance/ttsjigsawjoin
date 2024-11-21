@@ -111,10 +111,8 @@ end
 
 function addPieceActions(obj)
 
-  function squareAlign(color, pos, focusedObj)
-    local objects = Player[color].getSelectedObjects()
-    inplaceShuffle(objects)
-    local spacing = getPieceSpacing(objects, true)
+	function doSquareAlign(focusedObj, objects) 
+		local spacing = getPieceSpacing(objects, true)
 
     local p0 = focusedObj.getPosition()
     local width = math.ceil(math.sqrt(#objects))
@@ -126,6 +124,12 @@ function addPieceActions(obj)
         p0.z - math.floor((i - 1) / width) * spacing
       }, false)
     end
+	end
+
+  function squareAlign(color, pos, focusedObj)
+    local objects = Player[color].getSelectedObjects()
+    inplaceShuffle(objects)
+		doSquareAlign(focusedObj, objects)
   end
   obj.addContextMenuItem("Arrange: Square", squareAlign)
 
@@ -192,6 +196,17 @@ function addPieceActions(obj)
     broadcastToAll("Cheat: " .. Player[color].steam_name .. " rotated " .. #objects .. " piece(s) the right way.")
   end
   obj.addContextMenuItem("Cheat: Rotate Right", solveAlign)
+
+  function solveOrdering(color, pos, focusedObj)
+    local objects = Player[color].getSelectedObjects()
+		table.sort(objects, function(a, b)
+			return getPieceId(a) - getPieceId(b) < 0
+		end)
+		doSquareAlign(focusedObj, objects)
+
+    broadcastToAll("Cheat: " .. Player[color].steam_name .. " sorted " .. #objects .. " piece(s) to the puzzle order.")
+  end
+  obj.addContextMenuItem("Cheat: Puzzle Order", solveOrdering)
 end
 
 function addBoardActions(board)

@@ -6,7 +6,7 @@ This is a branch of [Canonelis/ttsjiggys](https://github.com/Canonelis/ttsjigsaw
 
 - No piece movement limitation. (The base mod limits you to only moving one more piece than your total score.)
 - Useability improvements to initial puzzle piece positions/rotations.
-- Context actions for arranging a selection of pieces in a square, a row, or to a local grid for easy manipulation and handling of pieces.
+- Context actions for arranging a selection of pieces in a square, a row, or to a local grid for easy manipulation and handling of pieces. You can also arrange square puzzle pieces based on their general shape (e.g. all tabs in, 3 in 1 out, etc.).
 - Cheats (see below).
 - No greeting screen.
 - Right click the puzzle board and choose "Change table color" to quickly change the table background color.
@@ -16,7 +16,6 @@ Todo/not complete/etc.:
 
 - Move the starting puzzle board to the side and shrink it down. I never want the full puzzle image underneath the pieces I'm working on and hopefully you don't either.
 - Regenerate pieces with higher accuracy UV data so the image on pieces isn't distorted when inspected closely.
-- Ability to arrange pieces by shape (e.g. all tabs in, two adjacent tabes out the other two in, etc.)
 
 ## Cheats
 
@@ -27,6 +26,7 @@ A handful of accessability/cheat features have been added to help make more adva
 	- "Cheat: Gather Pieces" to make a "mini puzzle" (a small subset of the larger puzzle) for a less skilled player to work on. Start by placing one puzzle piece on the puzzle board, then right-click the puzzle board and select this option. It will ask you for a distance; choose and confirm. If nothing happens, try again. (TTS seems to often not give me the result the first time you use the dialog.) All pieces within the given range of the given piece will be moved to the center of the game area. You now have a subset "circle" of puzzle to work on.
 - Right click a puzzle piece (possibly a selection of pieces) and choose...
 	- "Cheat: Rotate Right" to correctly orient all pieces as they appear in the final puzzle solution.
+	- "Cheat: Puzzle Order" is basically the same as "Arrange: Square", but orders pieces based on their order in the puzzle (rows first, starting from the top-left). Note that items arrange on the same row may not be on the same row in the puzzle.
 
 Use of a cheat is announced to all players.
 
