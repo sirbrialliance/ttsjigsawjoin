@@ -396,6 +396,31 @@ function onObjectDropped(player_color, object)
   end
 end
 
+function onObjectPickUp(player_color, object)
+  if not gameState.puzzleEnabled or player_color == "Grey" then return end
+  local piece = getPiece(object)
+  if piece == nil then return end
+
+  -- Instantly finish any animated merges that are underway.
+  forceFinishJoinNow(object)
+  if object.isDestroyed() then
+    -- We lost the thing we grabbed...try to put the new thing in their hand.
+    -- (Doens't really work, but we at least select it.)
+    local newObject = nil
+    for id in iterJoinedTo(piece.id, false) do
+      local newPiece = getPiece(id)
+      if newPiece.object ~= nil and not newPiece.object.isDestroyed() then
+        newObject = newPiece.object
+        break
+      end
+    end
+
+    if newObject ~= nil then
+      getPiece(newObject).object.addToPlayerSelection(player_color)
+    end
+  end
+end
+
 function getHostPlayer()
   for index, player in ipairs(Player.getPlayers()) do
     if player.host then
@@ -1078,6 +1103,7 @@ function spawnPuzzle(templateId, picture)
     piece.sticky = false
   end
 
+  activeMerges = {}
   addObjectsActions()
 end
 
@@ -1843,7 +1869,8 @@ end
 
 
 
-
+--- Starts a smooth movement to put the given pieces together in their solved location.
+--- (That's all, does not attach pieces/et cetera.)
 function snapPieces(droppedPiece, targetPiece)
   local start = os.time()
 
@@ -1874,7 +1901,7 @@ end
 
 
 
-
+--- Physically attaches the given piece to the correct solved location.
 function attachPieces(droppedPiece, targetPiece)
   local start = os.time()
 
@@ -1956,23 +1983,30 @@ end
 
 
 
-
+--- Merges currently underway. 
+--- Map of piece id => {{other piece id => {timerId, timeoutFunc}, ...}
 activeMerges = {}
+
+--- Check if the piece is in a valid place and, if so, start merging it.
 function onPieceDropped(player_color, droppedPiece)
   local start = os.time()
 
-  activeMerges[droppedPiece.id] = activeMerges[droppedPiece.id] or 0
+  activeMerges[droppedPiece.id] = activeMerges[droppedPiece.id] or {}
 
   if gameState.debug_level >= 3 then
     debugPrint(string.format(
       'onPieceDropped player_color: %s, droppedPiece.id: %d, activeMerges: %d',
       player_color,
       droppedPiece.id,
-      activeMerges[droppedPiece.id]
+      printTable(activeMerges[droppedPiece.id], true)
     ))
   end
 
-  if activeMerges[droppedPiece.id] > 0 then return end
+  -- Bail if any active merges underway
+  for otherPieceId, info in pairs(activeMerges[droppedPiece.id]) do
+    -- typically shouldn't happen since piecking a piece up should finish any underway merges
+    return
+  end
 
   local droppedPieceGroup = {}
   for pieceId in iterJoinedTo(droppedPiece.id) do
@@ -2013,13 +2047,14 @@ function onPieceDropped(player_color, droppedPiece)
 end
 
 
+--- Starts the process of joining pieces together, eventually culmanting in a call to attachPieces()
 function joinPieces(player, droppedPiece, targetPiece, animated)
   animated = animated ~= false -- Default is true
 
-  activeMerges[targetPiece.id] = (activeMerges[targetPiece.id] or 0) + 1
-  activeMerges[droppedPiece.id] = (activeMerges[droppedPiece.id] or 0) + 1
+  activeMerges[targetPiece.id] = activeMerges[targetPiece.id] or {}
+  activeMerges[droppedPiece.id] = activeMerges[droppedPiece.id] or {}
 
-  droppedPiece.object.interactable = false
+  -- droppedPiece.object.interactable = false
 
   droppedPiece.object.removeFromPlayerSelection(player.color)
 
@@ -2051,12 +2086,12 @@ function joinPieces(player, droppedPiece, targetPiece, animated)
   end
 
   local toRunFunc = function()
-    droppedPiece.object.interactable = true
+    -- droppedPiece.object.interactable = true
 
     attachPieces(droppedPiece, targetPiece)
 
-    activeMerges[targetPiece.id] = activeMerges[targetPiece.id] - 1
-    activeMerges[droppedPiece.id] = activeMerges[droppedPiece.id] - 1
+    activeMerges[targetPiece.id][droppedPiece.id] = nil
+    activeMerges[droppedPiece.id][targetPiece.id] = nil
 
     if animated then
       Wait.frames(onCheckSolutionRequest, 1)
@@ -2082,9 +2117,21 @@ function joinPieces(player, droppedPiece, targetPiece, animated)
     toRunFunc()
   end
   if animated then
-    Wait.condition(toRunFunc, conditionFunc, timeout, timeoutFunc)
+    local timerId = Wait.condition(toRunFunc, conditionFunc, timeout, timeoutFunc)
+    activeMerges[targetPiece.id][droppedPiece.id] = {timerId = timerId, timeoutFunc = toRunFunc}
+    activeMerges[droppedPiece.id][targetPiece.id] = {timerId = timerId, timeoutFunc = toRunFunc}
   else
     toRunFunc()
+  end
+end
+
+function forceFinishJoinNow(object)
+  local pieceId = getPieceId(object)
+  if pieceId ~= nil and activeMerges[pieceId] ~= nil then
+    for otherPieceId, info in pairs(activeMerges[pieceId]) do
+      Wait.stop(info.timerId)
+      info.timeoutFunc()
+    end
   end
 end
 
