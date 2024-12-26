@@ -256,30 +256,35 @@ function addBoardActions(board)
     -- todo: may only work right for rectangular puzzles
     local player = Player[color]
 
-		--[[ debugDrawLine({
-			points = {pos, {pos.x, pos.y + 5, pos.z}},
-			color = {1, 1, 1},
-			thickness = .1,
-		}) --]]
-
+    
     --Try to figure out where on the puzzle they clicked
+    -- `pos` only seems to give us the center of the thing we right-clicked on
+    --Look at the mouse pointer?
     --Wait, no, it's not useful because the pointer is already not where they opened the context menu,
-    --but where they clicked onthe menu.
-    --[[local pointerPos = player.getPointerPosition()
+    --but where they clicked on the menu.
+    --[[
+    local pointerPos = player.getPointerPosition()
     local bounds = focusedObj.getBoundsNormalized()
     bounds.left = bounds.center.x - bounds.size.x / 2
     bounds.right = bounds.center.x + bounds.size.x / 2
     bounds.far = bounds.center.z + bounds.size.z / 2
     bounds.near = bounds.center.z - bounds.size.z / 2
-
+    
     local puzzlePos = {
       x = (pointerPos.x - bounds.left) / bounds.size.x,
       y = (pointerPos.z - bounds.near) / bounds.size.z,
     }
-
+    
     log("Pointer is at " .. printTable(pointerPos, true))
     log("Bounds are " .. printTable(bounds, true))
-    log("puzzlePos " .. printTable(puzzlePos, true)) ]]
+    log("puzzlePos " .. printTable(puzzlePos, true))
+    log("pos " .. printTable(pos, true))
+    debugDrawLine({
+      points = {pos, {pos.x, pos.y + 5, pos.z}},
+      color = {1, 0, 0},
+      thickness = .1,
+    })
+    --]]
 
     local bounds = focusedObj.getBounds()
 
@@ -311,6 +316,8 @@ function addBoardActions(board)
       local rangeSq = range * range
       -- log("piece at " .. printTable(lastPiecePick.solutionPosition, true))
 
+      local dumpOrigin = focusedObj.getPosition()
+
       Player[color].clearSelectedObjects()
 
       local targetPos = lastPiecePick.solutionPosition
@@ -321,11 +328,11 @@ function addBoardActions(board)
           -- log("piece at " .. printTable(piece, true) .. " is " .. distSq .. " <= " .. rangeSq)
           -- piece.object.addToPlayerSelection(color)
           piece.object.setPosition({
-            (math.random() - .5) * range,
-            math.random() * range + 2,
-            (math.random() - .5) * range,
+            dumpOrigin.x + (math.random() - .5) * range,
+            dumpOrigin.y + math.random() * range + 2,
+            dumpOrigin.z + (math.random() - .5) * range,
           }, true)
-          piece.object.setVelocity({0, math.random() * 2, 0})
+          piece.object.setVelocity({0, math.random() * -.1, 0})
           count = count + 1
         end
       end
