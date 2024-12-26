@@ -10,12 +10,12 @@ This is a branch of [Canonelis/ttsjiggys](https://github.com/Canonelis/ttsjigsaw
 - Cheats (see below).
 - No greeting screen.
 - Right click the puzzle board and choose "Change table color" to quickly change the table background color.
+- Pieces have been regenerated with higher accuracy UV data so the image on pieces isn't distorted when inspected closely.
 
 
 Todo/not complete/etc.:
 
 - Move the starting puzzle board to the side and shrink it down. I never want the full puzzle image underneath the pieces I'm working on and hopefully you don't either.
-- Regenerate pieces with higher accuracy UV data so the image on pieces isn't distorted when inspected closely.
 
 ## Cheats
 

@@ -1,7 +1,9 @@
 --[[ Lua code. See documentation: http://berserk-games.com/knowledgebase/scripting/ --]]
 templateData = {}
 puzzleData = {}
-PUZZLE_URL = 'https://raw.githubusercontent.com/Canonelis/ttsjiggys/main/'
+PUZZLE_URL = 'https://raw.githubusercontent.com/sirbrialliance/ttsjiggys/main/'
+-- For testing locally: (run `python -m http.server` in your piece folder)
+-- PUZZLE_URL = 'http://localhost:8000/'
 checkSolution_waitId = nil
 showing_credits = false
 update_scoreboard_delay = nil
@@ -403,13 +405,15 @@ function onObjectPickUp(player_color, object)
 
   -- Instantly finish any animated merges that are underway.
   forceFinishJoinNow(object)
+
+  --[[
   if object.isDestroyed() then
     -- We lost the thing we grabbed...try to put the new thing in their hand.
     -- (Doens't really work, but we at least select it.)
     local newObject = nil
     for id in iterJoinedTo(piece.id, false) do
       local newPiece = getPiece(id)
-      if newPiece.object ~= nil and not newPiece.object.isDestroyed() then
+      if newPiece ~= nill and newPiece.object ~= nil and not newPiece.object.isDestroyed() then
         newObject = newPiece.object
         break
       end
@@ -419,6 +423,7 @@ function onObjectPickUp(player_color, object)
       getPiece(newObject).object.addToPlayerSelection(player_color)
     end
   end
+  --]]
 end
 
 function getHostPlayer()

@@ -297,7 +297,7 @@ function addBoardActions(board)
     else
       lastPiecePick = piece
       -- log("regarding piece at " .. printTable(lastPiecePick.solutionPosition, true))
-      player.showInputDialog("Collect how far from this piece?", "10", countConfirmed)
+      player.showInputDialog("Collect how far from this piece? (Try again if it doens't work the first time.)", "10", countConfirmed)
     end
 
     function countConfirmed(text, color)
