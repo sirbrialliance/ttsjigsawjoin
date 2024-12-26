@@ -398,6 +398,10 @@ function onObjectDropped(player_color, object)
   end
 end
 
+function onObjectRotate(object, spin, flip, player_color, old_spin, old_flip)
+  onObjectDropped(player_color, object)
+end
+
 function onObjectPickUp(player_color, object)
   if not gameState.puzzleEnabled or player_color == "Grey" then return end
   local piece = getPiece(object)
@@ -2014,8 +2018,13 @@ function arePiecesAligned(droppedPiece, targetPiece)
   local objectRotation = droppedPiece.object.getRotation()
   local targetRotation = targetPiece.object.getRotation()
 
-  local droppedRotationDelta = droppedPiece.object.getRotation() - droppedPiece.solutionRotation
-  local targetRotationDelta = targetPiece.object.getRotation() - targetPiece.solutionRotation
+  -- If checking a piece that's rotating, check the target rotation, not the current.
+  if droppedPiece.object.getRotationSmooth() ~= nil then
+    objectRotation = droppedPiece.object.getRotationSmooth()
+  end
+
+  local droppedRotationDelta = objectRotation - droppedPiece.solutionRotation
+  local targetRotationDelta = targetRotation - targetPiece.solutionRotation
 
   local rotationDelta = normalizeRotation(droppedRotationDelta - targetRotationDelta)
 
@@ -2115,7 +2124,6 @@ function onPieceDropped(player_color, droppedPiece)
     ))
   end
 end
-
 
 --- Starts the process of joining pieces together, eventually culmanting in a call to attachPieces()
 function joinPieces(player, droppedPiece, targetPiece, animated)
