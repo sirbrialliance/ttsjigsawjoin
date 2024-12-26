@@ -256,6 +256,12 @@ function addBoardActions(board)
     -- todo: may only work right for rectangular puzzles
     local player = Player[color]
 
+		--[[ debugDrawLine({
+			points = {pos, {pos.x, pos.y + 5, pos.z}},
+			color = {1, 1, 1},
+			thickness = .1,
+		}) --]]
+
     --Try to figure out where on the puzzle they clicked
     --Wait, no, it's not useful because the pointer is already not where they opened the context menu,
     --but where they clicked onthe menu.

@@ -1030,22 +1030,62 @@ function spawnPuzzle(templateId, picture)
   if templateData[templateId].pieces == nil then
     generatePieceData(templateData[templateId])
   end
+  
+  local puzzleSize = templateData[gameState.templateId].dimensions
+  
 
+  -- Draw where the finished puzzle would go (and clear any other lines)
+  Global.setVectorLines({
+    {
+      points = {
+        {puzzleSize.width / 2, 1, -puzzleSize.height / 2},
+        {-puzzleSize.width / 2, 1, -puzzleSize.height / 2},
+        {-puzzleSize.width / 2, 1, puzzleSize.height / 2},
+        {puzzleSize.width / 2, 1, puzzleSize.height / 2},
+        {puzzleSize.width / 2, 1, -puzzleSize.height / 2},
+      },
+      color = {.5, .5, .5},
+      thickness = .2,
+    }
+  })
+
+  -- Puzzle board
+  local boardPos = Vector({-puzzleSize.width / 2 * 3, 1, puzzleSize.height / 2 * 3})
   local board = spawnObject({
     type = 'Custom_Model',
-    position = { x = 0, y = 1, z = 0 },
-    rotation = { x = 0, y = 180, z = 0 }
+    position = boardPos,
+    rotation = { x = 0, y = 180, z = 0 },
+    scale = { x = .5, y = .5, z = .5},
   })
   board.setCustomObject({
     mesh = templateData[gameState.templateId].baseUrl .. 'board.obj',
     diffuse = picture,
     material = 3
   })
+  board.locked = true
 
-  local paddingFactor = 1.5
 
-  local boardOffsetX = templateData[gameState.templateId].dimensions.width / 2 * paddingFactor + 1.5
-  local boardOffsetZ = templateData[gameState.templateId].dimensions.height / 2 * paddingFactor + 1.5
+  local padding = math.max(puzzleSize.width, puzzleSize.height) * .2 + 9
+  local boardOffsetX = puzzleSize.width / 2 + padding
+  local boardOffsetZ = puzzleSize.height / 2 + padding
+
+
+  -- Are we looking at a place we shouldn't place an initial piece?
+  function isReservedArea(position)
+    if math.abs(position.x) < boardOffsetX and math.abs(position.z) < boardOffsetZ then
+      return true
+    -- elseif position overlaps board then
+    --   return true
+    else
+      return false
+    end
+  end
+
+
+  -- Determine piece places
+  local spiralPositions = {}
+
+  --[[ Old method: in a spiral:
 
   -- https://stackoverflow.com/questions/13894715/draw-equidistant-points-on-a-spiral
   local arc = 1.6
@@ -1055,7 +1095,6 @@ function spawnPuzzle(templateId, picture)
   local r = arc
   local phi = r / b
 
-  local spiralPositions = {}
   while #spiralPositions < #templateData[gameState.templateId].pieces do
     local position = Vector(
       r * math.cos(phi),
@@ -1063,12 +1102,36 @@ function spawnPuzzle(templateId, picture)
       r * math.sin(phi)
     )
     if math.abs(position.x) > boardOffsetX or math.abs(position.z) > boardOffsetZ then
+    -- if not isReservedArea(position) then
       spiralPositions[#spiralPositions + 1] = position
     end
     phi = phi + arc / r
     r = b * phi
   end
+  -- ]]
 
+  -- New method: rectangular
+  local xw = math.floor(puzzleSize.width / 3)
+  local zw = math.floor(puzzleSize.height / 3)
+  function addPiecePosition(x, z)
+    if #spiralPositions >= #templateData[gameState.templateId].pieces then return end
+
+    local p = Vector({x * 1.5, 1.25, z * 1.5})
+    if not isReservedArea(p) then
+      spiralPositions[#spiralPositions + 1] = p
+    end
+  end
+  while #spiralPositions < #templateData[gameState.templateId].pieces do
+    local xw1 = xw - 1
+    local zw1 = zw - 1
+    for x = -xw1, xw1, 1 do addPiecePosition(x, zw) end
+    for z = zw, -zw, -1 do addPiecePosition(xw, z) end
+    for x = xw1, -xw1, -1 do addPiecePosition(x, -zw) end
+    for z = -zw, zw, 1 do addPiecePosition(-xw, z) end
+
+    xw = xw + 1
+    zw = zw + 1    
+  end
 
 
   local shuffledPositions = {}
@@ -1077,6 +1140,8 @@ function spawnPuzzle(templateId, picture)
     table.insert(shuffledPositions, pos, spiralPosition)
   end
 
+
+  -- Create and place pieces
 
   -- TODO save cache WIP
   pieceTextCache = ''
