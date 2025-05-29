@@ -1,5 +1,5 @@
 
-function alignPiecesByShape(origin, objects, allowRotate)
+function alignPiecesByShape(origin, objects, allowRotate, horizontalOnly)
 	local nubinfo = templateData[gameState.templateId].nubinfo
 
 	if nubinfo == nil then 
@@ -33,7 +33,11 @@ function alignPiecesByShape(origin, objects, allowRotate)
 
 		local currentShape = rotateString(shape, rot)
 
-		-- print("Shape is " .. shape .. " and spin is " .. obj.getRotation().y .. " so active shape is " .. currentShape)
+    if horizontalOnly then
+      currentShape = "-" .. currentShape:sub(2, 2) .. "-" .. currentShape:sub(4, 4)
+    end
+
+    -- print("Shape is " .. shape .. " and spin is " .. obj.getRotation().y .. " so active shape is " .. currentShape)
 
 		-- record result
     groups[currentShape] = groups[currentShape] or {}
@@ -94,6 +98,7 @@ function alignPiecesByShape(origin, objects, allowRotate)
 	-- Arrange
   local row = 0
   for _, groupName in ipairs(groupList) do
+    -- print("Row " .. row .. " is " .. groupName .. " with " .. #groups[groupName])
     for i, obj in ipairs(groups[groupName]) do
       setPieceCenter(obj, {origin.x + (i - 1) * spacing, origin.y, origin.z - row * spacing}, false)
     end
@@ -160,7 +165,7 @@ function addPieceActions(obj)
 		function shapeAlign(color, pos, focusedObj)
 			local objects = Player[color].getSelectedObjects()
 			inplaceShuffle(objects)
-			local ret = alignPiecesByShape(focusedObj.getPosition(), objects, false)
+			local ret = alignPiecesByShape(focusedObj.getPosition(), objects, false, false)
 			if ret == false then noNubinfoApologize(Player[color]) end
 		end
 		obj.addContextMenuItem("Arrange: By Shape", shapeAlign)
@@ -169,10 +174,19 @@ function addPieceActions(obj)
 			local objects = Player[color].getSelectedObjects()
 			inplaceShuffle(objects)
 	
-			local ret = alignPiecesByShape(focusedObj.getPosition(), objects, true)
+			local ret = alignPiecesByShape(focusedObj.getPosition(), objects, true, false)
 			if ret == false then noNubinfoApologize(Player[color]) end
 		end
 		obj.addContextMenuItem("Arr & Rot: By Shape", shapeSpinAlign)
+		
+		function shapeLeftRightAlign(color, pos, focusedObj)
+			local objects = Player[color].getSelectedObjects()
+			inplaceShuffle(objects)
+	
+			local ret = alignPiecesByShape(focusedObj.getPosition(), objects, false, true)
+			if ret == false then noNubinfoApologize(Player[color]) end
+		end
+		obj.addContextMenuItem("Arrange: Left/Right", shapeLeftRightAlign)
 	end
 
   function gridAlign(color, pos, focusedObj)
