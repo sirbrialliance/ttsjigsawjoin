@@ -229,6 +229,8 @@ function getOverlapHelper(objects)
   handler = {
     piecesArea = -1,
 
+    spacing = spacing,
+
     -- Provide a function that returns possible piece positions when called
     -- return {x: column, z: row}
     -- placementStepper = nil,
@@ -238,7 +240,7 @@ function getOverlapHelper(objects)
       local objectBounds = getVisualBoundsWorld(object)
       origin = Vector({objectBounds.edges.x0, objectBounds.center.y, objectBounds.edges.z1})
 
-      debugDrawPointMarker(origin, {0, 0, 0})
+      -- debugDrawPointMarker(origin, {0, 0, 0})
     end,
     targetObjects = function(objects)
       objectData = {}
@@ -272,7 +274,7 @@ function getOverlapHelper(objects)
           me.x1 < used.x2 and me.x2 > used.x1 and
           me.z1 < used.z2 and me.z2 > used.z1
         then
-          debugDrawEdges(me, {1, 0, 0})
+          -- debugDrawEdges(me, {1, 0, 0})
           return false
         end
       end
@@ -283,7 +285,7 @@ function getOverlapHelper(objects)
         local edges = handler.getEdgesFor(objectBounds, x, z)
         movePiece(object, objectBounds, x, z)
         table.insert(usedBounds, edges)
-        debugDrawEdges(edges, {0, 1, 0})
+        -- debugDrawEdges(edges, {0, 1, 0})
 
         return true
       else

@@ -191,14 +191,22 @@ function addPieceActions(obj)
 
   function gridAlign(color, pos, focusedObj)
     local objects = Player[color].getSelectedObjects()
-    local spacing = getPieceSpacing(objects, true)
+
+    local helper = getOverlapHelper(objects)
     local origin = Vector(pos)
+    helper.setOrigin(origin)
+    local spacing = helper.spacing
+
+    --debugDrawPointMarker(pos, {0, 0, 0})
 
     for i, obj in ipairs(objects) do
-      p = obj.getPosition()
-      p.x = math.floor((p.x - origin.x) / spacing + .5) * spacing + origin.x
-      p.z = math.floor((p.z - origin.z) / spacing + .5) * spacing + origin.z
-      setPieceCenter(obj, p, false)
+      local bounds = getVisualBoundsWorld(obj)
+      p = {x = bounds.edges.x0, z = bounds.edges.z1}
+      --debugDrawPointMarker(Vector(p.x, 1.1, p.z), {0, 1, 0})
+      p.x = math.floor((p.x - origin.x) / spacing + .5)
+      p.z = math.floor((p.z - origin.z) / spacing + .5)
+      helper.placePiece(obj, p.x, -p.z)
+      -- setPieceCenter(obj, p, false)
     end
   end
   obj.addContextMenuItem("Align: Local grid", gridAlign)
