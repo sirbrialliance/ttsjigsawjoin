@@ -399,7 +399,8 @@ function onObjectDropped(player_color, object)
 end
 
 function onObjectRotate(object, spin, flip, player_color, old_spin, old_flip)
-  onObjectDropped(player_color, object)
+  --onObjectDropped(player_color, object)
+  --fixme: can't double-rotate
 end
 
 function onObjectPickUp(player_color, object)

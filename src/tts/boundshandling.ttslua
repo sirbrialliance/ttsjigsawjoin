@@ -76,6 +76,7 @@ function getVisualBoundsWorld(obj)
     center = Vector({(edges.x1 + edges.x0) / 2, (edges.y1 + edges.y0) / 2, (edges.z1 + edges.z0) / 2}),
     size = Vector({edges.x1 - edges.x0, edges.y1 - edges.y0, edges.z1 - edges.z0}),
     offset = nil,
+    edges = edges,
   }
   ret.offset = obj.getPosition() - ret.center
 
@@ -84,6 +85,19 @@ function getVisualBoundsWorld(obj)
   return ret
 
   -- And after all that, obj.getBounds() is often very close to if not the same as our result. :-(
+end
+
+-- Given the world bounds of a group of pieces, returns probably about how many pieces large ({width, height})
+-- the cluster is.
+function getClusterSize(bounds)
+  -- Pieces are roughly 1 unit wide/tall, give or take.
+  local width = math.floor(bounds.size.x + .4)
+  local height = math.floor(bounds.size.z + .4)
+
+  return {
+    width = math.max(1, width),
+    height = math.max(1, height),
+  }
 end
 
 function debugDrawLine(line)
@@ -124,6 +138,23 @@ function debugDrawBounds(bounds, color)
   })
 end
 
+function debugDrawEdges(edges, color)
+  local y = 1.2
+  local p = {
+    tl = Vector({edges.x1, y, edges.z1}),
+    tr = Vector({edges.x2, y, edges.z1}),
+    br = Vector({edges.x2, y, edges.z2}),
+    bl = Vector({edges.x1, y, edges.z2}),
+  }
+
+  debugDrawLine({
+    points = {p.tl, p.tr, p.br, p.bl, p.tl},
+    color = color,
+    thickness = .01,
+  })
+
+end
+
 -- Returns a practical spacing to use between the given pieces (taking into account actual piece size)
 function getPieceSpacing(objects, includeHeight)
   local spacing = 1
@@ -149,3 +180,108 @@ function setPieceCenter(obj, pos, fast)
 
   obj.setPositionSmooth(pos, fast)
 end
+
+-- Helper for placing pieces on a local grid and trying not to put groups of pieces on top of each other.
+function getOverlapHelper(objects)
+  local origin = objects[1].getPosition()
+  --local spacing = getPieceSpacing(objects, true)
+  local spacing = 1.6
+
+  -- In this area we'll treat a piece at grid position x as the topleft-most piece in the cluster
+  -- is at the  grid position (projected into the world).
+  -- x+ is right, z+ is towards the user
+
+  --array of {x1, z1, x2, z2} rects that we've already put pieces in
+  local usedBounds = {}
+
+  local handler
+
+  function movePiece(object, objectBounds, x, z)
+    -- debugDrawBounds(objectBounds, {1, 1, 0})
+
+    -- put the top-left corner of the object at the grid position
+    local pos = Vector({x * spacing + origin.x, origin.y, -z * spacing + origin.z})
+    -- account for size and off-center origin
+    pos.x = pos.x + objectBounds.offset.x + objectBounds.size.x / 2
+    pos.z = pos.z + objectBounds.offset.z + objectBounds.size.z / 2
+
+    -- also account for nominal cluster size not being the same as the actual cluster size
+    local clusterSize = getClusterSize(objectBounds)
+    pos.x = pos.x - (objectBounds.size.x - clusterSize.width) / 2
+    pos.z = pos.z - (objectBounds.size.z - clusterSize.height) / 2
+
+    object.setPositionSmooth(pos, false)
+  end
+
+
+  handler = {
+    setOrigin = function(p) origin = Vector(p) end,
+    setOriginByObject = function(object)
+      local objectBounds = getVisualBoundsWorld(object)
+      origin = Vector({objectBounds.edges.x0, objectBounds.center.y, objectBounds.edges.z0})
+    end,
+    getEdgesFor = function(objectBounds, x, z)
+      -- returns x/z min/max in world space if the piece were placed at the given grid position
+      -- if the pieces were exactly their cluster size
+      local size = getClusterSize(objectBounds)
+      return {
+        -- x1 = x * spacing + objectBounds.center.x - objectBounds.size.x / 2,
+        -- x2 = x * spacing + objectBounds.center.x + objectBounds.size.x / 2,
+        -- z1 = z * spacing + objectBounds.center.z - objectBounds.size.z / 2,
+        -- z2 = z * spacing + objectBounds.center.z + objectBounds.size.z / 2,
+        x1 = x * spacing + origin.x,
+        x2 = x * spacing + size.width + origin.x,
+        z1 = -z * spacing + origin.z,
+        z2 = -z * spacing + size.height + origin.z,
+      }
+    end,
+    isSpaceFree = function(objectBounds, x, z)
+      local me = handler.getEdgesFor(objectBounds, x, z)
+
+      for i, used in ipairs(usedBounds) do
+        if
+          me.x1 < used.x2 and me.x2 > used.x1 and
+          me.z1 < used.z2 and me.z2 > used.z1
+        then
+          debugDrawEdges(me, {1, 0, 0})
+          return false
+        end
+      end
+      return true
+    end,
+    tryPlacePiece = function(object, objectBounds, x, z)
+      if handler.isSpaceFree(objectBounds, x, z) then
+        local edges = handler.getEdgesFor(objectBounds, x, z)
+        movePiece(object, objectBounds, x, z)
+        table.insert(usedBounds, edges)
+        debugDrawEdges(edges, {0, 1, 0})
+
+        return true
+      else
+        return false
+      end
+    end,
+    placePiece = function(object, x, z)
+      local objectBounds = getVisualBoundsWorld(object)
+      -- debugDrawBounds(objectBounds, {1, 1, 0})
+      -- debugDrawEdges(handler.getEdgesFor(objectBounds, 0, 0), {1, .5, 0})
+
+      for xShim = 0, 10 do
+        for zShim = 0, 10 do
+          if handler.tryPlacePiece(object, objectBounds, x + xShim, z + zShim) then
+            -- done
+            return
+          end
+        end
+      end
+
+      -- Failed to find a spot, give up
+      print("Overlap handler failed to find somewhere to put a piece")
+      movePiece(object, objectBounds, x, z)
+    end
+
+  }
+
+  return handler
+end
+

@@ -111,18 +111,14 @@ end
 
 function addPieceActions(obj)
 
-	function doSquareAlign(focusedObj, objects) 
-		local spacing = getPieceSpacing(objects, true)
+	function doSquareAlign(focusedObj, objects)
+    local helper = getOverlapHelper(objects)
 
-    local p0 = focusedObj.getPosition()
+    helper.setOriginByObject(focusedObj)
     local width = math.ceil(math.sqrt(#objects))
 
     for i, obj in ipairs(objects) do
-      setPieceCenter(obj, {
-        p0.x + (i - 1) % width * spacing,
-        p0.y,
-        p0.z - math.floor((i - 1) / width) * spacing
-      }, false)
+      helper.placePiece(obj, (i - 1) % width, math.floor((i - 1) / width))
     end
 	end
 
@@ -181,7 +177,7 @@ function addPieceActions(obj)
       setPieceCenter(obj, p, false)
     end
   end
-  obj.addContextMenuItem("Align: To grid", gridAlign)
+  obj.addContextMenuItem("Align: Local grid", gridAlign)
 
   function solveAlign(color, pos, focusedObj)
     local objects = Player[color].getSelectedObjects()
@@ -195,7 +191,7 @@ function addPieceActions(obj)
 
     broadcastToAll("Cheat: " .. Player[color].steam_name .. " rotated " .. #objects .. " piece(s) the right way.")
   end
-  obj.addContextMenuItem("Cheat: Rotate Right", solveAlign)
+  obj.addContextMenuItem("Cheat: Rotate Solved", solveAlign)
 
   function solveOrdering(color, pos, focusedObj)
     local objects = Player[color].getSelectedObjects()
