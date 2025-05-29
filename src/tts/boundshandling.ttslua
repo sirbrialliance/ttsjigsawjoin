@@ -163,19 +163,21 @@ function debugDrawPointMarker(pos, color)
   })
 end
 
--- Returns a practical spacing to use between the given pieces (taking into account actual piece size)
+-- Returns a practical spacing to use between the given pieces
 function getPieceSpacing(objects, includeHeight)
-  local spacing = 1
+  return 1.6
 
-  for i, obj in ipairs(objects) do
-    local bounds = getVisualBoundsWorld(obj)
-    spacing = math.max(spacing, bounds.size.x)
-    if includeHeight == true then
-      spacing = math.max(spacing, bounds.size.z)
-    end
-  end
+  -- local spacing = 1
 
-  return spacing + .1
+  -- for i, obj in ipairs(objects) do
+  --   local bounds = getVisualBoundsWorld(obj)
+  --   spacing = math.max(spacing, bounds.size.x)
+  --   if includeHeight == true then
+  --     spacing = math.max(spacing, bounds.size.z)
+  --   end
+  -- end
+
+  -- return spacing + .1
 end
 
 --- Moves the visual bounds center of the given piece to the given point.
@@ -192,8 +194,7 @@ end
 -- Helper for placing pieces on a local grid and trying not to put groups of pieces on top of each other.
 function getOverlapHelper(objects)
   local origin = objects[1].getPosition()
-  --local spacing = getPieceSpacing(objects, true)
-  local spacing = 1.6
+  local spacing = getPieceSpacing(objects, true)
 
   -- In this area we'll treat a piece at grid position x as the topleft-most piece in the cluster
   -- is at the  grid position (projected into the world).

@@ -9,7 +9,7 @@ function alignPiecesByShape(origin, objects, allowRotate)
   local spacing = getPieceSpacing(objects, true)
   local groups = {}
 
-	--- mumpy.roll(), but for 4 character strings
+	--- numpy.roll(), but for 4 character strings
 	function rotateString(shape, rot)
 		local ret = ""
 		for i=0, 3 do
@@ -22,6 +22,11 @@ function alignPiecesByShape(origin, objects, allowRotate)
   for i, obj in ipairs(objects) do
 		local id = getPieceId(obj)
     local shape = nubinfo[id] or "????"
+
+    if #obj.getAttachments() > 0 then
+      -- Don't try to arrange clusters
+      shape = "____"
+    end
 
 		-- take into account the rotation
 		local rot = (math.floor(-obj.getRotation().y / 90 + 4.5) + 2) % 4
