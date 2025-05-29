@@ -115,11 +115,19 @@ function addPieceActions(obj)
     local helper = getOverlapHelper(objects)
 
     helper.setOriginByObject(focusedObj)
-    local width = math.ceil(math.sqrt(#objects))
+    helper.targetObjects(objects)
+    local width = math.ceil(math.sqrt(helper.piecesArea))
 
-    for i, obj in ipairs(objects) do
-      helper.placePiece(obj, (i - 1) % width, math.floor((i - 1) / width))
+    local i = 0
+    local placementStepper = function()
+      i = i + 1
+      return {x = (i - 1) % width, z = math.floor((i - 1) / width)}
     end
+    helper.placePieces(objects, placementStepper)
+
+    -- for i, obj in ipairs(objects) do
+    --   helper.placePiece(obj, (i - 1) % width, math.floor((i - 1) / width))
+    -- end
 	end
 
   function squareAlign(color, pos, focusedObj)
