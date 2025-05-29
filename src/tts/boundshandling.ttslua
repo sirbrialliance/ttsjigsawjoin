@@ -289,15 +289,29 @@ function getOverlapHelper(objects)
         return false
       end
     end,
+    --- Puts the piece there even if it will overlap
+    forcePlacePiece = function(object, x, z)
+      local objectBounds = objectData[object].bounds
+      movePiece(object, objectBounds, x, z)
+      table.insert(usedBounds, handler.getEdgesFor(objectBounds, x, z))
+    end,
+    --- Puts the piece there, trying nearby if it will overlap
     placePiece = function(object, x, z)
-      local objectBounds = getVisualBoundsWorld(object)
+      local objectBounds = objectData[object].bounds
       -- debugDrawBounds(objectBounds, {1, 1, 0})
       -- debugDrawEdges(handler.getEdgesFor(objectBounds, 0, 0), {1, .5, 0})
 
-      for zShim = 0, -10, -1 do
-        for xShim = 0, 10 do
+      -- Try to find a place it fits and put it there
+      for zShim = 0, 5 do
+        for xShim = 0, 5 do
           if handler.tryPlacePiece(object, objectBounds, x + xShim, z + zShim) then
-            -- done
+            return
+          end
+        end
+      end
+      for zShim = -1, -5, -1 do
+        for xShim = -1, -5, -1 do
+          if handler.tryPlacePiece(object, objectBounds, x + xShim, z + zShim) then
             return
           end
         end
@@ -332,6 +346,8 @@ function getOverlapHelper(objects)
     end
 
   }
+
+  handler.targetObjects(objects)
 
   return handler
 end

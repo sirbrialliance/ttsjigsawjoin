@@ -111,11 +111,12 @@ end
 
 function addPieceActions(obj)
 
-	function doSquareAlign(focusedObj, objects)
-    local helper = getOverlapHelper(objects)
+  function squareAlign(color, pos, focusedObj)
+    local objects = Player[color].getSelectedObjects()
+    inplaceShuffle(objects)
 
+    local helper = getOverlapHelper(objects)
     helper.setOriginByObject(focusedObj)
-    helper.targetObjects(objects)
     local width = math.ceil(math.sqrt(helper.piecesArea))
 
     local i = 0
@@ -124,31 +125,27 @@ function addPieceActions(obj)
       return {x = (i - 1) % width, z = math.floor((i - 1) / width)}
     end
     helper.placePieces(objects, placementStepper)
-
-    -- for i, obj in ipairs(objects) do
-    --   helper.placePiece(obj, (i - 1) % width, math.floor((i - 1) / width))
-    -- end
-	end
-
-  function squareAlign(color, pos, focusedObj)
-    local objects = Player[color].getSelectedObjects()
-    inplaceShuffle(objects)
-		doSquareAlign(focusedObj, objects)
   end
   obj.addContextMenuItem("Arrange: Square", squareAlign)
 
-  function rowAlign(color, pos, focusedObj)
+  function rectangleAlign(color, pos, focusedObj)
     local objects = Player[color].getSelectedObjects()
     inplaceShuffle(objects)
-    local spacing = getPieceSpacing(objects, false)
 
-    local p0 = focusedObj.getPosition()
+    local helper = getOverlapHelper(objects)
+    helper.setOriginByObject(focusedObj)
+    -- Target a rough aspect ratio
+    local height = math.floor(helper.piecesArea / 10)
+    local width = math.ceil(helper.piecesArea / height)
 
-    for i, obj in ipairs(objects) do
-      setPieceCenter(obj, {p0.x + (i - 1) * spacing, p0.y, p0.z}, false)
+    local i = 0
+    local placementStepper = function()
+      i = i + 1
+      return {x = (i - 1) % width, z = math.floor((i - 1) / width)}
     end
+    helper.placePieces(objects, placementStepper)
   end
-  obj.addContextMenuItem("Arrange: Row", rowAlign)
+  obj.addContextMenuItem("Arrange: Rectangle", rectangleAlign)
 
 	-- Only supported on square puzzles:
 	if (templateData[gameState.templateId].shape or "square") == "square" then
@@ -187,7 +184,7 @@ function addPieceActions(obj)
   end
   obj.addContextMenuItem("Align: Local grid", gridAlign)
 
-  function solveAlign(color, pos, focusedObj)
+  function solveRotate(color, pos, focusedObj)
     local objects = Player[color].getSelectedObjects()
 
     for i, obj in ipairs(objects) do
@@ -199,14 +196,22 @@ function addPieceActions(obj)
 
     broadcastToAll("Cheat: " .. Player[color].steam_name .. " rotated " .. #objects .. " piece(s) the right way.")
   end
-  obj.addContextMenuItem("Cheat: Rotate Solved", solveAlign)
+  obj.addContextMenuItem("Cheat: Rotate Solved", solveRotate)
 
   function solveOrdering(color, pos, focusedObj)
     local objects = Player[color].getSelectedObjects()
 		table.sort(objects, function(a, b)
 			return getPieceId(a) - getPieceId(b) < 0
 		end)
-		doSquareAlign(focusedObj, objects)
+    
+    local helper = getOverlapHelper(objects)
+    helper.setOriginByObject(focusedObj)
+    local width = math.ceil(math.sqrt(helper.piecesArea))
+    -- the overlap helper will mess up the ordering, just make a mess with bigger pieces
+
+    for i, obj in ipairs(objects) do
+      helper.forcePlacePiece(obj, (i - 1) % width, math.floor((i - 1) / width))
+    end
 
     broadcastToAll("Cheat: " .. Player[color].steam_name .. " sorted " .. #objects .. " piece(s) to the puzzle order.")
   end
