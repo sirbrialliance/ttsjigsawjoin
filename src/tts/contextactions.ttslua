@@ -237,28 +237,28 @@ function addBoardActions(board)
   board.addContextMenuItem("Change table color", changeTableColor)
 
 
-  function selectEdges(color, pos, focusedObj)
+  function gatherEdges(color, pos, focusedObj)
     Player[color].clearSelectedObjects()
 
-    local edgeObjects = {}
+    local dumpOrigin = focusedObj.getPosition()
+    local range = math.sqrt(#templateData[gameState.templateId].pieces) / 3
 
     for pieceId, info in pairs(templateData[gameState.templateId].pieces) do
       if #info.neighbors <= 5 and gameState.pieces[pieceId].joinedTo == nil then
         local piece = getPiece(pieceId)
         if piece and piece.object ~= nil and piece.object.locked == false then
-          table.insert(edgeObjects, piece.object)
+          piece.object.setPosition({
+            dumpOrigin.x + (math.random() - .5) * range,
+            dumpOrigin.y + math.random() * range + 2,
+            dumpOrigin.z + (math.random() - .5) * range,
+          }, true)
         end
       end
     end
 
-    inplaceShuffle(edgeObjects)
-    for i, object in ipairs(edgeObjects) do
-      object.addToPlayerSelection(color)
-    end
-
-    broadcastToAll("Cheat: " .. Player[color].steam_name .. " selected edges.")
+    broadcastToAll("Cheat: " .. Player[color].steam_name .. " gathered edges.")
   end
-  board.addContextMenuItem("Cheat: Select edges", selectEdges)
+  board.addContextMenuItem("Cheat: Gather edges", gatherEdges)
 
   local lastPiecePick = nil
   function gatherPieces(color, pos, focusedObj)
