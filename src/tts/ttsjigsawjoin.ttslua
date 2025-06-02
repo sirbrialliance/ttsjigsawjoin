@@ -2542,6 +2542,8 @@ function generatePieceData(details)
   end
 end
 
+require("src/tts/debugtools")
+require("src/tts/clusterinfo")
 require("src/tts/boundshandling")
 require("src/tts/contextactions")
 

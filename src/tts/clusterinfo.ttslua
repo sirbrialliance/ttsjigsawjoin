@@ -1,0 +1,126 @@
+-- Tools/utility for getting info on a piece or cluster of pieces.
+
+function getVisualBoundsWorld(object)
+  -- This is made harder by bounds not being a thing we can just simply rotate...
+	-- Also, known issue, clusters tend to have wrong bounds at times until you pick them up and set them
+	-- back down...
+  local bounds = object.getVisualBoundsNormalized()
+
+  local corners = {}
+  local deltaSpin = 0
+
+  if object.getRotationSmooth() ~= nil then
+    -- Try to return the data for once we finish a pending rotation.
+    -- ...it's not perfect but also not too important.
+    local pendingSpin = object.getRotationSmooth().y
+    local spin = object.getRotation().y
+    deltaSpin = math.rad(spin - pendingSpin)
+  end
+
+  for cornerFlag = 0, 7 do
+    local signs = {x = 1, y = 1, z = 1}
+    if bit32.band(cornerFlag, 0x1) == 0 then signs.x = -1 end
+    if bit32.band(cornerFlag, 0x2) == 0 then signs.y = -1 end
+    if bit32.band(cornerFlag, 0x4) == 0 then signs.z = -1 end
+
+    -- How offset and center and local position works in TTS is kinda unintuitive.
+    local localPos = Vector({
+      -bounds.offset.x + signs.x * bounds.size.x / 2,
+      -bounds.offset.y + signs.y * bounds.size.y / 2,
+      -bounds.offset.z + signs.z * bounds.size.z / 2,
+    })
+
+    if deltaSpin ~= 0 then
+      localPos = Vector({
+        localPos.x * math.cos(deltaSpin) - localPos.z * math.sin(deltaSpin),
+        localPos.y,
+        localPos.x * math.sin(deltaSpin) - localPos.z * math.cos(deltaSpin),
+      })
+    end
+
+    local worldPos = object.positionToWorld(localPos)
+
+    table.insert(corners, worldPos)
+  end
+
+
+
+  -- debugDrawBounds(obj.getBounds(), {0, 1, 0})
+  -- debugDrawLine({
+  --   points = corners,
+  --   color = {0, 1, 1},
+  --   thickness = .01,
+  -- })
+  -- debugDrawLine({
+  --   points = {obj.getPosition() + Vector({-.3, 0, -.3}), obj.getPosition(), obj.getPosition() + Vector({.3, 0, -.3})},
+  --   color = {0, 1, 1},
+  -- })
+
+  -- Find the new AABB
+  local edges = {
+    x0 = corners[1].x,
+    x1 = corners[1].x,
+    y0 = corners[1].y,
+    y1 = corners[1].y,
+    z0 = corners[1].z,
+    z1 = corners[1].z,
+  }
+
+  for i = 2, 7 do
+    edges.x0 = math.min(edges.x0, corners[i].x)
+    edges.x1 = math.max(edges.x1, corners[i].x)
+    edges.y0 = math.min(edges.y0, corners[i].y)
+    edges.y1 = math.max(edges.y1, corners[i].y)
+    edges.z0 = math.min(edges.z0, corners[i].z)
+    edges.z1 = math.max(edges.z1, corners[i].z)
+  end
+
+  local ret = {
+    center = Vector({(edges.x1 + edges.x0) / 2, (edges.y1 + edges.y0) / 2, (edges.z1 + edges.z0) / 2}),
+    size = Vector({edges.x1 - edges.x0, edges.y1 - edges.y0, edges.z1 - edges.z0}),
+    offset = nil,
+    edges = edges,
+  }
+  ret.offset = object.getPosition() - ret.center
+
+  -- debugDrawBounds(ret, {0, 1, 1})
+
+  return ret
+
+  -- And after all that, obj.getBounds() is often very close to if not the same as our result. :-(
+end
+
+--- Returns info about a cluster of pieces.
+--- {
+---   object,
+---   bounds (from getVisualBoundsWorld),
+---   pieceWidth/Height (max rows/cols),
+---   pieceCount (actual count),
+---   piecesArea (width*height)
+--- }
+function getClusterInfo(object)
+	local info  = {}
+	info.object = object
+	info.bounds = getVisualBoundsWorld(object)
+
+	local attachments = object.getAttachments()
+  -- print("Cluster on obj is " .. printTable(attachments, true))
+
+	if #attachments == 0 then
+		info.pieceWidth = 1
+		info.pieceHeight = 1
+		info.pieceCount = 1
+	else
+		-- Pieces are roughly 1 unit wide/tall, give or take.
+		local width = math.floor(info.bounds.size.x + .4)
+		local height = math.floor(info.bounds.size.z + .4)
+
+		-- Probably about how many pieces large the cluster is and how many pieces are in the cluster.
+		info.pieceWidth = math.max(1, width)
+		info.pieceHeight = math.max(1, height)
+		info.pieceCount = #attachments + 1
+	end
+	info.piecesArea = info.pieceWidth * info.pieceHeight
+
+	return info
+end

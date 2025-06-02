@@ -1,167 +1,4 @@
 
-function getVisualBoundsWorld(obj)
-  -- This is made harder by bounds not being a thing we can just simply rotate...
-  local bounds = obj.getVisualBoundsNormalized()
-
-  local corners = {}
-  local deltaSpin = 0
-
-  if obj.getRotationSmooth() ~= nil then
-    -- Try to return the data for once we finish a pending rotation.
-    -- ...it's not perfect but also not too important.
-    local pendingSpin = obj.getRotationSmooth().y
-    local spin = obj.getRotation().y
-    deltaSpin = math.rad(spin - pendingSpin)
-  end
-
-  for cornerFlag = 0, 7 do
-    local signs = {x = 1, y = 1, z = 1}
-    if bit32.band(cornerFlag, 0x1) == 0 then signs.x = -1 end
-    if bit32.band(cornerFlag, 0x2) == 0 then signs.y = -1 end
-    if bit32.band(cornerFlag, 0x4) == 0 then signs.z = -1 end
-
-    -- How offset and center and local position works in TTS is kinda unintuitive.
-    local localPos = Vector({
-      -bounds.offset.x + signs.x * bounds.size.x / 2,
-      -bounds.offset.y + signs.y * bounds.size.y / 2,
-      -bounds.offset.z + signs.z * bounds.size.z / 2,
-    })
-
-    if deltaSpin ~= 0 then
-      localPos = Vector({
-        localPos.x * math.cos(deltaSpin) - localPos.z * math.sin(deltaSpin),
-        localPos.y,
-        localPos.x * math.sin(deltaSpin) - localPos.z * math.cos(deltaSpin),
-      })
-    end
-
-    local worldPos = obj.positionToWorld(localPos)
-
-    table.insert(corners, worldPos)
-  end
-
-
-
-  -- debugDrawBounds(obj.getBounds(), {0, 1, 0})
-  -- debugDrawLine({
-  --   points = corners,
-  --   color = {0, 1, 1},
-  --   thickness = .01,
-  -- })
-  -- debugDrawLine({
-  --   points = {obj.getPosition() + Vector({-.3, 0, -.3}), obj.getPosition(), obj.getPosition() + Vector({.3, 0, -.3})},
-  --   color = {0, 1, 1},
-  -- })
-
-  -- Find the new AABB
-  local edges = {
-    x0 = corners[1].x,
-    x1 = corners[1].x,
-    y0 = corners[1].y,
-    y1 = corners[1].y,
-    z0 = corners[1].z,
-    z1 = corners[1].z,
-  }
-
-  for i = 2, 7 do
-    edges.x0 = math.min(edges.x0, corners[i].x)
-    edges.x1 = math.max(edges.x1, corners[i].x)
-    edges.y0 = math.min(edges.y0, corners[i].y)
-    edges.y1 = math.max(edges.y1, corners[i].y)
-    edges.z0 = math.min(edges.z0, corners[i].z)
-    edges.z1 = math.max(edges.z1, corners[i].z)
-  end
-
-  local ret = {
-    center = Vector({(edges.x1 + edges.x0) / 2, (edges.y1 + edges.y0) / 2, (edges.z1 + edges.z0) / 2}),
-    size = Vector({edges.x1 - edges.x0, edges.y1 - edges.y0, edges.z1 - edges.z0}),
-    offset = nil,
-    edges = edges,
-  }
-  ret.offset = obj.getPosition() - ret.center
-
-  -- debugDrawBounds(ret, {0, 1, 1})
-
-  return ret
-
-  -- And after all that, obj.getBounds() is often very close to if not the same as our result. :-(
-end
-
--- Given the world bounds of a group of pieces, returns probably about how many pieces large ({width, height})
--- the cluster is.
-function getClusterSize(bounds)
-  -- Pieces are roughly 1 unit wide/tall, give or take.
-  local width = math.floor(bounds.size.x + .4)
-  local height = math.floor(bounds.size.z + .4)
-
-  return {
-    width = math.max(1, width),
-    height = math.max(1, height),
-  }
-end
-
-function debugDrawLine(line)
-  local vectors = Global.getVectorLines() or {}
-
-  local offsetPoints = {}
-  for i = 1, #line.points do
-    offsetPoints[i] = Vector(line.points[i]) + Vector({0, .1, 0})
-  end
-  line.points = offsetPoints
-
-  table.insert(vectors, line)
-  Global.setVectorLines(vectors)
-end
-
-function debugDrawBounds(bounds, color)
-  -- local bc = Vector({bounds.center.x + bounds.offset.x, bounds.center.y + bounds.offset.y, bounds.center.z + bounds.offset.z})
-  local bc = bounds.center
-  local top = bc.y + bounds.size.y / 2
-  local p = {
-    tl = Vector({bc.x - bounds.size.x / 2, top, bc.z + bounds.size.z / 2}),
-    tr = Vector({bc.x + bounds.size.x / 2, top, bc.z + bounds.size.z / 2}),
-    br = Vector({bc.x + bounds.size.x / 2, top, bc.z - bounds.size.z / 2}),
-    bl = Vector({bc.x - bounds.size.x / 2, top, bc.z - bounds.size.z / 2}),
-  }
-
-  debugDrawLine({
-    points = {p.tl, p.tr, p.br, p.bl, p.tl},
-    color = color,
-    thickness = .01,
-  })
-
-  local objCenter = bounds.center + bounds.offset
-  debugDrawLine({
-    points = {objCenter + Vector(-.3, 0, .3), objCenter, objCenter + Vector(.3, 0, .3)},
-    color = color,
-    thickness = .02,
-  })
-end
-
-function debugDrawEdges(edges, color)
-  local y = 1.2
-  local p = {
-    tl = Vector({edges.x1, y, edges.z1}),
-    tr = Vector({edges.x2, y, edges.z1}),
-    br = Vector({edges.x2, y, edges.z2}),
-    bl = Vector({edges.x1, y, edges.z2}),
-  }
-
-  debugDrawLine({
-    points = {p.tl, p.tr, p.br, p.bl, p.tl},
-    color = color,
-    thickness = .01,
-  })
-
-end
-
-function debugDrawPointMarker(pos, color)
-  debugDrawLine({
-    points = {pos + Vector(-.3, 0, .3), pos, pos + Vector(.3, 0, .3)},
-    color = color,
-    thickness = .02,
-  })
-end
 
 -- Returns a practical spacing to use between the given pieces
 function getPieceSpacing(objects, includeHeight)
@@ -203,24 +40,24 @@ function getOverlapHelper(objects)
   --array of {x1, z1, x2, z2} rects that we've already put pieces in
   local usedBounds = {}
 
-  local objectData = {}
+  local objectInfo = {}
 
   local handler
 
-  function movePiece(object, objectBounds, x, z)
+  function movePiece(object, x, z)
+    local cluster = objectInfo[object]
     -- debugDrawBounds(objectBounds, {1, 1, 0})
-    
+
     -- put the top-left corner of the object at the grid position
     local pos = Vector({x * spacing + origin.x, origin.y, -z * spacing + origin.z})
     -- debugDrawPointMarker(pos, {0, 1, 0})
     -- account for size and off-center origin
-    pos.x = pos.x + objectBounds.offset.x + objectBounds.size.x / 2
-    pos.z = pos.z + objectBounds.offset.z - objectBounds.size.z / 2
+    pos.x = pos.x + cluster.bounds.offset.x + cluster.bounds.size.x / 2
+    pos.z = pos.z + cluster.bounds.offset.z - cluster.bounds.size.z / 2
 
     -- also account for nominal cluster size not being the same as the actual cluster size
-    local clusterSize = getClusterSize(objectBounds)
-    pos.x = pos.x - (objectBounds.size.x - clusterSize.width) / 2
-    pos.z = pos.z + (objectBounds.size.z - clusterSize.height) / 2
+    pos.x = pos.x - (cluster.bounds.size.x - cluster.pieceWidth) / 2
+    pos.z = pos.z + (cluster.bounds.size.z - cluster.pieceHeight) / 2
 
     object.setPositionSmooth(pos, false)
   end
@@ -243,31 +80,27 @@ function getOverlapHelper(objects)
       -- debugDrawPointMarker(origin, {0, 0, 0})
     end,
     targetObjects = function(objects)
-      objectData = {}
+      objectInfo = {}
       handler.piecesArea = 0
       for i, object in ipairs(objects) do
-        local objectBounds = getVisualBoundsWorld(object)
-        local size = getClusterSize(objectBounds)
-        handler.piecesArea = handler.piecesArea + size.width * size.height
-        objectData[object] = {
-          clusterSize = size,
-          bounds = objectBounds,
-        }
+        local cluster = getClusterInfo(object)
+        handler.piecesArea = handler.piecesArea + cluster.piecesArea
+        objectInfo[object] = cluster
       end
     end,
-    getEdgesFor = function(objectBounds, x, z)
-      -- returns x/z min/max in world space if the piece were placed at the given grid position
-      -- if the pieces were exactly their cluster size
-      local size = getClusterSize(objectBounds)
+    -- returns x/z min/max in world space if the piece were placed at the given grid position
+    -- if the pieces were exactly their cluster size
+    getEdgesFor = function(object, x, z)
+      local cluster = objectInfo[object]
       return {
         x1 = x * spacing + origin.x,
-        x2 = x * spacing + size.width + origin.x,
+        x2 = x * spacing + cluster.pieceWidth + origin.x,
         z2 = -z * spacing + origin.z,
-        z1 = -z * spacing - size.height + origin.z,
+        z1 = -z * spacing - cluster.pieceHeight + origin.z,
       }
     end,
-    isSpaceFree = function(objectBounds, x, z)
-      local me = handler.getEdgesFor(objectBounds, x, z)
+    isSpaceFree = function(object, x, z)
+      local me = handler.getEdgesFor(object, x, z)
 
       for i, used in ipairs(usedBounds) do
         if
@@ -280,10 +113,10 @@ function getOverlapHelper(objects)
       end
       return true
     end,
-    tryPlacePiece = function(object, objectBounds, x, z)
-      if handler.isSpaceFree(objectBounds, x, z) then
-        local edges = handler.getEdgesFor(objectBounds, x, z)
-        movePiece(object, objectBounds, x, z)
+    tryPlacePiece = function(object, x, z)
+      if handler.isSpaceFree(object, x, z) then
+        local edges = handler.getEdgesFor(object, x, z)
+        movePiece(object, x, z)
         table.insert(usedBounds, edges)
         -- debugDrawEdges(edges, {0, 1, 0})
 
@@ -294,27 +127,27 @@ function getOverlapHelper(objects)
     end,
     --- Puts the piece there even if it will overlap
     forcePlacePiece = function(object, x, z)
-      local objectBounds = objectData[object].bounds
-      movePiece(object, objectBounds, x, z)
-      table.insert(usedBounds, handler.getEdgesFor(objectBounds, x, z))
+      local objectBounds = objectInfo[object].bounds
+      movePiece(object, x, z)
+      table.insert(usedBounds, handler.getEdgesFor(object, x, z))
     end,
     --- Puts the piece there, trying nearby if it will overlap
     placePiece = function(object, x, z)
-      local objectBounds = objectData[object].bounds
+      local objectBounds = objectInfo[object].bounds
       -- debugDrawBounds(objectBounds, {1, 1, 0})
       -- debugDrawEdges(handler.getEdgesFor(objectBounds, 0, 0), {1, .5, 0})
 
       -- Try to find a place it fits and put it there
       for zShim = 0, 5 do
         for xShim = 0, 5 do
-          if handler.tryPlacePiece(object, objectBounds, x + xShim, z + zShim) then
+          if handler.tryPlacePiece(object, x + xShim, z + zShim) then
             return
           end
         end
       end
       for zShim = -1, -5, -1 do
         for xShim = -1, -5, -1 do
-          if handler.tryPlacePiece(object, objectBounds, x + xShim, z + zShim) then
+          if handler.tryPlacePiece(object, x + xShim, z + zShim) then
             return
           end
         end
@@ -322,16 +155,14 @@ function getOverlapHelper(objects)
 
       -- Failed to find a spot, give up
       print("Overlap handler failed to find somewhere to put a piece")
-      movePiece(object, objectBounds, x, z)
+      movePiece(object, x, z)
     end,
     placePieces = function(objects, placementStepper)
       -- Sort with biggest pieces first
       local orderedObjects = {}
       for _, obj in ipairs(objects) do table.insert(orderedObjects, obj) end
       function objCmp(a, b)
-        local aArea = objectData[a].clusterSize.width * objectData[a].clusterSize.height
-        local bArea = objectData[b].clusterSize.width * objectData[b].clusterSize.height
-        return aArea > bArea
+        return objectInfo[a].piecesArea > objectInfo[b].piecesArea
       end
       table.sort(orderedObjects, objCmp)
 
@@ -339,7 +170,7 @@ function getOverlapHelper(objects)
       for _, obj in ipairs(orderedObjects) do
         while true do
           local pos = placementStepper()
-          if handler.tryPlacePiece(obj, objectData[obj].bounds, pos.x, pos.z) then
+          if handler.tryPlacePiece(obj, pos.x, pos.z) then
             -- it fit
             break
           end

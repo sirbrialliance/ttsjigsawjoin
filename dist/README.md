@@ -7,6 +7,8 @@ To set scripts in a TTS save file:
 
 Then to set or update the scripts using your IDE of choice to upload them into an active TTS file. For example, with Visual Studio Code with the "Tabletop Simulator Lua" plugin installed use the `TTSLua: Save and Play` command with a puzzle (or to-be puzzle) save file loaded in TTS. Your IDE will flatten all the file includes and send the results over to TTS.
 
+If you have Unity Hub: Sometimes Unity Hub takes the port TTS uses, so if you mysteriously can't upload code, try closing Unity Hub.
+
 The `ttsjigsawjoin_TEMPLATE.json` and `build_json.py` files aren't used in this branch, but they are in the original.
 
 To explain how your new workshop mod will be bootstrapped with a clean scoreboard and other defaults...

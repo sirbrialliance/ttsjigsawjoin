@@ -1,0 +1,63 @@
+
+function debugDrawLine(line)
+  local vectors = Global.getVectorLines() or {}
+
+  local offsetPoints = {}
+  for i = 1, #line.points do
+    offsetPoints[i] = Vector(line.points[i]) + Vector({0, .1, 0})
+  end
+  line.points = offsetPoints
+
+  table.insert(vectors, line)
+  Global.setVectorLines(vectors)
+end
+
+function debugDrawBounds(bounds, color)
+  -- local bc = Vector({bounds.center.x + bounds.offset.x, bounds.center.y + bounds.offset.y, bounds.center.z + bounds.offset.z})
+  local bc = bounds.center
+  local top = bc.y + bounds.size.y / 2
+  local p = {
+    tl = Vector({bc.x - bounds.size.x / 2, top, bc.z + bounds.size.z / 2}),
+    tr = Vector({bc.x + bounds.size.x / 2, top, bc.z + bounds.size.z / 2}),
+    br = Vector({bc.x + bounds.size.x / 2, top, bc.z - bounds.size.z / 2}),
+    bl = Vector({bc.x - bounds.size.x / 2, top, bc.z - bounds.size.z / 2}),
+  }
+
+  debugDrawLine({
+    points = {p.tl, p.tr, p.br, p.bl, p.tl},
+    color = color,
+    thickness = .01,
+  })
+
+  local objCenter = bounds.center + bounds.offset
+  debugDrawLine({
+    points = {objCenter + Vector(-.3, 0, .3), objCenter, objCenter + Vector(.3, 0, .3)},
+    color = color,
+    thickness = .02,
+  })
+end
+
+function debugDrawEdges(edges, color)
+  local y = 1.2
+  local p = {
+    tl = Vector({edges.x1, y, edges.z1}),
+    tr = Vector({edges.x2, y, edges.z1}),
+    br = Vector({edges.x2, y, edges.z2}),
+    bl = Vector({edges.x1, y, edges.z2}),
+  }
+
+  debugDrawLine({
+    points = {p.tl, p.tr, p.br, p.bl, p.tl},
+    color = color,
+    thickness = .01,
+  })
+
+end
+
+function debugDrawPointMarker(pos, color)
+  debugDrawLine({
+    points = {pos + Vector(-.3, 0, .3), pos, pos + Vector(.3, 0, .3)},
+    color = color,
+    thickness = .02,
+  })
+end
