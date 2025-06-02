@@ -2,7 +2,7 @@
 function alignPiecesByShape(origin, objects, allowRotate, horizontalOnly)
 	local nubinfo = templateData[gameState.templateId].nubinfo
 
-	if nubinfo == nil then 
+	if nubinfo == nil then
 		return false
 	end
 
@@ -47,8 +47,20 @@ function alignPiecesByShape(origin, objects, allowRotate, horizontalOnly)
 	if allowRotate then
 		local targetGroups = {
 			"oooo", "ooio", "oioi", "ooii",
-			"oiii", "iiii",
+			"oiii", "iiii", "??e?",
 		}
+
+    --- If any side is an edge piece, replaces all other parts of the group with "?", else returns false
+    function maybeSingleEdgeGroup(g)
+      if g:sub(1, 1) == "?" or g:sub(2, 2) == "?" then return false end
+
+      if g:sub(1, 1) == "e" then return "e???"
+      elseif g:sub(2, 2) == "e" then return "?e??"
+      elseif g:sub(3, 3) == "e" then return "??e?"
+      elseif g:sub(4, 4) == "e" then return "???e"
+      else return false
+      end
+    end
 
 		--- Returns how many steps to rotate a by to get b. false if you can't.
 		function shapeCanRotate(a, b)
@@ -59,9 +71,24 @@ function alignPiecesByShape(origin, objects, allowRotate, horizontalOnly)
 			return false
 		end
 
+    -- Move all pieces with at least one edge into special groups.
+		for groupName, pieces in pairs(groups) do
+      local newGroup = maybeSingleEdgeGroup(groupName)
+      if newGroup ~= false then
+        --print("Move " .. groupName .. " to " .. newGroup .. " pieces " .. #pieces)
+        groups[newGroup] = groups[newGroup] or {}
+        for _, piece in ipairs(pieces) do
+          table.insert(groups[newGroup], piece)
+        end
+        groups[groupName] = {}
+      end
+    end
+
+    -- Rotate pieces that are in targetGroups
 		for groupName, pieces in pairs(groups) do
 			local rot = false
 			local transferGroup = nil
+      
 			-- Check to see if there's a targetGroup we can rotate this group into:
 			for _, targetGroup in ipairs(targetGroups) do
 				rot = shapeCanRotate(groupName, targetGroup)
@@ -160,7 +187,7 @@ function addPieceActions(obj)
 
 	-- Only supported on square puzzles:
 	if (templateData[gameState.templateId].shape or "square") == "square" then
-		function noNubinfoApologize(player) 
+		function noNubinfoApologize(player)
 			player.showInfoDialog("Sorry, nub/tab data isn't available.")
 		end
 		function shapeAlign(color, pos, focusedObj)
@@ -170,20 +197,20 @@ function addPieceActions(obj)
 			if ret == false then noNubinfoApologize(Player[color]) end
 		end
 		obj.addContextMenuItem("Arrange: By Shape", shapeAlign)
-		
+
 		function shapeSpinAlign(color, pos, focusedObj)
 			local objects = Player[color].getSelectedObjects()
 			inplaceShuffle(objects)
-	
+
 			local ret = alignPiecesByShape(focusedObj.getPosition(), objects, true, false)
 			if ret == false then noNubinfoApologize(Player[color]) end
 		end
 		obj.addContextMenuItem("Arr & Rot: By Shape", shapeSpinAlign)
-		
+
 		function shapeLeftRightAlign(color, pos, focusedObj)
 			local objects = Player[color].getSelectedObjects()
 			inplaceShuffle(objects)
-	
+
 			local ret = alignPiecesByShape(focusedObj.getPosition(), objects, false, true)
 			if ret == false then noNubinfoApologize(Player[color]) end
 		end
@@ -231,7 +258,7 @@ function addPieceActions(obj)
 		table.sort(objects, function(a, b)
 			return getPieceId(a) - getPieceId(b) < 0
 		end)
-    
+
     local helper = getOverlapHelper(objects)
     helper.setOriginByObject(focusedObj)
     local width = math.ceil(math.sqrt(helper.piecesArea))
@@ -293,7 +320,7 @@ function addBoardActions(board)
     -- todo: may only work right for rectangular puzzles
     local player = Player[color]
 
-    
+
     --Try to figure out where on the puzzle they clicked
     -- `pos` only seems to give us the center of the thing we right-clicked on
     --Look at the mouse pointer?
@@ -306,12 +333,12 @@ function addBoardActions(board)
     bounds.right = bounds.center.x + bounds.size.x / 2
     bounds.far = bounds.center.z + bounds.size.z / 2
     bounds.near = bounds.center.z - bounds.size.z / 2
-    
+
     local puzzlePos = {
       x = (pointerPos.x - bounds.left) / bounds.size.x,
       y = (pointerPos.z - bounds.near) / bounds.size.z,
     }
-    
+
     log("Pointer is at " .. printTable(pointerPos, true))
     log("Bounds are " .. printTable(bounds, true))
     log("puzzlePos " .. printTable(puzzlePos, true))
