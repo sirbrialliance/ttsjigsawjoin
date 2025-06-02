@@ -63,6 +63,7 @@ function onLoad(save_state)
     gameState.pieceLabel = next(pieceTypeList)
   end
 
+  updatePuzzleUrlUI()
   populateDynamicUI()
   if gameState.debug_level >= 2 then
     debugPrint(string.format(
@@ -917,6 +918,10 @@ function populatePieceListContainer(uiTable, pieceLabel)
   UI.setCustomAssets(assets)
 end
 
+function updatePuzzleUrlUI()
+  UI.setAttribute('pictureUrlShare', 'text', gameState.pictureUrl or "<none>")
+end
+
 function onClick_picture(player, button, id)
   UI.setAttribute('puzzleUrl', 'text', puzzleData[id].url)
   -- Search for a template id for the current piece set so we don't need to switch
@@ -1009,6 +1014,7 @@ function changePictureUrl(url)
     end
   end
   gameState.pictureUrl = url
+  updatePuzzleUrlUI()
 end
 
 function onClick_playerScoreBoardRow(player, button, id)
@@ -1032,12 +1038,12 @@ end
 function spawnPuzzle(templateId, picture)
   gameState.templateId = templateId
   gameState.pictureUrl = picture
+  updatePuzzleUrlUI()
   if templateData[templateId].pieces == nil then
     generatePieceData(templateData[templateId])
   end
   
   local puzzleSize = templateData[gameState.templateId].dimensions
-  
 
   -- Draw where the finished puzzle would go (and clear any other lines)
   Global.setVectorLines({
