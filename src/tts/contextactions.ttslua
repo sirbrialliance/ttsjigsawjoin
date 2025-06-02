@@ -147,7 +147,7 @@ function addPieceActions(obj)
     -- Target a rough aspect ratio
     local ratio = 5 / 1
     local width = math.ceil(math.sqrt(ratio * helper.piecesArea))
-    print("Rect size for " .. helper.piecesArea .. " is " .. width)
+    -- print("Rect size for " .. helper.piecesArea .. " is " .. width)
 
     local i = 0
     local placementStepper = function()
