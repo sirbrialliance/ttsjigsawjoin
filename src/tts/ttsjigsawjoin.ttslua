@@ -1959,14 +1959,15 @@ function snapPieces(droppedPiece, targetPiece)
 
   droppedPiece.object.setPositionSmooth({
     x = projectedObjectPosition.x,
-    y = droppedPiece.object.getPosition().y,
+    y = projectedObjectPosition.y,-- target position
+    -- y = droppedPiece.object.getPosition().y,-- current height
     z = projectedObjectPosition.z
-  }, true)
+  }, false, true)
 
   local targetRotationDelta = targetPiece.object.getRotation() - targetPiece.solutionRotation
   local snapRotation = targetRotationDelta + droppedPiece.solutionRotation
 
-  droppedPiece.object.setRotationSmooth({ x = 0, y = snapRotation.y, z = 0 }, true)
+  droppedPiece.object.setRotationSmooth({ x = 0, y = snapRotation.y, z = 0 }, false, true)
 
   if gameState.debug_level >= 2 then
     debugPrint(string.format(
@@ -2184,10 +2185,10 @@ function joinPieces(player, droppedPiece, targetPiece, animated)
   end
 
   local conditionFunc = function()
-    return not droppedPiece.object.isSmoothMoving() and droppedPiece.object.resting
+    return not droppedPiece.object.isSmoothMoving()
   end
 
-  local timeout = 2 -- seconds
+  local timeout = 1 -- seconds
 
   local timeoutFunc = function()
     if gameState.debug_level >= 3 then
