@@ -3028,6 +3028,79 @@ templateData['hc9x16-26x49'] = {dimensions = {width=26, height=49}, size=4875863
 templateData['hc9x16-37x71'] = {dimensions = {width=37, height=71}, size=10028469, seed=53, ratio='9x16', shape='honeycomb', label='2x36x36'}
 templateData['hc9x16-53x103'] = {dimensions = {width=53, height=103}, size=20852852, seed=54, ratio='9x16', shape='honeycomb', label='2x52x52'}
 
+templateData['cu16x9-8x5'] = {dimensions = {width=8, height=5}, size=120635, seed=5008, ratio='16x9', label='8 x 5'}
+templateData['cu16x9-16x9'] = {dimensions = {width=16, height=9}, size=426105, seed=9016, ratio='16x9', label='16 x 9'}
+templateData['cu16x9-23x13'] = {dimensions = {width=23, height=13}, size=886515, seed=13023, ratio='16x9', label='23 x 13'}
+templateData['cu16x9-32x18'] = {dimensions = {width=32, height=18}, size=1651704, seed=18032, ratio='16x9', label='32 x 18'}
+templateData['cu16x9-48x27'] = {dimensions = {width=48, height=27}, size=3675650, seed=27048, ratio='16x9', label='48 x 27'}
+templateData['cu16x9-64x36'] = {dimensions = {width=64, height=36}, size=6672420, seed=36064, ratio='16x9', label='64 x 36'}
+templateData['cu16x9-80x45'] = {dimensions = {width=80, height=45}, size=10317294, seed=45080, ratio='16x9', label='80 x 45'}
+templateData['cu16x9-96x54'] = {dimensions = {width=96, height=54}, size=14777116, seed=54096, ratio='16x9', label='96 x 54'}
+templateData['cu3x2-6x4'] = {dimensions = {width=6, height=4}, size=77159, seed=4006, ratio='3x2', label='6 x 4'}
+templateData['cu3x2-12x8'] = {dimensions = {width=12, height=8}, size=265187, seed=8012, ratio='3x2', label='12 x 8'}
+templateData['cu3x2-21x14'] = {dimensions = {width=21, height=14}, size=832583, seed=14021, ratio='3x2', label='21 x 14'}
+templateData['cu3x2-36x24'] = {dimensions = {width=36, height=24}, size=2498084, seed=24036, ratio='3x2', label='36 x 24'}
+templateData['cu3x2-48x32'] = {dimensions = {width=48, height=32}, size=4441962, seed=32048, ratio='3x2', label='48 x 32'}
+templateData['cu3x2-57x38'] = {dimensions = {width=57, height=38}, size=6309467, seed=38057, ratio='3x2', label='57 x 38'}
+templateData['cu3x2-66x44'] = {dimensions = {width=66, height=44}, size=8315317, seed=44066, ratio='3x2', label='66 x 44'}
+templateData['cu3x2-78x52'] = {dimensions = {width=78, height=52}, size=11682235, seed=52078, ratio='3x2', label='78 x 52'}
+templateData['cu4x3-4x3'] = {dimensions = {width=4, height=3}, size=31879, seed=3004, ratio='4x3', label='4 x 3'}
+templateData['cu4x3-12x9'] = {dimensions = {width=12, height=9}, size=325570, seed=9012, ratio='4x3', label='12 x 9'}
+templateData['cu4x3-16x12'] = {dimensions = {width=16, height=12}, size=545487, seed=12016, ratio='4x3', label='16 x 12'}
+templateData['cu4x3-24x18'] = {dimensions = {width=24, height=18}, size=1245854, seed=18024, ratio='4x3', label='24 x 18'}
+templateData['cu4x3-36x27'] = {dimensions = {width=36, height=27}, size=2789954, seed=27036, ratio='4x3', label='36 x 27'}
+templateData['cu4x3-48x36'] = {dimensions = {width=48, height=36}, size=4990431, seed=36048, ratio='4x3', label='48 x 36'}
+templateData['cu4x3-60x45'] = {dimensions = {width=60, height=45}, size=7777683, seed=45060, ratio='4x3', label='60 x 45'}
+templateData['cu4x3-72x54'] = {dimensions = {width=72, height=54}, size=11274009, seed=54072, ratio='4x3', label='72 x 54'}
+templateData['cu5x4-5x4'] = {dimensions = {width=5, height=4}, size=62510, seed=4005, ratio='5x4', label='5 x 4'}
+templateData['cu5x4-10x8'] = {dimensions = {width=10, height=8}, size=224177, seed=8010, ratio='5x4', label='10 x 8'}
+templateData['cu5x4-20x16'] = {dimensions = {width=20, height=16}, size=900555, seed=16020, ratio='5x4', label='20 x 16'}
+templateData['cu5x4-30x24'] = {dimensions = {width=30, height=24}, size=2031166, seed=24030, ratio='5x4', label='30 x 24'}
+templateData['cu5x4-40x32'] = {dimensions = {width=40, height=32}, size=3692360, seed=32040, ratio='5x4', label='40 x 32'}
+templateData['cu5x4-50x40'] = {dimensions = {width=50, height=40}, size=5802357, seed=40050, ratio='5x4', label='50 x 40'}
+templateData['cu5x4-60x48'] = {dimensions = {width=60, height=48}, size=8375310, seed=48060, ratio='5x4', label='60 x 48'}
+templateData['cu5x4-70x56'] = {dimensions = {width=70, height=56}, size=11275697, seed=56070, ratio='5x4', label='70 x 56'}
+templateData['cu4x4-4x4'] = {dimensions = {width=4, height=4}, size=44947, seed=4004, ratio='4x4', label='4 x 4'}
+templateData['cu4x4-8x8'] = {dimensions = {width=8, height=8}, size=177640, seed=8008, ratio='4x4', label='8 x 8'}
+templateData['cu4x4-12x12'] = {dimensions = {width=12, height=12}, size=415355, seed=12012, ratio='4x4', label='12 x 12'}
+templateData['cu4x4-20x20'] = {dimensions = {width=20, height=20}, size=1111401, seed=20020, ratio='4x4', label='20 x 20'}
+templateData['cu4x4-30x30'] = {dimensions = {width=30, height=30}, size=2553876, seed=30030, ratio='4x4', label='30 x 30'}
+templateData['cu4x4-40x40'] = {dimensions = {width=40, height=40}, size=4597633, seed=40040, ratio='4x4', label='40 x 40'}
+templateData['cu4x4-50x50'] = {dimensions = {width=50, height=50}, size=7153569, seed=50050, ratio='4x4', label='50 x 50'}
+templateData['cu4x4-70x70'] = {dimensions = {width=70, height=70}, size=14142368, seed=70070, ratio='4x4', label='70 x 70'}
+templateData['cu4x5-4x5'] = {dimensions = {width=4, height=5}, size=64589, seed=4005, ratio='4x5', label='4 x 5'}
+templateData['cu4x5-8x10'] = {dimensions = {width=8, height=10}, size=223656, seed=8010, ratio='4x5', label='8 x 10'}
+templateData['cu4x5-16x20'] = {dimensions = {width=16, height=20}, size=911968, seed=16020, ratio='4x5', label='16 x 20'}
+templateData['cu4x5-24x30'] = {dimensions = {width=24, height=30}, size=2018534, seed=24030, ratio='4x5', label='24 x 30'}
+templateData['cu4x5-32x40'] = {dimensions = {width=32, height=40}, size=3720402, seed=32040, ratio='4x5', label='32 x 40'}
+templateData['cu4x5-40x50'] = {dimensions = {width=40, height=50}, size=5806515, seed=40050, ratio='4x5', label='40 x 50'}
+templateData['cu4x5-48x60'] = {dimensions = {width=48, height=60}, size=8385401, seed=48060, ratio='4x5', label='48 x 60'}
+templateData['cu4x5-56x70'] = {dimensions = {width=56, height=70}, size=11200895, seed=56070, ratio='4x5', label='56 x 70'}
+templateData['cu3x4-3x4'] = {dimensions = {width=3, height=4}, size=36369, seed=3004, ratio='3x4', label='3 x 4'}
+templateData['cu3x4-9x12'] = {dimensions = {width=9, height=12}, size=301232, seed=9012, ratio='3x4', label='9 x 12'}
+templateData['cu3x4-12x16'] = {dimensions = {width=12, height=16}, size=550740, seed=12016, ratio='3x4', label='12 x 16'}
+templateData['cu3x4-18x24'] = {dimensions = {width=18, height=24}, size=1235847, seed=18024, ratio='3x4', label='18 x 24'}
+templateData['cu3x4-27x36'] = {dimensions = {width=27, height=36}, size=2775430, seed=27036, ratio='3x4', label='27 x 36'}
+templateData['cu3x4-36x48'] = {dimensions = {width=36, height=48}, size=4961256, seed=36048, ratio='3x4', label='36 x 48'}
+templateData['cu3x4-45x60'] = {dimensions = {width=45, height=60}, size=7702803, seed=45060, ratio='3x4', label='45 x 60'}
+templateData['cu3x4-54x72'] = {dimensions = {width=54, height=72}, size=11165285, seed=54072, ratio='3x4', label='54 x 72'}
+templateData['cu2x3-4x6'] = {dimensions = {width=4, height=6}, size=69838, seed=4006, ratio='2x3', label='4 x 6'}
+templateData['cu2x3-8x12'] = {dimensions = {width=8, height=12}, size=275865, seed=8012, ratio='2x3', label='8 x 12'}
+templateData['cu2x3-14x21'] = {dimensions = {width=14, height=21}, size=816992, seed=14021, ratio='2x3', label='14 x 21'}
+templateData['cu2x3-24x36'] = {dimensions = {width=24, height=36}, size=2509935, seed=24036, ratio='2x3', label='24 x 36'}
+templateData['cu2x3-32x48'] = {dimensions = {width=32, height=48}, size=4447289, seed=32048, ratio='2x3', label='32 x 48'}
+templateData['cu2x3-38x57'] = {dimensions = {width=38, height=57}, size=6317585, seed=38057, ratio='2x3', label='38 x 57'}
+templateData['cu2x3-44x66'] = {dimensions = {width=44, height=66}, size=8373178, seed=44066, ratio='2x3', label='44 x 66'}
+templateData['cu2x3-52x78'] = {dimensions = {width=52, height=78}, size=11686866, seed=52078, ratio='2x3', label='52 x 78'}
+templateData['cu9x16-5x8'] = {dimensions = {width=5, height=8}, size=116667, seed=5008, ratio='9x16', label='5 x 8'}
+templateData['cu9x16-9x16'] = {dimensions = {width=9, height=16}, size=414923, seed=9016, ratio='9x16', label='9 x 16'}
+templateData['cu9x16-13x23'] = {dimensions = {width=13, height=23}, size=887389, seed=13023, ratio='9x16', label='13 x 23'}
+templateData['cu9x16-18x32'] = {dimensions = {width=18, height=32}, size=1658014, seed=18032, ratio='9x16', label='18 x 32'}
+templateData['cu9x16-27x48'] = {dimensions = {width=27, height=48}, size=3665247, seed=27048, ratio='9x16', label='27 x 48'}
+templateData['cu9x16-36x64'] = {dimensions = {width=36, height=64}, size=6729693, seed=36064, ratio='9x16', label='36 x 64'}
+templateData['cu9x16-45x80'] = {dimensions = {width=45, height=80}, size=10349043, seed=45080, ratio='9x16', label='45 x 80'}
+templateData['cu9x16-54x96'] = {dimensions = {width=54, height=96}, size=14873578, seed=54096, ratio='9x16', label='54 x 96'}
+
 
 for lbl, details in pairs(templateData) do
   details.size = details.size/1000000
@@ -3040,3 +3113,4 @@ pieceTypeList['tr'] = {name = "Traditional", description = "Traditional puzzle p
 pieceTypeList['ca'] = {name = "Casual", description = "Made for the laid back puzzler"}
 pieceTypeList['fk'] = {name = "Funky", description = "Funky pieces that have many interesting features"}
 pieceTypeList['jg'] = {name = "Spikey", description = "Small, simple and to the pointy"}
+pieceTypeList['cu'] = {name = "Cursed", description = "No edges, weird nubs"}

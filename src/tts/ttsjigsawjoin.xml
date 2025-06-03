@@ -409,7 +409,7 @@
             </Row>
             <Row>
               <Cell >
-                <VerticalScrollView id="pieceListScroll" color="rgba(0, 0, 0, 0)" scrollSensitivity="50" verticalScrollbarVisibility="AutoHideAndExpandViewport">
+                <VerticalScrollView id="pieceListScroll" color="rgba(0, 0, 0, 0)" scrollSensitivity="50" verticalScrollbarVisibility="AutoHideAndExpandViewport" horizontalScrollbarVisibility="None">
                     <VerticalLayout id="pieceListContainer" width="100">
                       <!-- Button class="piecePicture" -->
                     </VerticalLayout>

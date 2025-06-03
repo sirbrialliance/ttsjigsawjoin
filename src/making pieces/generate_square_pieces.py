@@ -25,6 +25,8 @@ from py2d.Math import Vector
 
 import puzz_gen
 
+SAVE_PATH = r"/home/jstephens/wdev/OpenSource/ttsjiggys"
+
 random.seed(1)
 
 white = (255,255,255)
@@ -159,7 +161,7 @@ def generateObjBoard(width, height):
     
     
 
-def generateObjFromVertices(verts, rot, wi, hi, nw, nh):
+def generateObjFromVertices(verts, rot, wi, hi, nw, nh, edgeCut):
     # generate a clockwise array(which is ccw in video-display land)
     verts = py2d.Polygon.from_tuples(verts).clone_ccw()
     
@@ -202,11 +204,19 @@ def generateObjFromVertices(verts, rot, wi, hi, nw, nh):
     
     # make vt rows
     file_text += "vt 0 0\n"
-    for v in verts:
+    if edgeCut > 0:
+        # take a bit off the edges of the image so you can't so easily see disguised edge pieces
+        scale_x = 1.0 / (nw + edgeCut * 2)
+        scale_y = 1.0 / (nh + edgeCut * 2)
+        offset_x = scale_x * (wi + 0.5 + edgeCut)
+        offset_y = scale_y * (hi + 0.5 + edgeCut)
+    else:
         scale_x = 1.0 / nw
         scale_y = 1.0 / nh
         offset_x = scale_x * (wi + 0.5)
         offset_y = scale_y * (hi + 0.5)
+
+    for v in verts:
         file_text += f"vt {fl(offset_x + v[0] * scale_x, 7)} {fl(1 - (offset_y + v[1] * scale_y), 7)}\n"
 
     #file_text += "s off\n"
@@ -274,7 +284,7 @@ class RNG:
         
 
 def generateFiles(puzz_func, prefix):
-    save_path = Path(r"/home/jstephens/wtmp/Pieces")
+    save_path = Path(SAVE_PATH)
     save_path.mkdir(parents = True, exist_ok=True)
     try:
         (save_path / "data.txt").unlink()
@@ -376,14 +386,15 @@ def generateFiles(puzz_func, prefix):
 
 
     # puzzles_to_do = [("4:3", [[16,9]])]
-    # puzzles_to_do = [("4:4", [[4,4]])]
-    
+    # puzzles_to_do = [("1:1", [[4,4], [5,5]])]
+    # puzzles_to_do = [("16:9",[[8,5], [16,9], [23,13]])]
 
-    seed_inc = 0
     for lbl, dims_list in puzzles_to_do:
         for nw, nh in dims_list:
-            seed_inc += 1
-            rng = RNG(seed_inc)
+            seed = nw + nh * 1000
+            # seed += 1
+            rng = RNG(seed)
+            random.seed(seed)
             new_label = lbl
             if lbl[0] == "-":
                 new_label = lbl[1:]
@@ -401,7 +412,7 @@ def generateFiles(puzz_func, prefix):
                 fout.write(obj_text)
             
             
-            puzz, nubinfo = puzz_func(nw, nh)
+            puzz, nubinfo, extraInfo = puzz_func(nw, nh)
             
             #fout_piece_outlines = (folder_path / "piece_outlines.txt").open('w')
 
@@ -420,7 +431,7 @@ def generateFiles(puzz_func, prefix):
                 rot = rng.randbetween(0, 3)
 
                 # generate obj text
-                obj_text = generateObjFromVertices(piece, rot, wi, hi, nw, nh)
+                obj_text = generateObjFromVertices(piece, rot, wi, hi, nw, nh, extraInfo['edgeCut'])
                 
                 # save pieces in appropriate folder jg9x16-
                 with (folder_path / f"piece.{i + 1}.obj").open('w') as fout:
@@ -435,7 +446,11 @@ def generateFiles(puzz_func, prefix):
             for f in folder_path.iterdir():
                 total_size += f.lstat().st_size
             with (save_path / "data.txt").open("a") as fout:
-                fout.write(f"{folder_name} width={nw} height={nh} size={total_size} seed={seed_inc}\n")
+                # fout.write(f"{folder_name} width={nw} height={nh} size={total_size} seed={seed}\n")
+                ratio = lbl.replace(":", "x")
+                fout.write(f"templateData['{folder_name}'] = {{dimensions = {{width={nw}, height={nh}}}, size={total_size}, seed={seed}, ratio='{ratio}', label='{nw} x {nh}'}}\n")
+                # templateData['jg16x9-8x5'] = {dimensions = {width=8, height=5}, size=59571, seed=17, ratio='16x9', label='8 x 5'}
+
 
             with (folder_path / "nubinfo.json").open('w') as fout:
                 json.dump(nubinfo, fout)
@@ -454,11 +469,15 @@ def generateFiles(puzz_func, prefix):
 #puzz, _ = generateCasualPuzzle(7, 7, 38)
 #puzz, _ = generateJaggedPuzzle(60, 60)
 # puzz, _ = generateTraditionalPuzzle(6, 6)
-#print(puzz)
-generateFiles(lambda w, h: puzz_gen.generateFunkyPuzzle(w,h,5),"fk")
-generateFiles(lambda w, h: puzz_gen.generateCasualPuzzle(w,h,7),"ca")
-generateFiles(lambda w, h: puzz_gen.generateTraditionalPuzzle(w,h),"tr")
-generateFiles(puzz_gen.generateJaggedPuzzle,"jg")
+# puzz, _ = puzz_gen.generateCursedPuzzle(2, 2)
+# print(puzz)
+
+
+# generateFiles(lambda w, h: puzz_gen.generateFunkyPuzzle(w,h,5),"fk")
+# generateFiles(lambda w, h: puzz_gen.generateCasualPuzzle(w,h,7),"ca")
+# generateFiles(lambda w, h: puzz_gen.generateTraditionalPuzzle(w,h),"tr")
+generateFiles(lambda w, h: puzz_gen.generateCursedPuzzle(w,h),"cu")
+# generateFiles(puzz_gen.generateJaggedPuzzle,"jg")
 
 sys.exit()
 

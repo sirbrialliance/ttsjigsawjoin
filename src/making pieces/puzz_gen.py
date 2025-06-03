@@ -458,7 +458,8 @@ class CasualPuzzle:
         # print("piece_nubinfo", simplify_nubinfo(self.piece_nubinfo))
         # print("piece_dict", self.piece_dict)
 
-        return (pieces, simplify_nubinfo(self.piece_nubinfo))
+        extraInfo = {'edgeCut': 0}
+        return (pieces, simplify_nubinfo(self.piece_nubinfo), extraInfo)
 
 
 class FunkyPuzzle(CasualPuzzle):
@@ -530,6 +531,90 @@ class TraditionalPuzzle(CasualPuzzle):
         return ret
 
 
+class AngleNubPuzzle(CasualPuzzle):
+    def __init__(self):
+        super().__init__(5)
+        self.OUTSIDE_CORNER_MAX_SLOPE = 0.2
+        self.CORNER_VARIANCE = 0
+        self.CORNER_ANGLE_VARIANCE = 0 * math.pi/4
+
+        self.NUB_HEIGHT_VARIANCE = 0.2
+        self.NUB_SIDEWAYS_VARIANCE = 0.3
+
+    def genNub(self):
+        nub = py2d.Polygon.from_tuples([
+            (-.1, 0),
+            (random.uniform(-.2, .2), random.uniform(.05, .3)),
+            (.1, 0),
+        ])
+
+        rx = random.random()
+        ry = random.random() - 0.5
+        if ry > rx/2:
+            ry -= 0.5
+            rx += 1
+        elif ry < -rx/2:
+            ry += 0.5
+            rx += 1
+        ry *= 2
+        rx -= 1
+
+        t = py2d.Transform.move(rx*self.NUB_SIDEWAYS_VARIANCE,ry*self.NUB_HEIGHT_VARIANCE)
+        nub = [t * p for p in nub]
+        isInnie = random.random() > 0.5 # Decide whether nub is an innie or an outie
+        if isInnie:
+            ret = py2d.Polygon.from_tuples([(x, -y) for x,y in nub])
+        else:
+            ret = py2d.Polygon.from_tuples(nub)
+
+        ret._isInnie = isInnie
+        return ret
+
+
+class CursedPuzzle(CasualPuzzle):
+    def __init__(self):
+        super().__init__(5) # POINT_COUNT doesn't really matter since we override getNub()
+
+        self.OUTSIDE_CORNER_MAX_SLOPE = 0.2
+        self.CORNER_VARIANCE = 0
+        self.CORNER_ANGLE_VARIANCE = 0 * math.pi/4
+
+        self.NUB_HEIGHT_VARIANCE = 0.05
+        self.NUB_SIDEWAYS_VARIANCE = 0.08
+
+        self.subtypes = [
+            # CasualPuzzle(7),
+            FunkyPuzzle(5),
+            AngleNubPuzzle(),
+        ]
+
+    def genNub(self):
+        subType = random.choice(self.subtypes)
+        return subType.genNub()
+    
+
+
+    def generate(self, width, height):
+        # Generate a larger puzzle and then we'll strip off the outside edges
+        fakeWidth = width + 2
+        fakeHeight = height + 2
+        (pieces, nubInfo, extraInfo) = super().generate(fakeWidth, fakeHeight)
+
+        retPieces = []
+        retNubInfo = []
+
+        for y in range(height):
+            for x in range(width):
+                idx = (x + 1) + (y + 1) * fakeWidth
+                # Since we stripped off a row and col, shift world pos accordingly.
+                piece = [py2d.Transform.move(-1, -1) * p for p in pieces[idx]]
+                retPieces.append(piece)
+                retNubInfo.append(nubInfo[idx])
+
+        extraInfo['edgeCut'] = .4
+
+        return (retPieces, retNubInfo, extraInfo)
+
 
 def generateCasualPuzzle(width, height, POINT_COUNT):
     gen = CasualPuzzle(POINT_COUNT)
@@ -544,6 +629,11 @@ def generateFunkyPuzzle(width, height, POINT_COUNT):
 
 def generateTraditionalPuzzle(width, height):
     gen = TraditionalPuzzle()
+    return gen.generate(width, height)
+
+
+def generateCursedPuzzle(width, height):
+    gen = CursedPuzzle()
     return gen.generate(width, height)
 
 
