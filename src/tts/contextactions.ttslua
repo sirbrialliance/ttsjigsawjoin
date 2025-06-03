@@ -277,14 +277,10 @@ function addBoardActions(board)
   function changeTableColor(color, pos, focusedObj)
     function colorPicked(pickedColor, playerColor)
       for i, obj in pairs(tableSurfaces) do
-        local settings = obj.getCustomObject()
-        settings.diffuse = ""
-        obj.setCustomObject(settings)
-
         obj.setColorTint(pickedColor)
 
-        tableSurfaces[i] = obj.reload()
-        tableSurfaces[i].interactable = false
+        -- tableSurfaces[i] = obj.reload()
+        -- tableSurfaces[i].interactable = false
       end
     end
     Player[color].showColorDialog(tableSurfaces[0].getColorTint(), colorPicked)

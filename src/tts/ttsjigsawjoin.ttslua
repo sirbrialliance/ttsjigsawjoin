@@ -90,65 +90,44 @@ function onLoad(save_state)
 
   Physics.play_area = 2.5
 
-  if tableSurfaces ~= nil then
-    for i,v in pairs(tableSurfaces) do
-      if v ~= nil and v ~= tableSurface then
+  local tableColor = Color(.176, .176, .176)
+
+  --nix any existing puzzle tables
+  tableSurfaces = getObjectsWithTag("puzzleTable")
+  for _, v in pairs(tableSurfaces) do
+    -- Preserve different table color, if set.
+    tableColor = v.getColorTint()
         v.destruct()
       end
-    end
-  end
-  tableSurface = getObjectFromGUID("1f2767")
-  if tableSurface ~= nil then
+
+  --and make fresh, new ones
     tableSurfaces = {}
-    tableSurface.setCustomObject({
-      mesh = "http://cloud-3.steamusercontent.com/ugc/1701784456924019297/E6BD6A9D7C6C935C2281036FA5535123AE6C4C49/"
-    })
-    tableSurface.locked = true
-    tableSurface.interactable = false
-    sv = tableSurface.getVectorLines({})
-    tableSurface.setVectorLines({})
-    tableSurface = tableSurface.reload()
-    Wait.frames(function()
-          local wid = 98
           for i = 0, 5 do
-            xi = i % 3
-            yi = math.floor(i/3)
-            tableSurfaces[i] = tableSurface.clone({position={ -wid + wid * xi, 0.01, -wid/2 + wid * yi}})
-            tableSurfaces[i].setRotation({0,0,0})
-            tableSurfaces[i].interactable = false
-          end
-          tableSurface.destruct()
-          tableSurface = tableSurfaces[0]
-          for _,p1 in pairs(sv) do
-            for _, p2 in pairs(p1.points) do
-              p2.y = 2
-            end
-          end
-          Global.setVectorLines(sv)
-        end, 5)
-  else
-    tableSurfaces = {}
-    for _,o in pairs(getObjects()) do
-      local customObj = o.getCustomObject()
-      if customObj and customObj.mesh and customObj.mesh:match("123AE6C4C49") then
-        table.insert(tableSurfaces,o)
-        o.interactable = false
-      end
-    end
-    table.sort(tableSurfaces,
-            function(a,b)
-              apos = a.getPosition()
-              bpos = b.getPosition()
-              if math.abs(apos.z-bpos.z) > 1 then
-                return apos.z < bpos.z
-              end
-              return apos.x < bpos.x
-            end)
-    for i = 1, 6 do
-      tableSurfaces[i-1] = tableSurfaces[i]
-      tableSurfaces[i] = nil
-    end
+    local wid = 100
+    local xi = i % 3
+    local yi = math.floor(i/3)
+    local surface = spawnObject({
+      type = "Custom_Model",
+      sound = false,
+      position = {-wid + wid * xi, .99, -wid/2 + wid * yi},
+    })
+    surface.setCustomObject({
+      mesh = PUZZLE_URL .. "res/table.obj",
+      diffuse = PUZZLE_URL .. "res/images/puzzle_table.jpg",
+      type = 4,--board
+      material = 4,--glass
+      specular_intensity = .01,
+      specular_sharpness = .2,
+    })
+    surface.setColorTint(tableColor)
+    surface.setName("Puzzle Table")
+    surface.addTag("puzzleTable")
+    surface.locked = true
+    surface.interactable = false
+
+    tableSurfaces[i] = surface
   end
+
   if gameState.debug_level >= 2 then
     debugPrint(string.format(
       'onLoad-TableSurfaces elapsed: %.2f',
