@@ -607,6 +607,10 @@ function onEndEdit_newPictureUrl(player, value, id)
   UI.setAttribute(id, 'text', value)
 end
 
+function onEndEdit_default(player, value, id)
+  UI.setAttribute(id, 'text', value)
+end
+
 function onValueChanged_templateSelection(player, value, id)
   UI.setAttribute(id, 'isOn', value)
   UI.setAttribute('templateSelection', 'selectedId', id)
@@ -1021,7 +1025,7 @@ function spawnPuzzle(templateId, picture)
   if templateData[templateId].pieces == nil then
     generatePieceData(templateData[templateId])
   end
-  
+
   local puzzleSize = templateData[gameState.templateId].dimensions
 
   -- Draw where the finished puzzle would go (and clear any other lines)
@@ -1120,7 +1124,7 @@ function spawnPuzzle(templateId, picture)
     for z = -zw, zw, 1 do addPiecePosition(-xw, z) end
 
     xw = xw + 1
-    zw = zw + 1    
+    zw = zw + 1
   end
 
 
@@ -1288,6 +1292,43 @@ end
 function onClick_CloseCredits()
   showing_credits = false
   UI.setAttribute('closeCredits', 'active', false)
+end
+
+function onClick_AspectCalc()
+  local width = tonumber(UI.getAttribute("aspectCalcWidth", "text"))
+  local height = tonumber(UI.getAttribute("aspectCalcHeight", "text"))
+  if width == nil or height == nil then return end
+  if width == 0 or height == 0 then return end
+
+  local angle = math.atan(width/height)
+
+  --Get the smallest puzzle for each aspect for the current template type.
+  local templateCandidates = {}
+  for id, data in pairs(templateData) do
+    if id:sub(1, 2) == gameState.pieceLabel then
+      local current = templateCandidates[data.ratio]
+      if current == nil or data.dimensions.width < current.dimensions.width then
+        templateCandidates[data.ratio] = data
+      end
+    end
+  end
+
+
+  --Find the one that's closest
+  local bestFit = nil
+  local fitDistance = 1000
+  for _, data in pairs(templateCandidates) do
+    local tAngle = math.atan(data.aspect)
+    local diff = math.abs(angle - tAngle)
+    if diff < fitDistance then
+      bestFit = data
+      fitDistance = diff
+    end
+  end
+
+  if bestFit ~= nil then
+    onValueChanged_templateSelection(nil, true, bestFit.id)
+  end
 end
 
 
@@ -2049,7 +2090,7 @@ end
 
 
 
---- Merges currently underway. 
+--- Merges currently underway.
 --- Map of piece id => {{other piece id => {timerId, timeoutFunc}, ...}
 activeMerges = {}
 
@@ -2509,7 +2550,7 @@ function generatePieceData(details)
   local pieceData = {}
   if shape == "square" then
     generatePieceDataSquare(dims, rng, pieceData)
-    
+
     -- NB: doesn't work with file:///, so test locally with a webserver
     WebRequest.get(details.baseUrl .. 'nubinfo.json', handler_getNubinfo)
   elseif shape == "honeycomb" then
@@ -3084,6 +3125,12 @@ templateData['cu9x16-54x96'] = {dimensions = {width=54, height=96}, size=1487357
 for lbl, details in pairs(templateData) do
   details.size = details.size/1000000
   details.baseUrl = PUZZLE_URL .. string.sub(lbl,1,2) .. '/' .. lbl .. '/'
+  details.id = lbl
+  for w, h in string.gmatch(details.ratio, "(%w+)x(%w+)") do
+    w = tonumber(w)
+    h = tonumber(h)
+    details.aspect = w/h
+  end
 end
 
 pieceTypeList = {}

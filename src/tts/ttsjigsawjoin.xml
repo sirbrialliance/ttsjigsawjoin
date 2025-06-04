@@ -387,6 +387,11 @@
   <Text class="tip"
     color="rgba(1, 1, 1, 1)"
     alignment="MiddleLeft" />
+
+  <InputField class="aspectCalcInput"
+    minWidth="50"
+    fontSize="11"
+  />
 </Defaults>
 <TableLayout id="puzzleSelector" class="jjWindow puzzleSelector greyBorder" visibility="Host" active="false">
   <Row preferredHeight="40">
@@ -495,6 +500,16 @@
             <Row class="spacer" />
             <Row preferredheight="30">
               <Cell>
+                <HorizontalLayout childForceExpandWidth="false" childAlignment="MiddleLeft">
+                  <HorizontalLayout childForceExpandWidth="false" color="#000000">
+                    <Text class="tip" minWidth="118">Calculate aspect:</Text>
+                    <InputField id="aspectCalcWidth" class="aspectCalcInput" placeHolder="width" onEndEdit="onEndEdit_default"/>
+                    <Text class="tip" minWidth="5">x</Text>
+                    <InputField id="aspectCalcHeight" class="aspectCalcInput" placeHolder="height" onEndEdit="onEndEdit_default"/>
+                  </HorizontalLayout>
+                  <Text minWidth="2" />
+                  <Button minWidth="90" onClick="onClick_AspectCalc">Calculate</Button>
+                </HorizontalLayout>
                 <HorizontalLayout childForceExpandWidth="false" childAlignment="MiddleRight">
                   <Button minWidth="120" onClick="onClick_CancelPuzzleSelector" fontSize="16">Cancel</Button>
                   <Button minWidth="120" onClick="onClick_ContinuePuzzleSelector" fontSize="16">Continue</Button>
