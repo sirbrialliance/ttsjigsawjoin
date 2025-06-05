@@ -237,7 +237,7 @@ function addPieceActions(obj)
       -- setPieceCenter(obj, p, false)
     end
   end
-  obj.addContextMenuItem("Align: Local grid", gridAlign)
+  obj.addContextMenuItem("Align: Local Grid", gridAlign)
 
   function solveRotate(color, pos, focusedObj)
     local objects = Player[color].getSelectedObjects()
@@ -285,31 +285,7 @@ function addBoardActions(board)
     end
     Player[color].showColorDialog(tableSurfaces[0].getColorTint(), colorPicked)
   end
-  board.addContextMenuItem("Change table color", changeTableColor)
-
-
-  function gatherEdges(color, pos, focusedObj)
-    Player[color].clearSelectedObjects()
-
-    local dumpOrigin = focusedObj.getPosition()
-    local range = math.sqrt(#templateData[gameState.templateId].pieces) / 3
-
-    for pieceId, info in pairs(templateData[gameState.templateId].pieces) do
-      if #info.neighbors <= 5 and gameState.pieces[pieceId].joinedTo == nil then
-        local piece = getPiece(pieceId)
-        if piece and piece.object ~= nil and piece.object.locked == false then
-          piece.object.setPosition({
-            dumpOrigin.x + (math.random() - .5) * range,
-            dumpOrigin.y + math.random() * range + 2,
-            dumpOrigin.z + (math.random() - .5) * range,
-          }, true)
-        end
-      end
-    end
-
-    broadcastToAll("Cheat: " .. Player[color].steam_name .. " gathered edges.")
-  end
-  board.addContextMenuItem("Cheat: Gather edges", gatherEdges)
+  board.addContextMenuItem("Change Table Color...", changeTableColor)
 
   local lastPiecePick = nil
   function gatherPieces(color, pos, focusedObj)
@@ -368,7 +344,7 @@ function addBoardActions(board)
     else
       lastPiecePick = piece
       -- log("regarding piece at " .. printTable(lastPiecePick.solutionPosition, true))
-      player.showInputDialog("Collect how far from this piece? (Try again if it doens't work the first time.)", "10", countConfirmed)
+      player.showInputDialog("Collect how far from this piece? (Try again if this doens't work the first time.)", "10", countConfirmed)
     end
 
     function countConfirmed(text, color)
@@ -400,8 +376,30 @@ function addBoardActions(board)
       broadcastToAll("Cheat: " .. Player[color].steam_name .. " gathered " .. count .. " piece(s).")
     end
   end
-  board.addContextMenuItem("Cheat: Gather pieces", gatherPieces)
+  board.addContextMenuItem("Cheat: Gather Pieces...", gatherPieces)
 
 
+  function gatherEdges(color, pos, focusedObj)
+    Player[color].clearSelectedObjects()
+
+    local dumpOrigin = focusedObj.getPosition()
+    local range = math.sqrt(#templateData[gameState.templateId].pieces) / 3
+
+    for pieceId, info in pairs(templateData[gameState.templateId].pieces) do
+      if #info.neighbors <= 5 and gameState.pieces[pieceId].joinedTo == nil then
+        local piece = getPiece(pieceId)
+        if piece and piece.object ~= nil and piece.object.locked == false then
+          piece.object.setPosition({
+            dumpOrigin.x + (math.random() - .5) * range,
+            dumpOrigin.y + math.random() * range + 2,
+            dumpOrigin.z + (math.random() - .5) * range,
+          }, true)
+        end
+      end
+    end
+
+    broadcastToAll("Cheat: " .. Player[color].steam_name .. " gathered edges.")
+  end
+  board.addContextMenuItem("Cheat: Gather Edges", gatherEdges)
 end
 
