@@ -6,7 +6,7 @@ This is a branch of [Canonelis/ttsjiggys](https://github.com/Canonelis/ttsjigsaw
 
 ## Playing
 
-- Subscribe to (todo: I need to upload this to the Steam Workshop) in the Steam Workshop.
+- Subscribe to the [game in the Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3493402409).
 - Load the game like any other from the Steam Workshop.
 - Hit "New Puzzle", paste in a URL, choose your options, and hit "Continue" to get started!
 
