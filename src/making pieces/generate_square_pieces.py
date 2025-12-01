@@ -181,6 +181,7 @@ def generateObjFromVertices(verts, rot, wi, hi, nw, nh, edgeCut):
     file_text = ""
     # make a reverse lookup for vertices
     index_dict = {}
+    vert_text = ""
     # make top v rows
     for i, v in enumerate(verts):
         index_dict[(v[0],v[1])] = i
@@ -190,19 +191,27 @@ def generateObjFromVertices(verts, rot, wi, hi, nw, nh, edgeCut):
             v = [-v[0],-v[1]]
         elif rot == 3:
             v = [-v[1],v[0]]
-        file_text += f"v {fl(v[0])} 0.07 {fl(v[1])}\n"
+        vert_text += f"v {fl(v[0])} 0.07 {fl(v[1])}\n"
 
     # make bottom v rows
-    for v in verts:
+    for _, v in enumerate(verts):
         if rot == 1:
             v = [v[1],-v[0]]
         elif rot == 2:
             v = [-v[0],-v[1]]
         elif rot == 3:
             v = [-v[1],v[0]]
-        file_text += f"v {fl(v[0])} 0 {fl(v[1])}\n"
+        vert_text += f"v {fl(v[0])} 0 {fl(v[1])}\n"
+
+    file_text += vert_text
+    # Make a second copy of verts so we don't share edge normals and end up looking like poop
+    file_text += vert_text
     
-    # make vt rows
+    # make vt (UV coord) rows
+    uv_text = ""
+    vertical_uv_index_dict = {}
+    vertical_uv_idx = len(verts) + 2
+    vertical_uv_text = ""
     file_text += "vt 0 0\n"
     if edgeCut > 0:
         # take a bit off the edges of the image so you can't so easily see disguised edge pieces
@@ -217,15 +226,57 @@ def generateObjFromVertices(verts, rot, wi, hi, nw, nh, edgeCut):
         offset_y = scale_y * (hi + 0.5)
 
     for v in verts:
-        file_text += f"vt {fl(offset_x + v[0] * scale_x, 7)} {fl(1 - (offset_y + v[1] * scale_y), 7)}\n"
+        x, y = offset_x + v[0] * scale_x, 1 - (offset_y + v[1] * scale_y)
+        vuv_x, vuv_y = x, y
 
+        # Edges look wrong when we're along the border and the texture is set to loop.
+        # (TTS sets the texture to loop) 
+        # With smaller value changes (e.g. coord ± .00001), you can get some ugly interpolation
+        # but at higher values, it distorts the front face of the puzzle piece.
+        # So, we'll use altered away-from-the-edge UVs on vertical pieces and normal ones on
+        # the top/bottom.
+
+        if math.isclose(x, 0, abs_tol=1e-15): vuv_x = .001
+        if math.isclose(y, 0, abs_tol=1e-15): vuv_y = .001
+        if math.isclose(x, 1, abs_tol=1e-15): vuv_x = .999
+        if math.isclose(y, 1, abs_tol=1e-15): vuv_y = .999
+
+        if x != vuv_x or y != vuv_y:
+            # We need to do special stuff with this UV coord
+            vertical_uv_index_dict[(v[0], v[1])] = vertical_uv_idx
+            vertical_uv_idx += 1
+            vertical_uv_text += f"vt {fl(vuv_x, 7)} {fl(vuv_y, 7)}\n"
+
+        # The loop issue can also be seen on the top/bottom faces, but we're not doing anything 
+        # about that right now.
+
+        uv_text += f"vt {fl(x, 7)} {fl(y, 7)}\n"
+
+        # if fl(x, 7) == "0": print(f"x is not 0: {x}")
+        # if fl(y, 7) == "0": print(f"y is not 0: {y}")
+
+    file_text += uv_text
+    file_text += vertical_uv_text
+   
     #file_text += "s off\n"
+
+    # Make normals rows ... actually, it appears we can leave these out if we have separate verts
+    # file_text += "vn 0 1 0\n"
+    # file_text += "vn 0 -1 0\n"
+    # for i, v in enumerate(verts):
+    #     v2 = verts[(i + 1) % len(verts)]
+    #     dir = v - v2
+    #     dir.x, dir.y = dir.y, dir.x
+    #     dir = dir.normalize()
+    #     file_text += f"vn {fl(dir.x, 3)} 0 {fl(dir.y, 3)}\n"
+
 
     decomp_raw = getConvexDecomposition(verts.as_tuple_list())
 
     if len(decomp_raw) == 0:
         print(wi, hi, nw, nh)
         raise Exception("no decomp")
+    
 
     # TTS can handle quads in the .obj fine, but it doesn't support any n-gon.
     # Prefer quads when we can, since it makes the file smaller, but do further breakdown
@@ -247,8 +298,12 @@ def generateObjFromVertices(verts, rot, wi, hi, nw, nh, edgeCut):
         group = py2d.Polygon.from_tuples(group).clone_ccw()
         for v in group:
             ind = index_dict[(v[0],v[1])] + 1
-            txt += f" {ind}/{ind + 1}"
+            uv_ind = ind + 1
+            # txt += f" {ind}/{uv_ind}/1"
+            txt += f" {ind}/{uv_ind}"
         file_text += txt + "\n"
+
+    file_text += "\n"
 
     n = len(verts)
     # make bottom faces
@@ -257,13 +312,39 @@ def generateObjFromVertices(verts, rot, wi, hi, nw, nh, edgeCut):
         group = py2d.Polygon.from_tuples(group).clone_cw()
         for v in group:
             ind = index_dict[(v[0],v[1])] + 1 + n
-            txt += f" {ind}"
+            uv_ind = ind - n + 1
+            # txt += f" {ind}/{uv_ind}/2"
+            txt += f" {ind}/{uv_ind}"
         file_text += txt + "\n"
+
+    file_text += "\n"
 
     # make the side faces
     for i in range(1, n + 1):
+        i1 = i
         i2 = 1 if i == n else i + 1
-        file_text += f"f {i} {n+i} {n+i2} {i2}\n"
+
+        uv_i1 = i1 + 1
+        uv_i2 = i2 + 1
+
+        # Do we need to use special UVs for this vertical edge?
+        v1, v2 = verts[i1 - 1], verts[i2 - 1]
+        if (v1[0], v1[1]) in vertical_uv_index_dict:
+            uv_i1 = vertical_uv_index_dict[(v1[0], v1[1])]
+            # print(f"{v1} {(v1[0], v1[1])} is special, use idx {uv_i}")
+        if (v2[0], v2[1]) in vertical_uv_index_dict:
+            uv_i2 = vertical_uv_index_dict[(v2[0], v2[1])]
+            # print(f"{v2} {(v2[0], v2[1])} is special, use idx2 {uv_i2}")
+
+        # use copy of vert coord so normals aren't shared
+        pos_i1 = i1 + n * 2
+        pos_i2 = i2 + n * 2
+
+        # norm_i = i1 + 1
+
+        file_text += f"f {pos_i1}/{uv_i1} {n+pos_i1}/{uv_i1} {n+pos_i2}/{uv_i2} {pos_i2}/{uv_i2}\n"
+        # file_text += f"f {pos_i1}/{uv_i1}/{norm_i} {n+pos_i1}/{uv_i1}/{norm_i} {n+pos_i2}/{uv_i2}/{norm_i} {pos_i2}/{uv_i2}/{norm_i}\n"
+
 
     return(file_text[:-1])
 
@@ -385,7 +466,9 @@ def generateFiles(puzz_func, prefix):
 
 
 
-    # puzzles_to_do = [("4:3", [[16,9]])]
+    puzzles_to_do = [("4:3", [[4,3]])]
+    # puzzles_to_do = [puzzles_to_do[2]]
+
     # puzzles_to_do = [("1:1", [[4,4], [5,5]])]
     # puzzles_to_do = [("16:9",[[8,5], [16,9], [23,13]])]
 
@@ -474,9 +557,9 @@ def generateFiles(puzz_func, prefix):
 
 
 # generateFiles(lambda w, h: puzz_gen.generateFunkyPuzzle(w,h,5),"fk")
-# generateFiles(lambda w, h: puzz_gen.generateCasualPuzzle(w,h,7),"ca")
+generateFiles(lambda w, h: puzz_gen.generateCasualPuzzle(w,h,7),"ca")
 # generateFiles(lambda w, h: puzz_gen.generateTraditionalPuzzle(w,h),"tr")
-generateFiles(lambda w, h: puzz_gen.generateCursedPuzzle(w,h),"cu")
+# generateFiles(lambda w, h: puzz_gen.generateCursedPuzzle(w,h),"cu")
 # generateFiles(puzz_gen.generateJaggedPuzzle,"jg")
 
 sys.exit()
