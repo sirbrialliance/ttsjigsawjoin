@@ -1,0 +1,51 @@
+
+function getPuzzleEffectObject()
+	local existingObjs = getObjectsWithTag("PuzzleFX")
+	if #existingObjs > 0 then
+		return existingObjs[1]
+	end
+
+	local fxObj = nil
+
+	-- local function whenSpawned(obj)
+	-- 	printTable(obj.AssetBundle.getTriggerEffects())
+	-- 	obj.AssetBundle.playTriggerEffect(0)
+	-- 	Wait.time(function()
+	-- 		obj.destruct()
+	-- 	end, 2)
+	-- end
+
+	fxObj = spawnObject({
+		type = "Custom_Assetbundle",
+		sound = false,
+		position = Vector(0, 0, 0),
+		-- callback_function = whenSpawned,
+	})
+	fxObj.setCustomObject({
+		assetbundle = PUZZLE_URL .. "res/puzzleeffects.unity3d",
+		type = 0,--generic
+		material = 0,--plastic
+	})
+	fxObj.addTag("PuzzleFX")
+	fxObj.locked = true
+	-- fxObj.interactable = false
+
+end
+
+function playJoinEffect(obj1, obj2)
+	local bounds1 = getVisualBoundsWorld(obj1)
+	local bounds2 = getVisualBoundsWorld(obj2)
+
+	local pos = Vector(
+		(bounds1.center.x + bounds2.center.x) / 2,
+		(bounds1.center.y + bounds2.center.y) / 2,
+		(bounds1.center.z + bounds2.center.z) / 2
+	)
+
+	local fxObj = getPuzzleEffectObject()
+	if fxObj.AssetBundle ~= nil then
+		fxObj.setPosition(pos)
+		fxObj.AssetBundle.playTriggerEffect(0)
+	end
+
+end

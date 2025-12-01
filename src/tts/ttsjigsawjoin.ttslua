@@ -143,6 +143,8 @@ function onLoad(save_state)
     end
   end
 
+  --getPuzzleEffectObject()
+
   if gameState.debug_level >= 2 then
     debugPrint(string.format(
       'onLoad elapsed: %.2f',
@@ -2007,6 +2009,8 @@ end
 function attachPieces(droppedPiece, targetPiece)
   local start = os.time()
 
+  --playJoinEffect(targetPiece.object, droppedPiece.object)
+
   local projectedObjectPosition = projectPiecePosition(targetPiece, droppedPiece.id)
 
   droppedPiece.object.setPosition(projectedObjectPosition)
@@ -2573,6 +2577,7 @@ require("src/tts/debugtools")
 require("src/tts/clusterinfo")
 require("src/tts/boundshandling")
 require("src/tts/contextactions")
+require("src/tts/effects")
 
 puzzleData['baking-bread-357627'] = {
   url = PUZZLE_URL .. 'res/puzzles/baking-bread-357627-5120x3840.jpg',
