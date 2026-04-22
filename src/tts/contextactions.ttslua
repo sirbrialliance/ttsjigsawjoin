@@ -88,7 +88,7 @@ function alignPiecesByShape(origin, objects, allowRotate, horizontalOnly)
 		for groupName, pieces in pairs(groups) do
 			local rot = false
 			local transferGroup = nil
-      
+
 			-- Check to see if there's a targetGroup we can rotate this group into:
 			for _, targetGroup in ipairs(targetGroups) do
 				rot = shapeCanRotate(groupName, targetGroup)
@@ -339,13 +339,6 @@ function addBoardActions(board)
       end
     end
 
-    if not piece then
-      player.showInfoDialog("Place a piece on top of the puzzle")
-    else
-      lastPiecePick = piece
-      -- log("regarding piece at " .. printTable(lastPiecePick.solutionPosition, true))
-      player.showInputDialog("Collect how far from this piece? (Try again if this doens't work the first time.)", "10", countConfirmed)
-    end
 
     function countConfirmed(text, color)
       local range = text + 0
@@ -358,22 +351,26 @@ function addBoardActions(board)
 
       local targetPos = lastPiecePick.solutionPosition
       local count = 0
+      local targetPieces = {}
       for i, piece in ipairs(getAllPieces()) do
         local distSq = math.pow(piece.solutionPosition.x - targetPos.x, 2) + math.pow(piece.solutionPosition.z - targetPos.z, 2)
         if distSq <= rangeSq and not piece.object.locked then
           -- log("piece at " .. printTable(piece, true) .. " is " .. distSq .. " <= " .. rangeSq)
           -- piece.object.addToPlayerSelection(color)
-          piece.object.setPosition({
-            dumpOrigin.x + (math.random() - .5) * range,
-            dumpOrigin.y + math.random() * range + 2,
-            dumpOrigin.z + (math.random() - .5) * range,
-          }, true)
-          piece.object.setVelocity({0, math.random() * -.1, 0})
-          count = count + 1
+          table.insert(targetPieces, piece)
         end
       end
 
-      broadcastToAll("Cheat: " .. Player[color].steam_name .. " gathered " .. count .. " piece(s).")
+      cheatStealPieces(color, targetPieces, dumpOrigin, "made a mini-puzzle.")
+    end
+
+
+    if not piece then
+      player.showInfoDialog("Place a piece on top of the puzzle")
+    else
+      lastPiecePick = piece
+      -- log("regarding piece at " .. printTable(lastPiecePick.solutionPosition, true))
+      player.showInputDialog("Collect how far from this piece?", "10", countConfirmed)
     end
   end
   board.addContextMenuItem("Cheat: Gather Pieces...", gatherPieces)
@@ -385,20 +382,17 @@ function addBoardActions(board)
     local dumpOrigin = focusedObj.getPosition()
     local range = math.sqrt(#templateData[gameState.templateId].pieces) / 3
 
+    local targetPieces = {}
     for pieceId, info in pairs(templateData[gameState.templateId].pieces) do
       if #info.neighbors <= 5 and gameState.pieces[pieceId].joinedTo == nil then
         local piece = getPiece(pieceId)
         if piece and piece.object ~= nil and piece.object.locked == false then
-          piece.object.setPosition({
-            dumpOrigin.x + (math.random() - .5) * range,
-            dumpOrigin.y + math.random() * range + 2,
-            dumpOrigin.z + (math.random() - .5) * range,
-          }, true)
+          table.insert(targetPieces, piece)
         end
       end
     end
 
-    broadcastToAll("Cheat: " .. Player[color].steam_name .. " gathered edges.")
+    cheatStealPieces(color, targetPieces, dumpOrigin, "gathered edges.")
   end
   board.addContextMenuItem("Cheat: Gather Edges", gatherEdges)
 end

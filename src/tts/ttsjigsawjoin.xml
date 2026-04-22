@@ -176,7 +176,7 @@
   <Row preferredHeight="20">
     <Cell>
       <Text class="panelText" fontSize="10" preferredWidth="150">Picture URL:</Text>
-      <InputField 
+      <InputField
         id="pictureUrlShare"
         readonly="true"
         verticalOverflow="overflow"
@@ -543,3 +543,4 @@
     </Cell>
   </Row>
 </TableLayout>
+<Include src="src/tts/piecetheft.xml"/>

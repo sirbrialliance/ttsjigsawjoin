@@ -120,7 +120,7 @@ function onLoad(save_state)
       specular_sharpness = .2,
     })
     surface.setColorTint(tableColor)
-    surface.setName("Puzzle Table")
+    -- surface.setName("Puzzle Table")
     surface.addTag("puzzleTable")
     surface.locked = true
     surface.interactable = false
@@ -2572,6 +2572,7 @@ end
 require("src/tts/debugtools")
 require("src/tts/clusterinfo")
 require("src/tts/boundshandling")
+require("src/tts/cheatutil")
 require("src/tts/contextactions")
 
 puzzleData['baking-bread-357627'] = {

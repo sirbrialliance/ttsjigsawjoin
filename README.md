@@ -46,7 +46,7 @@ A handful of accessability/cheat features have been added to help make more adva
 
 - Right click the puzzle board and choose...
 	- "Cheat: Gather Edges" to move all the free/unconnected edge pieces over the puzzle board.
-	- "Cheat: Gather Pieces" to make a "mini puzzle" (a small subset of the larger puzzle) for a less skilled player to work on. Start by placing one puzzle piece on the puzzle board, then right-click the puzzle board and select this option. It will ask you for a distance; choose and confirm. If nothing happens (Tabletop bug), try again. All pieces within the given range of the given piece will be moved to the center of the game area. You now have a subset "circle" of puzzle to work on. Then, begin apologizing for all the pieces you took that others were working on.
+	- "Cheat: Gather Pieces" to make a "mini puzzle" (a small subset of the larger puzzle) for a less skilled player to work on. Start by placing one puzzle piece on the puzzle board, then right-click the puzzle board and select this option. It will ask you for a distance; choose and confirm. After allowing other players to accept (perhaps they're already working on that section!), all pieces within the given range of the given piece will be moved to the center of the game area. You now have a subset "circle" of puzzle to work on.
 - Right click a puzzle piece (or a selection of pieces) and choose...
 	- "Cheat: Rotate Solved" to correctly orient all pieces as they appear in the final puzzle solution.
 	- "Cheat: Puzzle Order" to arrange pieces based on their order in the puzzle (rows first, starting from the top-left). Note that items arranged on the same row may not be on the same row in the puzzle. Doesn't handle clusters of pieces well.
@@ -68,7 +68,7 @@ See [dist/README.md](dist/README.md)
 
 It's kind of a mess. First, go to `src/making pieces`.
 
-`generate_square_pieces.py` makes the square pieces, `create_pieces.py` makes the hexagonal ones. 
+`generate_square_pieces.py` makes the square pieces, `create_pieces.py` makes the hexagonal ones.
 
 You'll need to fiddle with hardcoded paths in those files and the hardcoded target actions. Note that you need to use the locally included version of `py2d`, not the normal version available through `pip`. You can debug "install" it with `pip install -e src/` from the project root.
 

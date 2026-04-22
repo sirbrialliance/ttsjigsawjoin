@@ -1,0 +1,51 @@
+<Defaults>
+  <TableLayout class="theftQuery"
+    rowBackgroundColor="rgba(0, 0, 0, 0.99)"
+		width="500"
+	/>
+
+</Defaults>
+<TableLayout
+	id="theftQuery" class="jjWindow theftQuery"
+	rectAlignment="MiddleCenter" active="false"
+	height="75"
+>
+  <Row class="customRow">
+    <Cell>
+      <Text id="theftQuery_title" class="customRow"></Text>
+    </Cell>
+  </Row>
+  <Row class="spacer" />
+  <Row preferredheight="25">
+    <Cell>
+      <HorizontalLayout childForceExpandWidth="false" childAlignment="MiddleRight">
+        <Button minWidth="120" onClick="theftQuery_decline_onClick">Please don't</Button>
+        <Button minWidth="120" onClick="theftQuery_view_onClick">See pieces</Button>
+        <Button minWidth="120" onClick="theftQuery_approve_onClick">That's fine</Button>
+      </HorizontalLayout>
+    </Cell>
+  </Row>
+</TableLayout>
+<TableLayout
+	id="theftQueryStatus" class="jjWindow theftQuery"
+	rectAlignment="LowerCenter" active="false"
+	height="95"
+>
+  <Row class="customRow">
+    <Cell>
+      <Text id="theftQueryStatus_title" class="customRow">Waiting for other players to accept your request...</Text>
+    </Cell>
+  </Row>
+  <Row class="spacer" />
+	<Row>
+    <Cell>
+      <Text id="theftQueryStatus_status" class="customRow"></Text>
+    </Cell>
+  </Row>
+  <Row preferredheight="25">
+    <Cell>
+			<Button minWidth="120" onClick="theftQuery_decline_onClick">Cancel</Button>
+    </Cell>
+  </Row>
+</TableLayout>
+

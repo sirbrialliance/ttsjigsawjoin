@@ -1,0 +1,185 @@
+
+
+local activeCheatStealRequest = nil
+
+function theftQuery_approve_onClick(player, value, id)
+  if activeCheatStealRequest then
+    activeCheatStealRequest.approve(player.color)
+  end
+
+end
+
+function theftQuery_decline_onClick(player, value, id)
+  if activeCheatStealRequest then
+    activeCheatStealRequest.decline(player.color)
+  end
+end
+
+function theftQuery_view_onClick(player, value, id)
+  if activeCheatStealRequest then
+    activeCheatStealRequest.view(player.color)
+  end
+end
+
+
+function cheatStealPieces(color, pieces, dumpOrigin, description)
+  local range = math.sqrt(#pieces) / 3
+  local requestFinished = false
+  local neededConfirmations = nil
+  local selfCancel = false
+
+  function takePiece(piece)
+    piece.object.highlightOff()
+    piece.object.setPosition({
+      dumpOrigin.x + (math.random() - .5) * range,
+      dumpOrigin.y + math.random() * range + 2,
+      dumpOrigin.z + (math.random() - .5) * range,
+    }, true)
+    piece.object.setVelocity({0, math.random() * -.1, 0})
+  end
+
+  function finishStealPieces(allowSteal)
+    if requestFinished then return end
+
+    if allowSteal then
+      for _, piece in ipairs(pieces) do
+        takePiece(piece)
+      end
+
+      broadcastToAll("Cheat: " .. Player[color].steam_name .. " " .. description .. " (" .. #pieces .. " pieces)")
+    else
+      for _, piece in ipairs(pieces) do
+        piece.object.highlightOff()
+      end
+      if selfCancel then
+        broadcastToAll(Player[color].steam_name .. " cancelled collecting pieces.")
+      else
+        broadcastToAll(Player[color].steam_name .. "'s piece collection was declined.")
+      end
+    end
+
+    UI.setAttribute("theftQuery", "active", false)
+    UI.setAttribute("theftQueryStatus", "active", false)
+
+    requestFinished = true
+    activeCheatStealRequest = nil
+  end
+
+  function playerApprovedSteal(otherPlayer)
+    neededConfirmations[otherPlayer] = nil
+    local stillWaiting = false
+    for k, v in pairs(neededConfirmations) do
+      stillWaiting = true
+    end
+    updatePendingCount()
+    updateConfirmFilter()
+
+    if stillWaiting == false then
+      finishStealPieces(true)
+    end
+  end
+
+  function playerDeclinedSteal(otherPlayer)
+    if otherPlayer == color then selfCancel = true end
+    finishStealPieces(false)
+  end
+
+  function playerViewSteal(otherPlayer)
+    if requestFinished then return end
+    local boundMin = pieces[1].object.getPosition()
+    local boundMax = pieces[1].object.getPosition()
+
+    for _, piece in ipairs(pieces) do
+      boundMin = Vector.min(boundMin, piece.object.getPosition())
+      boundMax = Vector.max(boundMax, piece.object.getPosition())
+    end
+
+    local dist = Vector.distance(boundMin, boundMax) + 3
+    local center = Vector.lerp(boundMin, boundMax, .5)
+
+    Player[otherPlayer].lookAt({
+      position = center,
+      pitch = 90,
+      distance = dist,
+    })
+  end
+
+  function updatePendingCount()
+    local pendingCount = 0
+    for k, v in pairs(neededConfirmations) do
+      pendingCount = pendingCount + 1
+    end
+    UI.setAttribute(
+      "theftQueryStatus_status", "text",
+      "Waiting for " .. pendingCount .. " player(s)"
+    )
+  end
+
+  function updateConfirmFilter()
+    local confirmPlayersFilter = ""
+    for otherPlayer, _ in pairs(neededConfirmations) do
+      if #confirmPlayersFilter > 0 then
+        confirmPlayersFilter = confirmPlayersFilter .. "|"
+      end
+      confirmPlayersFilter = confirmPlayersFilter .. otherPlayer
+    end
+
+    UI.setAttribute("theftQuery", "visibility", confirmPlayersFilter)
+  end
+
+
+  -- Existing request?
+  if activeCheatStealRequest then
+    activeCheatStealRequest.cancel()
+    activeCheatStealRequest = nil
+  end
+
+  if #pieces == 0 then
+    return
+  end
+
+
+  -- Other players okay with this?
+  if #getSeatedPlayers() == 1 then
+    --only 1 player
+    finishStealPieces(true)
+    return
+  end
+
+  neededConfirmations = {}
+  local confirmPlayersFilter = ""
+  for _, otherPlayer in ipairs(getSeatedPlayers()) do
+    if otherPlayer == color then
+      --don't include
+    else
+      if #confirmPlayersFilter > 0 then
+        confirmPlayersFilter = confirmPlayersFilter .. "|"
+      end
+      confirmPlayersFilter = confirmPlayersFilter .. otherPlayer
+
+      neededConfirmations[otherPlayer] = true
+    end
+  end
+
+  for _, piece in ipairs(pieces) do
+    piece.object.highlightOn(color)
+  end
+  updateConfirmFilter()
+  UI.setAttribute("theftQuery", "active", true)
+  UI.setAttribute("theftQuery_title", "text", "Allow " .. Player[color].steam_name .. " to take the highlighted pieces?")
+
+  UI.setAttribute("theftQueryStatus", "visibility", color)
+  UI.setAttribute("theftQueryStatus", "active", true)
+  updatePendingCount()
+
+
+  activeCheatStealRequest = {
+    cancel = function() finishStealPieces(false) end,
+    approve = playerApprovedSteal,
+    decline = playerDeclinedSteal,
+    view = playerViewSteal,
+  }
+end
+
+
+
