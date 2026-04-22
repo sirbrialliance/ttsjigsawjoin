@@ -1545,6 +1545,7 @@ end
 
 function onClick_RecoverDeletedPieces(player, button, id)
   if gameState.templateId == nil or gameState.guidCatalog == nil or next(gameState.guidCatalog) == nil then return end
+  print("Template is valid")
 
   -- Make a reverse lookup table of all valid piece GUIDs
   local allValidPieceGUIDs = {}
@@ -1605,6 +1606,7 @@ function onClick_RecoverDeletedPieces(player, button, id)
       end
     end
   end
+  print("Step 1 done")
 
   -- Replace all missing or invalid pieces
   for pieceId = 1, #gameState.pieces do
@@ -1634,13 +1636,15 @@ function onClick_RecoverDeletedPieces(player, button, id)
       end
     end
   end
+  print("Step 2 done")
 
    -- Show a random problematic piece to the player
   if #objectsToShow > 0 then
     local o = objectsToShow[math.random(#objectsToShow)]
-    player.lookAt({position = {o.getPosition().x, 1, o.getPosition().z} + Vector(0, -3.5, 2.937), pitch = 80, yaw = 0, distance = 15})
+    player.lookAt({position = Vector(o.getPosition().x, 1, o.getPosition().z) + Vector(0, -3.5, 2.937), pitch = 80, yaw = 0, distance = 15})
     o.highlightOn({1,1,0}, 3)
   end
+  print("Show done")
 
   -- Rebuild parentId and joinedTo
   for _, piece in pairs(getAllPieces()) do
@@ -1668,6 +1672,7 @@ function onClick_RecoverDeletedPieces(player, button, id)
       gameState.pieces[piece.id].player_name = nil
     end
   end
+  print("Data rebuild done")
   onCheckSolutionRequest()
 end
 
