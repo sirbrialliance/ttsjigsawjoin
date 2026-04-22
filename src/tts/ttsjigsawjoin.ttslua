@@ -1010,7 +1010,10 @@ function changePictureUrl(url)
     end
   end
   gameState.pictureUrl = url
-  updatePuzzleUrlUI()
+
+  -- rebuld puzzle stuffs
+  local data = onSave()
+  onLoad(data)
 end
 
 function onClick_playerScoreBoardRow(player, button, id)
