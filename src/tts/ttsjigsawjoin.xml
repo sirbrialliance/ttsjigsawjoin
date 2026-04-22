@@ -181,7 +181,7 @@
         readonly="true"
         verticalOverflow="overflow"
         fontSize="8"
-        />
+        ></InputField>
     </Cell>
   </Row>
   <Row preferredHeight="20">
@@ -543,4 +543,11 @@
     </Cell>
   </Row>
 </TableLayout>
+<Panel id="pictureViewer" class="" visibility="" active="false">
+  <Image
+    id="pictureViewer_picture"
+    image="pictureViewer_picture"
+    preserveAspect="true"
+  />
+</Panel>
 <Include src="src/tts/piecetheft.xml"/>

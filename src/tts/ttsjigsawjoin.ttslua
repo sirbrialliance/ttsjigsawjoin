@@ -902,7 +902,20 @@ function populatePieceListContainer(uiTable, pieceLabel)
 end
 
 function updatePuzzleUrlUI()
-  UI.setAttribute('pictureUrlShare', 'text', gameState.pictureUrl or "<none>")
+  function doIt()
+    UI.setAttribute('pictureUrlShare', 'text', gameState.pictureUrl or "<none>")
+
+    -- setting the picture URL on the <Image> directly works better than putting it in
+    -- UI.setCustomAssets. If we use customAssets and start a new puzzle, not only does
+    -- the image not appear, but it sppears to disable mipmaps on the actual image, too.
+    -- Doesn't work with videos.
+    UI.setAttribute("pictureViewer_picture", "image", gameState.pictureUrl)
+  end
+
+  -- I have to do this so it sets + syncs reliably?
+  doIt()
+  Wait.frames(doIt, 10)
+
 end
 
 function onClick_picture(player, button, id)

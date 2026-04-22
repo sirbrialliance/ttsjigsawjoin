@@ -144,6 +144,36 @@ function addObjectsActions()
       addBoardActions(object)
     end
   end
+
+  function hotkey_viewPuzzleImage(playerColor, hoveredObject, pointerPosition, isKeyUp)
+    -- this is made a lot more complicated as we have to filter for curretly viewing players
+    local viewers = {}
+    local visStr = UI.getAttribute("pictureViewer", "visibility")
+    if type(visStr) ~= "string" then visStr = "" end
+    for viewer in string.gmatch(visStr, "%w+") do
+      if viewer == playerColor and isKeyUp then
+        --don't add to list
+      else
+        table.insert(viewers, viewer)
+      end
+    end
+    if not isKeyUp then
+      table.insert(viewers, playerColor)
+    end
+
+    local visStr = ""
+    for _, viewer in ipairs(viewers) do
+      if #visStr > 0 then
+        visStr = visStr .. "|"
+      end
+      visStr = visStr .. viewer
+    end
+
+    UI.setAttribute("pictureViewer", "active", #viewers > 0)
+    UI.setAttribute("pictureViewer", "visibility", visStr)
+  end
+
+  addHotkey("View Puzzle Image", hotkey_viewPuzzleImage, true)
 end
 
 function addPieceActions(obj)
