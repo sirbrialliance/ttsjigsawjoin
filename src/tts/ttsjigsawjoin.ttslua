@@ -1058,18 +1058,25 @@ function spawnPuzzle(templateId, picture)
   })
   board.locked = true
 
+  local boardSize = Vector(puzzleSize.width / 2 * .5 + 2, 0, puzzleSize.height / 2 * .5 + 2)
+  local boardBoundsMin = boardPos - boardSize
+  local boardBoundsMax = boardPos + boardSize
+
 
   local padding = math.max(puzzleSize.width, puzzleSize.height) * .2 + 9
-  local boardOffsetX = puzzleSize.width / 2 + padding
-  local boardOffsetZ = puzzleSize.height / 2 + padding
+  local workAreaOffsetX = puzzleSize.width / 2 + padding
+  local workAreaOffsetZ = puzzleSize.height / 2 + padding
 
 
   -- Are we looking at a place we shouldn't place an initial piece?
   function isReservedArea(position)
-    if math.abs(position.x) < boardOffsetX and math.abs(position.z) < boardOffsetZ then
+    if math.abs(position.x) < workAreaOffsetX and math.abs(position.z) < workAreaOffsetZ then
       return true
-    -- elseif position overlaps board then
-    --   return true
+    elseif (--overlaps board?
+      position.x > boardBoundsMin.x and position.x < boardBoundsMax.x and
+      position.z > boardBoundsMin.z and position.z < boardBoundsMax.z
+    ) then
+      return true
     else
       return false
     end
@@ -1095,7 +1102,7 @@ function spawnPuzzle(templateId, picture)
       1.25,
       r * math.sin(phi)
     )
-    if math.abs(position.x) > boardOffsetX or math.abs(position.z) > boardOffsetZ then
+    if math.abs(position.x) > workAreaOffsetX or math.abs(position.z) > workAreaOffsetZ then
     -- if not isReservedArea(position) then
       spiralPositions[#spiralPositions + 1] = position
     end
