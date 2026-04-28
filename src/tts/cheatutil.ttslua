@@ -28,7 +28,7 @@ function cheatStealPieces(color, pieces, dumpOrigin, description)
   local neededConfirmations = nil
   local selfCancel = false
 
-  function takePiece(piece)
+  local function takePiece(piece)
     piece.object.highlightOff()
     piece.object.setPosition({
       dumpOrigin.x + (math.random() - .5) * range,
@@ -38,7 +38,30 @@ function cheatStealPieces(color, pieces, dumpOrigin, description)
     piece.object.setVelocity({0, math.random() * -.1, 0})
   end
 
-  function finishStealPieces(allowSteal)
+  local function updatePendingCount()
+    local pendingCount = 0
+    for k, v in pairs(neededConfirmations) do
+      pendingCount = pendingCount + 1
+    end
+    UI.setAttribute(
+      "theftQueryStatus_status", "text",
+      "Waiting for " .. pendingCount .. " player(s)"
+    )
+  end
+
+  local function updateConfirmFilter()
+    local confirmPlayersFilter = ""
+    for otherPlayer, _ in pairs(neededConfirmations) do
+      if #confirmPlayersFilter > 0 then
+        confirmPlayersFilter = confirmPlayersFilter .. "|"
+      end
+      confirmPlayersFilter = confirmPlayersFilter .. otherPlayer
+    end
+
+    UI.setAttribute("theftQuery", "visibility", confirmPlayersFilter)
+  end
+
+  local function finishStealPieces(allowSteal)
     if requestFinished then return end
 
     if allowSteal then
@@ -65,7 +88,7 @@ function cheatStealPieces(color, pieces, dumpOrigin, description)
     activeCheatStealRequest = nil
   end
 
-  function playerApprovedSteal(otherPlayer)
+  local function playerApprovedSteal(otherPlayer)
     neededConfirmations[otherPlayer] = nil
     local stillWaiting = false
     for k, v in pairs(neededConfirmations) do
@@ -79,12 +102,12 @@ function cheatStealPieces(color, pieces, dumpOrigin, description)
     end
   end
 
-  function playerDeclinedSteal(otherPlayer)
+  local function playerDeclinedSteal(otherPlayer)
     if otherPlayer == color then selfCancel = true end
     finishStealPieces(false)
   end
 
-  function playerViewSteal(otherPlayer)
+  local function playerViewSteal(otherPlayer)
     if requestFinished then return end
     local boundMin = pieces[1].object.getPosition()
     local boundMax = pieces[1].object.getPosition()
@@ -102,29 +125,6 @@ function cheatStealPieces(color, pieces, dumpOrigin, description)
       pitch = 90,
       distance = dist,
     })
-  end
-
-  function updatePendingCount()
-    local pendingCount = 0
-    for k, v in pairs(neededConfirmations) do
-      pendingCount = pendingCount + 1
-    end
-    UI.setAttribute(
-      "theftQueryStatus_status", "text",
-      "Waiting for " .. pendingCount .. " player(s)"
-    )
-  end
-
-  function updateConfirmFilter()
-    local confirmPlayersFilter = ""
-    for otherPlayer, _ in pairs(neededConfirmations) do
-      if #confirmPlayersFilter > 0 then
-        confirmPlayersFilter = confirmPlayersFilter .. "|"
-      end
-      confirmPlayersFilter = confirmPlayersFilter .. otherPlayer
-    end
-
-    UI.setAttribute("theftQuery", "visibility", confirmPlayersFilter)
   end
 
 

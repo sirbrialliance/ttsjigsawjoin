@@ -28,7 +28,7 @@
 </TableLayout>
 <TableLayout
 	id="theftQueryStatus" class="jjWindow theftQuery"
-	rectAlignment="LowerCenter" active="false"
+	rectAlignment="MiddleCenter" active="false"
 	height="95"
 >
   <Row class="customRow">

@@ -1544,7 +1544,10 @@ function printInvalidPieces()
 end
 
 function onClick_RecoverDeletedPieces(player, button, id)
-  if gameState.templateId == nil or gameState.guidCatalog == nil or next(gameState.guidCatalog) == nil then return end
+  if gameState.templateId == nil or gameState.guidCatalog == nil or next(gameState.guidCatalog) == nil then
+    print("Bad/missing templateId or guidCatalog")
+    return
+  end
   print("Template is valid")
 
   -- Make a reverse lookup table of all valid piece GUIDs
@@ -1677,7 +1680,10 @@ function onClick_RecoverDeletedPieces(player, button, id)
 end
 
 function onClick_ChangePictureUrl(player, button, id)
-  if gameState.templateId == nil or gameState.pictureUrl == nil then return end
+  if gameState.templateId == nil or gameState.pictureUrl == nil then
+    print("No active puzzle and/or puzzle image.")
+    return
+  end
   UI.setAttribute('newPictureUrl', 'text', gameState.pictureUrl)
   UI.setAttribute('pictureUrlChanger', 'active', true)
 end
