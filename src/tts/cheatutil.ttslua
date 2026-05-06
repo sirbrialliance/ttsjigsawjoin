@@ -23,11 +23,14 @@ end
 
 
 function cheatStealPieces(color, pieces, dumpOrigin, description)
+  local autoConfirmTime = 30
+  local confirmWhenSolo = false -- set to true to help test/debug
+
   local range = math.sqrt(#pieces) / 3
   local requestFinished = false
   local neededConfirmations = nil
   local selfCancel = false
-  local confirmWhenSolo = false -- for solo debugging
+  local requestStartedTime = Time.time
 
   local function takePiece(piece)
     piece.object.highlightOff()
@@ -39,15 +42,37 @@ function cheatStealPieces(color, pieces, dumpOrigin, description)
     piece.object.setVelocity({0, math.random() * -.1, 0})
   end
 
-  local function updatePendingCount()
+  local function updateUIInfo()
+    if requestFinished then return end
+
     local pendingCount = 0
     for k, v in pairs(neededConfirmations) do
       pendingCount = pendingCount + 1
     end
+
+    local timeRemaining = autoConfirmTime - math.floor(Time.time - requestStartedTime + .5)
+
+    UI.setAttribute(
+      "theftQuery_title", "text",
+      "Allow " .. Player[color].steam_name .. " to take the highlighted piece(s)?"
+    )
+    UI.setAttribute(
+      "theftQuery_targetInfo", "text",
+      "Targeting " .. #pieces .. " piece(s)"
+    )
+
+    UI.setAttribute(
+      "theftQuery_confirm", "text",
+      "That's fine (" .. timeRemaining .. ")"
+    )
+
     UI.setAttribute(
       "theftQueryStatus_status", "text",
-      "Waiting for " .. pendingCount .. " player(s)"
+      "Waiting for " .. pendingCount .. " player(s) or " ..
+      timeRemaining .. "s to collect " .. #pieces .. " piece(s)..."
     )
+
+
   end
 
   local function updateConfirmFilter()
@@ -95,7 +120,7 @@ function cheatStealPieces(color, pieces, dumpOrigin, description)
     for k, v in pairs(neededConfirmations) do
       stillWaiting = true
     end
-    updatePendingCount()
+    updateUIInfo()
     updateConfirmFilter()
 
     if stillWaiting == false then
@@ -145,6 +170,11 @@ function cheatStealPieces(color, pieces, dumpOrigin, description)
     for _, obj in ipairs(targetObjects) do
       handleRemoveObject(obj)
     end
+
+    updateUIInfo()
+    if #pieces == 0 then
+      finishStealPieces(false)
+    end
   end
 
 
@@ -184,13 +214,14 @@ function cheatStealPieces(color, pieces, dumpOrigin, description)
   for _, piece in ipairs(pieces) do
     piece.object.highlightOn(color)
   end
-  updateConfirmFilter()
   UI.setAttribute("theftQuery", "active", true)
-  UI.setAttribute("theftQuery_title", "text", "Allow " .. Player[color].steam_name .. " to take the highlighted pieces?")
-
   UI.setAttribute("theftQueryStatus", "visibility", color)
   UI.setAttribute("theftQueryStatus", "active", true)
-  updatePendingCount()
+  updateConfirmFilter()
+  updateUIInfo()
+
+  Wait.time(function() finishStealPieces(true) end, autoConfirmTime)
+  Wait.time(updateUIInfo, 1, autoConfirmTime + 1)
 
 
   activeCheatStealRequest = {

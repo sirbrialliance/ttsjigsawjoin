@@ -317,7 +317,6 @@ function addBoardActions(board)
   end
   board.addContextMenuItem("Change Table Color...", changeTableColor)
 
-  local lastPiecePick = nil
   local function gatherPieces(color, pos, focusedObj)
     -- todo: may only work right for rectangular puzzles
     local player = Player[color]
@@ -333,6 +332,7 @@ function addBoardActions(board)
     })
 
     local piece = nil
+    local pieceIsRandom = false
     for i, hit in ipairs(hits) do
       if getPiece(hit.hit_object) then
         piece = getPiece(hit.hit_object)
@@ -349,6 +349,7 @@ function addBoardActions(board)
           -- don't go for this piece
         else
           piece = rpiece
+          pieceIsRandom = true
           break
         end
       end
@@ -358,10 +359,10 @@ function addBoardActions(board)
 
     local function countConfirmed(text, color)
       local targetCount = text + 0
-      -- log("piece at " .. printTable(lastPiecePick.solutionPosition, true))
+      -- log("piece at " .. printTable(piece.solutionPosition, true))
 
       local dumpOrigin = focusedObj.getPosition()
-      local targetPos = lastPiecePick.solutionPosition
+      local targetPos = piece.solutionPosition
 
       local dsPieces = {} -- distance sorted pieces
       for i, piece in ipairs(getAllPieces()) do
@@ -392,10 +393,10 @@ function addBoardActions(board)
 
     if not piece then
       player.showInfoDialog("Couldn't find a good piece to center on. Try placing a piece on top of the puzzle.")
+    elseif pieceIsRandom then
+      player.showInputDialog("How many pieces do you want? (Centered on a random piece.)", "100", countConfirmed)
     else
-      lastPiecePick = piece
-      -- log("regarding piece at " .. printTable(lastPiecePick.solutionPosition, true))
-      player.showInputDialog("How many pieces do you want?", "100", countConfirmed)
+      player.showInputDialog("How many pieces do you want? (Centered on the given piece.)", "100", countConfirmed)
     end
   end
   board.addContextMenuItem("Cheat: Gather Pieces...", gatherPieces)

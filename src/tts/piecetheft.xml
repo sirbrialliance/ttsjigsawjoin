@@ -17,7 +17,8 @@
   </Row>
   <Row class="customRow">
     <Cell>
-      <Text class="">Select pieces to remove them.</Text>
+      <Text id="theftQuery_targetInfo">Targeting ...</Text>
+      <Text>Select pieces to remove them.</Text>
     </Cell>
   </Row>
   <Row class="spacer" />
@@ -26,7 +27,7 @@
       <HorizontalLayout childForceExpandWidth="false" childAlignment="MiddleRight">
         <Button minWidth="120" onClick="theftQuery_decline_onClick">Please don't</Button>
         <Button minWidth="120" onClick="theftQuery_view_onClick">See pieces</Button>
-        <Button minWidth="120" onClick="theftQuery_approve_onClick">That's fine</Button>
+        <Button minWidth="120" id="theftQuery_confirm" onClick="theftQuery_approve_onClick">That's fine</Button>
       </HorizontalLayout>
     </Cell>
   </Row>
@@ -34,14 +35,14 @@
 <TableLayout
 	id="theftQueryStatus" class="jjWindow theftQuery"
 	rectAlignment="MiddleCenter" active="false"
-	height="95"
+	height="75"
 >
-  <Row class="customRow">
+  <!-- <Row class="customRow">
     <Cell>
       <Text id="theftQueryStatus_title" class="customRow">Waiting for other players to accept your request...</Text>
     </Cell>
   </Row>
-  <Row class="spacer" />
+  <Row class="spacer" /> -->
 	<Row>
     <Cell>
       <Text id="theftQueryStatus_status" class="customRow"></Text>
