@@ -304,8 +304,8 @@ function addPieceActions(obj)
 end
 
 function addBoardActions(board)
-  function changeTableColor(color, pos, focusedObj)
-    function colorPicked(pickedColor, playerColor)
+  local function changeTableColor(color, pos, focusedObj)
+    local function colorPicked(pickedColor, playerColor)
       for i, obj in pairs(tableSurfaces) do
         obj.setColorTint(pickedColor)
 
@@ -318,39 +318,9 @@ function addBoardActions(board)
   board.addContextMenuItem("Change Table Color...", changeTableColor)
 
   local lastPiecePick = nil
-  function gatherPieces(color, pos, focusedObj)
+  local function gatherPieces(color, pos, focusedObj)
     -- todo: may only work right for rectangular puzzles
     local player = Player[color]
-
-
-    --Try to figure out where on the puzzle they clicked
-    -- `pos` only seems to give us the center of the thing we right-clicked on
-    --Look at the mouse pointer?
-    --Wait, no, it's not useful because the pointer is already not where they opened the context menu,
-    --but where they clicked on the menu.
-    --[[
-    local pointerPos = player.getPointerPosition()
-    local bounds = focusedObj.getBoundsNormalized()
-    bounds.left = bounds.center.x - bounds.size.x / 2
-    bounds.right = bounds.center.x + bounds.size.x / 2
-    bounds.far = bounds.center.z + bounds.size.z / 2
-    bounds.near = bounds.center.z - bounds.size.z / 2
-
-    local puzzlePos = {
-      x = (pointerPos.x - bounds.left) / bounds.size.x,
-      y = (pointerPos.z - bounds.near) / bounds.size.z,
-    }
-
-    log("Pointer is at " .. printTable(pointerPos, true))
-    log("Bounds are " .. printTable(bounds, true))
-    log("puzzlePos " .. printTable(puzzlePos, true))
-    log("pos " .. printTable(pos, true))
-    debugDrawLine({
-      points = {pos, {pos.x, pos.y + 5, pos.z}},
-      color = {1, 0, 0},
-      thickness = .1,
-    })
-    --]]
 
     local bounds = focusedObj.getBounds()
 
@@ -368,27 +338,52 @@ function addBoardActions(board)
         piece = getPiece(hit.hit_object)
       end
     end
+    if not piece then -- pick one for them
+      local shuffledPieces = {}
+      for _, rpiece in ipairs(getAllPieces()) do
+        table.insert(shuffledPieces, math.random(1, #shuffledPieces + 1), rpiece)
+      end
+
+      for _, rpiece in ipairs(shuffledPieces) do
+        if rpiece.object.locked or #rpiece.object.getAttachments() > 0 then
+          -- don't go for this piece
+        else
+          piece = rpiece
+          break
+        end
+      end
+
+    end
 
 
-    function countConfirmed(text, color)
-      local range = text + 0
-      local rangeSq = range * range
+    local function countConfirmed(text, color)
+      local targetCount = text + 0
       -- log("piece at " .. printTable(lastPiecePick.solutionPosition, true))
 
       local dumpOrigin = focusedObj.getPosition()
-
-      Player[color].clearSelectedObjects()
-
       local targetPos = lastPiecePick.solutionPosition
-      local count = 0
-      local targetPieces = {}
+
+      local dsPieces = {} -- distance sorted pieces
       for i, piece in ipairs(getAllPieces()) do
-        local distSq = math.pow(piece.solutionPosition.x - targetPos.x, 2) + math.pow(piece.solutionPosition.z - targetPos.z, 2)
-        if distSq <= rangeSq and not piece.object.locked then
-          -- log("piece at " .. printTable(piece, true) .. " is " .. distSq .. " <= " .. rangeSq)
-          -- piece.object.addToPlayerSelection(color)
-          table.insert(targetPieces, piece)
+        if piece.object.locked then
+          -- don't include
+        else
+          table.insert(dsPieces, {
+            dist = math.sqrt(math.pow(piece.solutionPosition.x - targetPos.x, 2) + math.pow(piece.solutionPosition.z - targetPos.z, 2)),
+            piece = piece,
+          })
         end
+      end
+
+      table.sort(dsPieces, function(a, b) return a.dist < b.dist end)
+
+      local targetPieces = {}
+      for _, piece in ipairs(dsPieces) do
+        if #targetPieces >= targetCount then
+          break
+        end
+
+        table.insert(targetPieces, piece.piece)
       end
 
       cheatStealPieces(color, targetPieces, dumpOrigin, "made a mini-puzzle.")
@@ -396,11 +391,11 @@ function addBoardActions(board)
 
 
     if not piece then
-      player.showInfoDialog("Place a piece on top of the puzzle")
+      player.showInfoDialog("Couldn't find a good piece to center on. Try placing a piece on top of the puzzle.")
     else
       lastPiecePick = piece
       -- log("regarding piece at " .. printTable(lastPiecePick.solutionPosition, true))
-      player.showInputDialog("Collect how far from this piece?", "10", countConfirmed)
+      player.showInputDialog("How many pieces do you want?", "100", countConfirmed)
     end
   end
   board.addContextMenuItem("Cheat: Gather Pieces...", gatherPieces)
