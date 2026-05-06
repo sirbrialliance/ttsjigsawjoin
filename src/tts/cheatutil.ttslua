@@ -156,8 +156,13 @@ function cheatStealPieces(color, pieces, dumpOrigin, description)
   local function removePieces(targetObjects)
     if requestFinished then return end
 
+    local pieceGUIDMap = {}
+    for _, piece in ipairs(pieces) do
+      pieceGUIDMap[piece.object.guid] = piece
+    end
+
     local function handleRemoveObject(targetObject)
-      local targetPiece = getPiece(targetObject)
+      local targetPiece = pieceGUIDMap[targetObject.guid]
       if not targetPiece then return end
 
       local stealPieceIdx = findInArray(targetPiece, pieces)
@@ -165,6 +170,7 @@ function cheatStealPieces(color, pieces, dumpOrigin, description)
 
       targetObject.highlightOff()
       table.remove(pieces, stealPieceIdx)
+      pieceGUIDMap[targetObject.guid] = nil
     end
 
     for _, obj in ipairs(targetObjects) do
