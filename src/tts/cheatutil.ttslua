@@ -1,6 +1,6 @@
 
 
-local activeCheatStealRequest = nil
+activeCheatStealRequest = nil
 
 function theftQuery_approve_onClick(player, value, id)
   if activeCheatStealRequest then
@@ -27,6 +27,7 @@ function cheatStealPieces(color, pieces, dumpOrigin, description)
   local requestFinished = false
   local neededConfirmations = nil
   local selfCancel = false
+  local confirmWhenSolo = false -- for solo debugging
 
   local function takePiece(piece)
     piece.object.highlightOff()
@@ -127,6 +128,25 @@ function cheatStealPieces(color, pieces, dumpOrigin, description)
     })
   end
 
+  local function removePieces(targetObjects)
+    if requestFinished then return end
+
+    local function handleRemoveObject(targetObject)
+      local targetPiece = getPiece(targetObject)
+      if not targetPiece then return end
+
+      local stealPieceIdx = findInArray(targetPiece, pieces)
+      if not stealPieceIdx then return end
+
+      targetObject.highlightOff()
+      table.remove(pieces, stealPieceIdx)
+    end
+
+    for _, obj in ipairs(targetObjects) do
+      handleRemoveObject(obj)
+    end
+  end
+
 
   -- Existing request?
   if activeCheatStealRequest then
@@ -140,7 +160,7 @@ function cheatStealPieces(color, pieces, dumpOrigin, description)
 
 
   -- Other players okay with this?
-  if #getSeatedPlayers() == 1 then
+  if #getSeatedPlayers() == 1 and not confirmWhenSolo then
     --only 1 player
     finishStealPieces(true)
     return
@@ -149,7 +169,7 @@ function cheatStealPieces(color, pieces, dumpOrigin, description)
   neededConfirmations = {}
   local confirmPlayersFilter = ""
   for _, otherPlayer in ipairs(getSeatedPlayers()) do
-    if otherPlayer == color then
+    if otherPlayer == color and not confirmWhenSolo then
       --don't include
     else
       if #confirmPlayersFilter > 0 then
@@ -178,6 +198,7 @@ function cheatStealPieces(color, pieces, dumpOrigin, description)
     approve = playerApprovedSteal,
     decline = playerDeclinedSteal,
     view = playerViewSteal,
+    removePieces = removePieces,
   }
 end
 

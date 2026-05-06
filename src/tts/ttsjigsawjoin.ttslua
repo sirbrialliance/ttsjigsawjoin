@@ -462,6 +462,14 @@ function areDiagonals(pId1, pId2)
 end
 
 function onPlayerAction(player, action, objects)
+  if player.color ~= "Grey" and activeCheatStealRequest then
+    if action == Player.Action.Select then
+      activeCheatStealRequest.removePieces(objects)
+    elseif action == Player.Action.PickUp then
+      activeCheatStealRequest.removePieces(objects)
+    end
+  end
+
   if player.color ~= "Grey" and not player.admin then
     if action == Player.Action.Select then
       return checkPlayerSelection(player, objects)

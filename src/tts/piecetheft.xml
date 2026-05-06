@@ -8,11 +8,16 @@
 <TableLayout
 	id="theftQuery" class="jjWindow theftQuery"
 	rectAlignment="MiddleCenter" active="false"
-	height="75"
+	height="105"
 >
   <Row class="customRow">
     <Cell>
       <Text id="theftQuery_title" class="customRow"></Text>
+    </Cell>
+  </Row>
+  <Row class="customRow">
+    <Cell>
+      <Text class="">Select pieces to remove them.</Text>
     </Cell>
   </Row>
   <Row class="spacer" />
