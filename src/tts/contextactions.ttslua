@@ -376,7 +376,11 @@ function addBoardActions(board)
 
 
     local function countConfirmed(text, color)
-      local targetCount = text + 0
+      local targetCount = tonumber(text)
+      if targetCount == nil or targetCount <= 0 or math.floor(targetCount) ~= targetCount then
+        broadcastToColor("\"" .. text .. "\" is not valid. Please enter an integer greater than 0.", color, Color.Red)
+        return
+      end
       -- log("piece at " .. printTable(piece.solutionPosition, true))
 
       local dumpOrigin = focusedObj.getPosition()
@@ -412,9 +416,9 @@ function addBoardActions(board)
     if not piece then
       player.showInfoDialog("Couldn't find a good piece to center on. Try placing a piece on top of the puzzle.")
     elseif pieceIsRandom then
-      player.showInputDialog("How many pieces do you want? (Centered on a random piece.)", "100", countConfirmed)
+      player.showInputDialog("How many pieces do you want? (Centered on a random piece.)", "50", countConfirmed)
     else
-      player.showInputDialog("How many pieces do you want? (Centered on the given piece.)", "100", countConfirmed)
+      player.showInputDialog("How many pieces do you want? (Centered on the given piece.)", "50", countConfirmed)
     end
   end
   board.addContextMenuItem("Cheat: Gather Pieces...", gatherPieces)
