@@ -301,6 +301,24 @@ function addPieceActions(obj)
     broadcastToAll("Cheat: " .. Player[color].steam_name .. " sorted " .. #objects .. " piece(s) to the puzzle order.")
   end
   obj.addContextMenuItem("Cheat: Puzzle Order", solveOrdering)
+
+
+  local function putPiecesWhereTheyGo(color, pos, focusedObj)
+    local objects = Player[color].getSelectedObjects()
+
+    local dims = templateData[gameState.templateId].dimensions
+    local cornerOffset = Vector(-dims.width / 2 - .5, 0, dims.height / 2 + .5)
+    for _, obj in ipairs(objects) do
+      local piece = getPiece(obj)
+      if piece then
+        obj.setPositionSmooth(piece.solutionPosition + cornerOffset, false, false)
+        obj.setRotationSmooth(piece.solutionRotation, false, false)
+      end
+    end
+
+    broadcastToAll("Cheat: " .. Player[color].steam_name .. " moved " .. #objects .. " piece(s) to where they go.")
+  end
+  obj.addContextMenuItem("Cheat: Where it Goes", putPiecesWhereTheyGo)
 end
 
 function addBoardActions(board)

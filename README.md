@@ -50,6 +50,7 @@ A handful of accessability/cheat features have been added to help make more adva
 - Right click a puzzle piece (or a selection of pieces) and choose...
 	- "Cheat: Rotate Solved" to correctly orient all pieces as they appear in the final puzzle solution.
 	- "Cheat: Puzzle Order" to arrange pieces based on their order in the puzzle (rows first, starting from the top-left). Note that items arranged on the same row may not be on the same row in the puzzle. Doesn't handle clusters of pieces well.
+	- "Cheat: Where it Goes" will move and rotate the pieces to where they go in the puzzle (based on the rectangle outline that's added when you start a puzzle).
 
 Decide with your group beforehand when using cheats is acceptable. Use of a cheat is announced to all players.
 
