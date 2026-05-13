@@ -136,6 +136,16 @@ function alignPiecesByShape(origin, objects, allowRotate, horizontalOnly)
 	return true
 end
 
+playerSelectionHistory = {}
+
+function selectionHistoryUpdate(playerColor)
+  -- Basically, anytime the player selects more than one item, remember what that was.
+  local objects = Player[playerColor].getSelectedObjects()
+  if #objects <= 1 then return end
+  playerSelectionHistory[playerColor] = objects
+end
+
+
 function addObjectsActions()
   for index, object in ipairs(getObjects()) do
     if getPiece(object) then
@@ -145,7 +155,7 @@ function addObjectsActions()
     end
   end
 
-  function hotkey_viewPuzzleImage(playerColor, hoveredObject, pointerPosition, isKeyUp)
+  local function hotkey_viewPuzzleImage(playerColor, hoveredObject, pointerPosition, isKeyUp)
     -- this is made a lot more complicated as we have to filter for curretly viewing players
     local viewers = {}
     local visStr = UI.getAttribute("pictureViewer", "visibility")
@@ -173,7 +183,18 @@ function addObjectsActions()
     UI.setAttribute("pictureViewer", "visibility", visStr)
   end
 
+  local function hotkey_selectionHistoryRewind(playerColor, hoveredObject, pointerPosition, isKeyUp)
+    if not playerSelectionHistory[playerColor] then
+      broadcastToColor("No previous selection to return to.", playerColor, Color.Yellow)
+    else
+      for _, obj in pairs(playerSelectionHistory[playerColor]) do
+        obj.addToPlayerSelection(playerColor)
+      end
+    end
+  end
+
   addHotkey("View Puzzle Image", hotkey_viewPuzzleImage, true)
+  addHotkey("Rewind Object Selection", hotkey_selectionHistoryRewind, false)
 end
 
 function addPieceActions(obj)

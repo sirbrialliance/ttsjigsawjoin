@@ -461,6 +461,12 @@ function areDiagonals(pId1, pId2)
   return false
 end
 
+function onObjectHover(playerColor)
+  -- There's no direct way to detect ctrl-clicking an object to select it, so we use this
+  -- in preference to polling with onUpdate
+  selectionHistoryUpdate(playerColor)
+end
+
 function onPlayerAction(player, action, objects)
   if player.color ~= "Grey" and activeCheatStealRequest then
     if action == Player.Action.Select then
@@ -469,6 +475,8 @@ function onPlayerAction(player, action, objects)
       activeCheatStealRequest.removePieces(objects)
     end
   end
+
+  selectionHistoryUpdate(player.color)
 
   if player.color ~= "Grey" and not player.admin then
     if action == Player.Action.Select then
