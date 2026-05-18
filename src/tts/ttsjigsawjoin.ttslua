@@ -2026,18 +2026,28 @@ function snapPieces(droppedPiece, targetPiece)
   local start = os.time()
 
   local projectedObjectPosition = projectPiecePosition(targetPiece, droppedPiece.id)
-
-  droppedPiece.object.setPositionSmooth({
-    x = projectedObjectPosition.x,
-    y = projectedObjectPosition.y,-- target position
-    -- y = droppedPiece.object.getPosition().y,-- current height
-    z = projectedObjectPosition.z
-  }, false, true)
-
   local targetRotationDelta = targetPiece.object.getRotation() - targetPiece.solutionRotation
   local snapRotation = targetRotationDelta + droppedPiece.solutionRotation
 
-  droppedPiece.object.setRotationSmooth({ x = 0, y = snapRotation.y, z = 0 }, false, true)
+  -- too kepp reseting pieces from glitching out on phyics interation, and/or keep unrelated
+  -- pieces from getting rustled, join the pieces in the air above if neither are locked
+  if not targetPiece.object.locked then
+    local targetPiecePos = targetPiece.object.getPosition()
+    local joinHeight = math.max(projectedObjectPosition.y, targetPiecePos.y) + .2
+
+    targetPiecePos.y = joinHeight
+    projectedObjectPosition.y = joinHeight
+
+    targetPiece.object.setPositionSmooth(targetPiecePos, false, true)
+    targetPiece.object.setRotationSmooth(targetPiece.object.getRotation(), false, true) -- to resist physics bumps
+    droppedPiece.object.setPositionSmooth(projectedObjectPosition, false, true)
+    droppedPiece.object.setRotationSmooth({ x = 0, y = snapRotation.y, z = 0 }, false, true)
+  else
+    -- other side is locked, so just go it to directly
+    droppedPiece.object.setPositionSmooth(projectedObjectPosition, false, true)
+    droppedPiece.object.setRotationSmooth({ x = 0, y = snapRotation.y, z = 0 }, false, true)
+  end
+
 
   if gameState.debug_level >= 2 then
     debugPrint(string.format(
