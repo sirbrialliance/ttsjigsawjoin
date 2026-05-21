@@ -74,6 +74,7 @@ function getOverlapHelper(objects)
 
     setOrigin = function(p) origin = Vector(p) end,
     setOriginByObject = function(object)
+      if not object then return end
       local objectBounds = getVisualBoundsWorld(object)
       origin = Vector({objectBounds.edges.x0, objectBounds.center.y, objectBounds.edges.z1})
 

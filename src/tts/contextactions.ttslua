@@ -195,46 +195,15 @@ function addObjectsActions()
 
   addHotkey("View Puzzle Image", hotkey_viewPuzzleImage, true)
   addHotkey("Rewind Object Selection", hotkey_selectionHistoryRewind, false)
+  addHotkey("Arrange: Square", function(color) piece_squareAlign(color) end, false)
+  addHotkey("Arrange: Rectangle", function(color) piece_rectangleAlign(color) end, false)
 end
 
 function addPieceActions(obj)
 
-  function squareAlign(color, pos, focusedObj)
-    local objects = Player[color].getSelectedObjects()
-    inplaceShuffle(objects)
+  obj.addContextMenuItem("Arrange: Square", piece_squareAlign)
 
-    local helper = getOverlapHelper(objects)
-    helper.setOriginByObject(focusedObj)
-    local width = math.ceil(math.sqrt(helper.piecesArea))
-
-    local i = 0
-    local placementStepper = function()
-      i = i + 1
-      return {x = (i - 1) % width, z = math.floor((i - 1) / width)}
-    end
-    helper.placePieces(objects, placementStepper)
-  end
-  obj.addContextMenuItem("Arrange: Square", squareAlign)
-
-  function rectangleAlign(color, pos, focusedObj)
-    local objects = Player[color].getSelectedObjects()
-    inplaceShuffle(objects)
-
-    local helper = getOverlapHelper(objects)
-    helper.setOriginByObject(focusedObj)
-    -- Target a rough aspect ratio
-    local ratio = 5 / 1
-    local width = math.ceil(math.sqrt(ratio * helper.piecesArea))
-    -- print("Rect size for " .. helper.piecesArea .. " is " .. width)
-
-    local i = 0
-    local placementStepper = function()
-      i = i + 1
-      return {x = (i - 1) % width, z = math.floor((i - 1) / width)}
-    end
-    helper.placePieces(objects, placementStepper)
-  end
-  obj.addContextMenuItem("Arrange: Rectangle", rectangleAlign)
+  obj.addContextMenuItem("Arrange: Rectangle", piece_rectangleAlign)
 
 	-- Only supported on square puzzles:
 	if (templateData[gameState.templateId].shape or "square") == "square" then
@@ -466,3 +435,41 @@ function addBoardActions(board)
   board.addContextMenuItem("Cheat: Gather Edges", gatherEdges)
 end
 
+
+function piece_squareAlign(color, pos, focusedObj)
+  local objects = Player[color].getSelectedObjects()
+  if #objects == 0 then return end
+  inplaceShuffle(objects)
+
+  local helper = getOverlapHelper(objects)
+  helper.setOriginByObject(focusedObj)
+  local width = math.ceil(math.sqrt(helper.piecesArea))
+
+  local i = 0
+  local placementStepper = function()
+    i = i + 1
+    return {x = (i - 1) % width, z = math.floor((i - 1) / width)}
+  end
+  helper.placePieces(objects, placementStepper)
+end
+
+
+function piece_rectangleAlign(color, pos, focusedObj)
+  local objects = Player[color].getSelectedObjects()
+  if #objects == 0 then return end
+  inplaceShuffle(objects)
+
+  local helper = getOverlapHelper(objects)
+  helper.setOriginByObject(focusedObj)
+  -- Target a rough aspect ratio
+  local ratio = 5 / 1
+  local width = math.ceil(math.sqrt(ratio * helper.piecesArea))
+  -- print("Rect size for " .. helper.piecesArea .. " is " .. width)
+
+  local i = 0
+  local placementStepper = function()
+    i = i + 1
+    return {x = (i - 1) % width, z = math.floor((i - 1) / width)}
+  end
+  helper.placePieces(objects, placementStepper)
+end

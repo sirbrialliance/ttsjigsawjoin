@@ -37,6 +37,7 @@ Right click a piece or a selection of pieces for some helpful arrangement option
 - "Arr & Rot: By Shape" (arrange and rotate by shape) does the same, but additionally will rotate the pieces so there are fewer groups overall. Additionally, it puts all the puzzle edge pieces in a group together.
 - "Arrange: Left/Right" does the same as "Arrange: By Shape", but only considers the left and right edges. If you want to do this by top/bottom edges instead, rotate the pieces 90° first, run the command, then rotate them back.
 - "Align: Local Grid" tries to arrange the selection so the pieces are grid-aligned with each other. It also tries to avoid putting pieces on top of each other, including larger clusters of pieces, so things may still move around more than a small bit.
+- One or more of the above are available to bind to game keys.
 
 Note the some of these options are not available for hexagonal puzzles.
 
