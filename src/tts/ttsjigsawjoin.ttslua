@@ -2029,11 +2029,16 @@ function snapPieces(droppedPiece, targetPiece)
   local targetRotationDelta = targetPiece.object.getRotation() - targetPiece.solutionRotation
   local snapRotation = targetRotationDelta + droppedPiece.solutionRotation
 
-  -- too kepp reseting pieces from glitching out on phyics interation, and/or keep unrelated
+  -- to keep reseting pieces from glitching out on physics interation, and/or keep unrelated
   -- pieces from getting rustled, join the pieces in the air above if neither are locked
+  -- and targetPiece isn't too large
   if not targetPiece.object.locked then
     local targetPiecePos = targetPiece.object.getPosition()
     local joinHeight = math.max(projectedObjectPosition.y, targetPiecePos.y) + .2
+
+    if #targetPiece.object.getAttachments() >= 4 then
+      joinHeight = targetPiecePos.y
+    end
 
     targetPiecePos.y = joinHeight
     projectedObjectPosition.y = joinHeight
