@@ -195,15 +195,23 @@ function addObjectsActions()
 
   addHotkey("View Puzzle Image", hotkey_viewPuzzleImage, true)
   addHotkey("Rewind Object Selection", hotkey_selectionHistoryRewind, false)
-  addHotkey("Arrange: Square", function(color) piece_squareAlign(color) end, false)
-  addHotkey("Arrange: Rectangle", function(color) piece_rectangleAlign(color) end, false)
+  addHotkey("Arrange: Square", function(playerColor, hoveredObject, pointerPosition)
+    piece_squareAlign(playerColor, pointerPosition)
+  end, false)
+  addHotkey("Arrange: Rectangle", function(playerColor, hoveredObject, pointerPosition)
+    piece_rectangleAlign(playerColor, pointerPosition)
+  end, false)
 end
 
 function addPieceActions(obj)
 
-  obj.addContextMenuItem("Arrange: Square", piece_squareAlign)
+  obj.addContextMenuItem("Arrange: Square", function(player_color, object_position, object)
+    piece_squareAlign(player_color, object_position)
+  end)
 
-  obj.addContextMenuItem("Arrange: Rectangle", piece_rectangleAlign)
+  obj.addContextMenuItem("Arrange: Rectangle", function(player_color, object_position, object)
+    piece_rectangleAlign(player_color, object_position)
+  end)
 
 	-- Only supported on square puzzles:
 	if (templateData[gameState.templateId].shape or "square") == "square" then
@@ -436,13 +444,13 @@ function addBoardActions(board)
 end
 
 
-function piece_squareAlign(color, pos, focusedObj)
+function piece_squareAlign(color, pos)
   local objects = Player[color].getSelectedObjects()
   if #objects == 0 then return end
   inplaceShuffle(objects)
 
   local helper = getOverlapHelper(objects)
-  helper.setOriginByObject(focusedObj)
+  helper.setOrigin(pos)
   local width = math.ceil(math.sqrt(helper.piecesArea))
 
   local i = 0
@@ -454,13 +462,13 @@ function piece_squareAlign(color, pos, focusedObj)
 end
 
 
-function piece_rectangleAlign(color, pos, focusedObj)
+function piece_rectangleAlign(color, pos)
   local objects = Player[color].getSelectedObjects()
   if #objects == 0 then return end
   inplaceShuffle(objects)
 
   local helper = getOverlapHelper(objects)
-  helper.setOriginByObject(focusedObj)
+  helper.setOrigin(pos)
   -- Target a rough aspect ratio
   local ratio = 5 / 1
   local width = math.ceil(math.sqrt(ratio * helper.piecesArea))
