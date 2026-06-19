@@ -59,9 +59,10 @@ Decide with your group beforehand when using cheats is acceptable. Use of a chea
 
 - Right click the puzzle board and choose "Change Table Color" to change the table background color.
 - When creating a new puzzle, you may not know your image's aspect ratio offhand. Simply enter the width and height in pixels to the right of "Calculate aspect:" then hit "Calculate". A puzzle board with the closest aspect ratio will be selected for you.
-- If you go to "Options" -> "Game Keys" you can bind a key to...
-	- "View Puzzle Image" to see the current puzzle image. (Doens't work on videos.)
+- If you go to "Options" -> "Game Keys" once you've created a puzzle you can bind a key to...
+	- "View Puzzle Image" to see the current puzzle image. (Doesn't work on videos.)
 	- "Rewind Object Selection" to re-select multiple pieces that you recently de-selected on accident.
+	- "Arrange Square/Rectangle" will arrange the selected pieces based on your pointer position.
 
 # Development
 
@@ -80,3 +81,19 @@ You'll need to fiddle with hardcoded paths in those files and the hardcoded targ
 Updated pieces need to be hosted somewhere and `PUZZLE_URL` in the main Lua script needs to changed (before generating a puzzle).
 
 `src/blender`, I believe, is an older, unmaintained method for generating the pieces.
+
+# Changelog
+
+## v2025-06V17.0
+
+- Fork from Jigsaw Join and initial changes.
+
+## v2026-06V17.1
+
+- Mini-puzzle fixes/improvements, including asking before taking pieces, no need for picking a starting piece, and grabbing by count instead of range.
+- Cheat: Where it Goes
+- Puzzle image hotkey
+- Rewind object selection hotkey
+- A couple arrange piece hotkeys
+- More piece join "animation" tweaks
+- Misc fixes
