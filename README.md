@@ -82,6 +82,16 @@ Updated pieces need to be hosted somewhere and `PUZZLE_URL` in the main Lua scri
 
 `src/blender`, I believe, is an older, unmaintained method for generating the pieces.
 
+## Release
+
+- Update changelog (below) and bump version in `ttsjigsawjoin.xml`.
+- Open up your template save in game and make sure code is up-to-date and that there is no active puzzle. (To make a template save, just save a copy of the Workshop save.)
+- Open open `TS_Save_nn.json` file for that save and set `LuaScriptState` to `saveDelay` so that any current state (e.g. your user in the scoreboard) will be blank.
+- Re-open in game, upload to Workshop.
+- Add changelog notes to Workshop.
+- Save and load your local copy a couple times so it will save data if you use it as a starting point for future games.
+
+
 # Changelog
 
 ## v2025-06V17.0
