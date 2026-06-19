@@ -543,7 +543,7 @@
     </Cell>
   </Row>
 </TableLayout>
-<Panel id="pictureViewer" class="" visibility="" active="false">
+<Panel id="pictureViewer" class="" visibility="" active="false" color="#333333">
   <Image
     id="pictureViewer_picture"
     image="pictureViewer_picture"
